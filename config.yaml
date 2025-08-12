@@ -1,0 +1,26 @@
+checkpoint: malawi_0_025.ckpt 
+
+date: -3
+
+lead_time: 0
+
+input:
+  cutout:
+    lam_0:
+      downscaled_mars:
+        log: false
+        grid: "0.1/0.1"
+        area: "-8/30/-22/43"
+        cache_dir: .cache
+        topgraphy_file: malawi_0_025.tif
+    global:
+      cached_mars:
+        log: false
+        cache_dir: .cache
+      mask: 'global/cutout_mask'
+
+output:
+  netcdf: out.nc
+
+# pre_processors:
+#   - downscale: {}
