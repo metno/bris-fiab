@@ -34,7 +34,7 @@ The original bris checkpoint needs a little manual massaging before it can run w
 uv run anemoi-inference metadata --edit bris-checkpoint.ckpt --editor vim
 ```
 
-Find `dataset.variables_metadata`, and replace with [this](part.yaml) yaml.
+Find `dataset.variables_metadata`, and replace with [this](etc/checkpoint_metadata_part.yaml) yaml.
 Note that there are lots of keys called `variables_metadata` around the document.
 Make sure to change the correct one.
 

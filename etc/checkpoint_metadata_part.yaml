@@ -1,0 +1,822 @@
+  variables_metadata:
+    10u:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: 10u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: 10u
+    10v:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: 10v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: 10v
+    2d:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: 2d
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: 2d
+    2t:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: 2t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: 2t
+    cos_julian_day:
+      computed_forcing: true
+      constant_in_time: false
+    cos_latitude:
+      computed_forcing: true
+      constant_in_time: true
+    cos_local_time:
+      computed_forcing: true
+      constant_in_time: false
+    cos_longitude:
+      computed_forcing: true
+      constant_in_time: true
+    insolation:
+      computed_forcing: true
+      constant_in_time: false
+    lcc:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: lcc
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: lcc
+    lsm:
+      constant_in_time: true
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: lsm
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: lsm
+    mcc:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: mcc
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: mcc
+    msl:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: msl
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: msl
+    q_100:
+      mars:
+        date: '20200205'
+        levelist: 100
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_100
+    q_1000:
+      mars:
+        date: '20200205'
+        levelist: 1000
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_1000
+    q_150:
+      mars:
+        date: '20200205'
+        levelist: 150
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_150
+    q_200:
+      mars:
+        date: '20200205'
+        levelist: 200
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_200
+    q_250:
+      mars:
+        date: '20200205'
+        levelist: 250
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_250
+    q_300:
+      mars:
+        date: '20200205'
+        levelist: 300
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_300
+    q_400:
+      mars:
+        date: '20200205'
+        levelist: 400
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_400
+    q_50:
+      mars:
+        date: '20200205'
+        levelist: 50
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_50
+    q_500:
+      mars:
+        date: '20200205'
+        levelist: 500
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_500
+    q_700:
+      mars:
+        date: '20200205'
+        levelist: 700
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_700
+    q_850:
+      mars:
+        date: '20200205'
+        levelist: 850
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_850
+    q_925:
+      mars:
+        date: '20200205'
+        levelist: 925
+        param: q
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: q_925
+    sin_julian_day:
+      computed_forcing: true
+      constant_in_time: false
+    sin_latitude:
+      computed_forcing: true
+      constant_in_time: true
+    sin_local_time:
+      computed_forcing: true
+      constant_in_time: false
+    sin_longitude:
+      computed_forcing: true
+      constant_in_time: true
+    skt:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: skt
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: skt
+    sp:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: sp
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: sp
+    ssrd:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: ssrd
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: ssrd
+    strd:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: strd
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: strd
+    t_100:
+      mars:
+        date: '20200205'
+        levelist: 100
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_100
+    t_1000:
+      mars:
+        date: '20200205'
+        levelist: 1000
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_1000
+    t_150:
+      mars:
+        date: '20200205'
+        levelist: 150
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_150
+    t_200:
+      mars:
+        date: '20200205'
+        levelist: 200
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_200
+    t_250:
+      mars:
+        date: '20200205'
+        levelist: 250
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_250
+    t_300:
+      mars:
+        date: '20200205'
+        levelist: 300
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_300
+    t_400:
+      mars:
+        date: '20200205'
+        levelist: 400
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_400
+    t_50:
+      mars:
+        date: '20200205'
+        levelist: 50
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_50
+    t_500:
+      mars:
+        date: '20200205'
+        levelist: 500
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_500
+    t_700:
+      mars:
+        date: '20200205'
+        levelist: 700
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_700
+    t_850:
+      mars:
+        date: '20200205'
+        levelist: 850
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_850
+    t_925:
+      mars:
+        date: '20200205'
+        levelist: 925
+        param: t
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: t_925
+    tcc:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: tcc
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: tcc
+    tcw:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: tcw
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: tcw
+    tp:
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: tp
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: tp
+    u_100:
+      mars:
+        date: '20200205'
+        levelist: 100
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_100
+    u_1000:
+      mars:
+        date: '20200205'
+        levelist: 1000
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_1000
+    u_150:
+      mars:
+        date: '20200205'
+        levelist: 150
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_150
+    u_200:
+      mars:
+        date: '20200205'
+        levelist: 200
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_200
+    u_250:
+      mars:
+        date: '20200205'
+        levelist: 250
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_250
+    u_300:
+      mars:
+        date: '20200205'
+        levelist: 300
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_300
+    u_400:
+      mars:
+        date: '20200205'
+        levelist: 400
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_400
+    u_50:
+      mars:
+        date: '20200205'
+        levelist: 50
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_50
+    u_500:
+      mars:
+        date: '20200205'
+        levelist: 500
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_500
+    u_700:
+      mars:
+        date: '20200205'
+        levelist: 700
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_700
+    u_850:
+      mars:
+        date: '20200205'
+        levelist: 850
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_850
+    u_925:
+      mars:
+        date: '20200205'
+        levelist: 925
+        param: u
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: u_925
+    v_100:
+      mars:
+        date: '20200205'
+        levelist: 100
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_100
+    v_1000:
+      mars:
+        date: '20200205'
+        levelist: 1000
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_1000
+    v_150:
+      mars:
+        date: '20200205'
+        levelist: 150
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_150
+    v_200:
+      mars:
+        date: '20200205'
+        levelist: 200
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_200
+    v_250:
+      mars:
+        date: '20200205'
+        levelist: 250
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_250
+    v_300:
+      mars:
+        date: '20200205'
+        levelist: 300
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_300
+    v_400:
+      mars:
+        date: '20200205'
+        levelist: 400
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_400
+    v_50:
+      mars:
+        date: '20200205'
+        levelist: 50
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_50
+    v_500:
+      mars:
+        date: '20200205'
+        levelist: 500
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_500
+    v_700:
+      mars:
+        date: '20200205'
+        levelist: 700
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_700
+    v_850:
+      mars:
+        date: '20200205'
+        levelist: 850
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_850
+    v_925:
+      mars:
+        date: '20200205'
+        levelist: 925
+        param: v
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: v_925
+    w_100:
+      mars:
+        date: '20200205'
+        levelist: 100
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_100
+    w_1000:
+      mars:
+        date: '20200205'
+        levelist: 1000
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_1000
+    w_150:
+      mars:
+        date: '20200205'
+        levelist: 150
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_150
+    w_200:
+      mars:
+        date: '20200205'
+        levelist: 200
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_200
+    w_250:
+      mars:
+        date: '20200205'
+        levelist: 250
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_250
+    w_300:
+      mars:
+        date: '20200205'
+        levelist: 300
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_300
+    w_400:
+      mars:
+        date: '20200205'
+        levelist: 400
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_400
+    w_50:
+      mars:
+        date: '20200205'
+        levelist: 50
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_50
+    w_500:
+      mars:
+        date: '20200205'
+        levelist: 500
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_500
+    w_700:
+      mars:
+        date: '20200205'
+        levelist: 700
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_700
+    w_850:
+      mars:
+        date: '20200205'
+        levelist: 850
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_850
+    w_925:
+      mars:
+        date: '20200205'
+        levelist: 925
+        param: w
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: w_925
+    z:
+      constant_in_time: true
+      mars:
+        date: '20200205'
+        levtype: sfc
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z
+    z_100:
+      mars:
+        date: '20200205'
+        levelist: 100
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_100
+    z_1000:
+      mars:
+        date: '20200205'
+        levelist: 1000
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_1000
+    z_150:
+      mars:
+        date: '20200205'
+        levelist: 150
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_150
+    z_200:
+      mars:
+        date: '20200205'
+        levelist: 200
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_200
+    z_250:
+      mars:
+        date: '20200205'
+        levelist: 250
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_250
+    z_300:
+      mars:
+        date: '20200205'
+        levelist: 300
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_300
+    z_400:
+      mars:
+        date: '20200205'
+        levelist: 400
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_400
+    z_50:
+      mars:
+        date: '20200205'
+        levelist: 50
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_50
+    z_500:
+      mars:
+        date: '20200205'
+        levelist: 500
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_500
+    z_700:
+      mars:
+        date: '20200205'
+        levelist: 700
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_700
+    z_850:
+      mars:
+        date: '20200205'
+        levelist: 850
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_850
+    z_925:
+      mars:
+        date: '20200205'
+        levelist: 925
+        param: z
+        step: 0
+        time: '0000'
+        valid_datetime: '2020-02-05T00:00:00'
+        variable: z_925

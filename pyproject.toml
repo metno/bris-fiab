@@ -1,6 +1,9 @@
 [build-system]
 requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 
+[tool.setuptools]
+packages = ["bris_fiab"]
+
 [project]
 name = "bris-fiab"
 version = "0.1.0"
