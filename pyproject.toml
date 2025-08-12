@@ -4,7 +4,7 @@ requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 [project]
 name = "bris-fiab"
 version = "0.1.0"
-description = "Add your description here"
+description = "Running the bris model in Forecast-in-a-Box"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
