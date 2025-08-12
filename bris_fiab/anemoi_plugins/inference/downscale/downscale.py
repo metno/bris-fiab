@@ -49,16 +49,22 @@ def downscale(source_ds: ekd.FieldList, target_grid: str) -> ekd.FieldList:
     output_grid = Topography(target_grid)
 
     for field in source_ds:  # type: ignore
-        # name: str = field.metadata("shortName")  # type: ignore
+        name: str = field.metadata("shortName")  # type: ignore
 
         # original_data = source_ds.sel(param=name).to_numpy()  # type: ignore
         original_data = field.to_numpy()  # type: ignore
 
-        data = gridpp.bilinear(
-            input_grid, output_grid.grid,
-            original_data  # type: ignore
-        )
-        # data = np.zeros((560, 520), np.float64)
+        if name == '2t':
+            data = gridpp.simple_gradient(
+                input_grid, output_grid.grid,
+                original_data,  # type: ignore
+                -0.0065
+            )
+        else:
+            data = gridpp.bilinear(
+                input_grid, output_grid.grid,
+                original_data  # type: ignore
+            )
 
         from earthkit.data.sources.array_list import ArrayField
 
