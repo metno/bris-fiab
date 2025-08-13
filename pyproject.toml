@@ -15,9 +15,12 @@ dependencies = [
     "anemoi-graphs==0.6.2",
     "anemoi-inference==0.7.0",
     "anemoi-models==0.4.1",
+    "anemoi-plugins-ecmwf-inference[regrid]>=0.1.2",
     "anemoi-transform==0.1.14",
     "anemoi-utils==0.4.29",
     "ecmwf-api-client==1.6.5",
+    "mir-python==1.27.1.dev20250627",
+    "multiolib==2.6.1.dev20250627",
     "rioxarray>=0.19.0",
 ]
 

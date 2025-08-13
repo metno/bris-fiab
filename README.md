@@ -5,8 +5,11 @@ This can run the bris model an [anemoi inference](https://anemoi.readthedocs.io/
 ## Setting up
 
 ```shell
+brew install fftw # for mir to work properly
 uv sync
 ```
+
+
 
 ## Running
 
