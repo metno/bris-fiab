@@ -59,7 +59,7 @@ wheels = [
 
 [[package]]
 name = "anemoi-inference"
-version = "0.6.3"
+version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anemoi-transform" },
@@ -76,9 +76,9 @@ dependencies = [
     { name = "semantic-version" },
     { name = "torch" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f9/2d/70be8d2a61c932b38fccb4c3c5085438f017b238daf69cfeded94a9f7d43/anemoi_inference-0.6.3.tar.gz", hash = "sha256:069da85179635148c02171b8998c813e4fe1f4331e8334433687a4fe32bf2860", size = 1314665, upload-time = "2025-06-25T13:55:44.957Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/5a/eee6c1f031fb0a0736720ca37edee632e981f15fcb44f7b49ac6d1d73550/anemoi_inference-0.7.0.tar.gz", hash = "sha256:f71df9094f714698f20882fdc447d8bd352429715ea62bd30a141dee59e6d7e2", size = 1333257, upload-time = "2025-08-04T10:49:09.801Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/76/f4d551637a21b2176d45c74f52966aa7badcbd20c458801d6385fe36872d/anemoi_inference-0.6.3-py3-none-any.whl", hash = "sha256:d957c3064560e5aef3bcf4bae6a1bd0763472eef143a1c68b88505f259d1b0c4", size = 175268, upload-time = "2025-06-25T13:55:43.275Z" },
+    { url = "https://files.pythonhosted.org/packages/88/5a/72f03d6b0f18004956c1f477451772ad04b51928871472fc8540d85f973c/anemoi_inference-0.7.0-py3-none-any.whl", hash = "sha256:5398b444c028542e6ee9c00b77e06eb54af1720bb003f24e3719669b7ab64fc1", size = 191736, upload-time = "2025-08-04T10:49:08.304Z" },
 ]
 
 [[package]]
@@ -219,7 +219,7 @@ dependencies = [
 requires-dist = [
     { name = "anemoi-datasets", specifier = "==0.5.26" },
     { name = "anemoi-graphs", specifier = "==0.6.2" },
-    { name = "anemoi-inference", specifier = "==0.6.3" },
+    { name = "anemoi-inference", specifier = "==0.7.0" },
     { name = "anemoi-models", specifier = "==0.4.1" },
     { name = "anemoi-transform", specifier = "==0.1.14" },
     { name = "anemoi-utils", specifier = "==0.4.29" },

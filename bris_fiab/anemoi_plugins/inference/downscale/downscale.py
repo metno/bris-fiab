@@ -7,7 +7,16 @@ import rioxarray
 import xarray as xr
 import numpy as np
 import typing
+from anemoi.inference.processor import Processor
 
+
+class DownscalePreProcessor(Processor):
+    def __init__(self, context: Context, topgraphy_file: str = 'malawi_0_025.tif', **kwargs):
+        self._topography_file = topgraphy_file
+        super().__init__(context, **kwargs)
+
+    def process(self, fields: ekd.FieldList) -> ekd.FieldList:  # type: ignore
+        return downscale(fields, self._topography_file)
 
 class DownscaledMarsInput(CachedMarsInput):
     def __init__(self, context: Context, topgraphy_file: str = 'malawi_0_025.tif', **kwargs):

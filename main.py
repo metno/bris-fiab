@@ -1,11 +1,13 @@
+import click
 from anemoi.inference.config.run import RunConfiguration
 from anemoi.inference.runners.default import DefaultRunner
 
+@click.command()
+@click.option('--config', type=click.Path(exists=True), default='config.yaml', help='Inference configuration file')
+def cli(config: str):
+    configuration = RunConfiguration.load(config)
 
-def run():
-    config = RunConfiguration.load('config.yaml')
-
-    runner = DefaultRunner(config)
+    runner = DefaultRunner(configuration)
 
     import torch
     if torch.cuda.is_available():
@@ -19,4 +21,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    cli()

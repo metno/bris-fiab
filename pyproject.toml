@@ -13,7 +13,7 @@ requires-python = ">=3.11"
 dependencies = [
     "anemoi-datasets==0.5.26",
     "anemoi-graphs==0.6.2",
-    "anemoi-inference==0.6.3",
+    "anemoi-inference==0.7.0",
     "anemoi-models==0.4.1",
     "anemoi-transform==0.1.14",
     "anemoi-utils==0.4.29",
@@ -24,3 +24,6 @@ dependencies = [
 [project.entry-points."anemoi.inference.inputs"]
 cached_mars = "bris_fiab.anemoi_plugins.inference.cached_mars:CachedMarsInput"
 downscaled_mars = "bris_fiab.anemoi_plugins.inference.downscale:DownscaledMarsInput"
+
+[project.entry-points."anemoi.inference.pre_processors"]
+downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
