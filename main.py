@@ -1,11 +1,15 @@
 import click
 from anemoi.inference.config.run import RunConfiguration
 from anemoi.inference.runners.default import DefaultRunner
+import earthkit.data as ekd
+
 
 @click.command()
 @click.option('--config', type=click.Path(exists=True), default='config.yaml', help='Inference configuration file')
 def cli(config: str):
     configuration = RunConfiguration.load(config)
+
+    ekd.config.set("cache-policy", "user")
 
     runner = DefaultRunner(configuration)
 
