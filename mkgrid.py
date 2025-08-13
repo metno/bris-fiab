@@ -26,27 +26,45 @@ def cli(grid: str, input: str, output: str):
     }
 
     met_variables = {
-        '2t': {
-            'units': 'K',
-            'long_name': 'air temperature',
-            'standard_name': 'air_temperature',
+        '2t': (
+            'air_temperature_2m',
+            {
+                'units': 'K',
+                'long_name': 'air temperature',
+                'standard_name': 'air_temperature',
+                'grid_mapping': 'spatial_ref',
+            }
+        ),
+        'tcc': (
+            'cloud_area_fraction',
+            {
+                'units': '1',
+                'long_name': 'cloud area fraction',
+                'standard_name': 'cloud_area_fraction',
+                'grid_mapping': 'spatial_ref',
+            }
+        ),
+        '10u': (
+            'x_wind_10m',
+            {
+                'units': 'm/s',
+                'long_name': 'eastward wind',
+                'standard_name': 'x_wind',
             'grid_mapping': 'spatial_ref',
         },
-        'tcc': {
-            'units': '1',
-            'long_name': 'total cloud cover',
-            'standard_name': 'total_cloud_cover',
-            'grid_mapping': 'spatial_ref',
-        },
-        'z_300': {
-            'units': 'm',
-            'long_name': 'geopotential height',
-            'standard_name': 'geopotential_height',
-            'grid_mapping': 'spatial_ref',
-        },
+        ),
+        '10v': (
+            'y_wind_10m',
+            {
+                'units': 'm/s',
+                'long_name': 'northward wind',
+                'standard_name': 'y_wind',
+                'grid_mapping': 'spatial_ref',
+            }
+        )
     }
 
-    for variable, attrs in met_variables.items():
+    for variable, meta in met_variables.items():
         if variable not in data:
             print(f"Variable {variable} not found in input data.")
             continue
@@ -57,9 +75,9 @@ def cli(grid: str, input: str, output: str):
             param_data,
             coords=[data['time'], elevation.y, elevation.x],
             dims=['time', 'lat', 'lon'],
-            attrs=attrs
+            attrs=meta[1]
         )
-        variables[variable] = param
+        variables[meta[0]] = param
 
     ds = xr.Dataset(
         variables
