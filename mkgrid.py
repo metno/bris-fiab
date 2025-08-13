@@ -1,22 +1,28 @@
 import click
 import rioxarray
 import xarray as xr
+import numpy as np
 
 
 @click.command()
 @click.option('--grid', type=click.Path(exists=True), default='malawi_0_025.tif', help='Grid to convert to')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
-def cli(grid, input, output):
-    grid = rioxarray.open_rasterio(grid)
+def cli(grid: str, input: str, output: str):
+    elevation = rioxarray.open_rasterio(grid)
     data = xr.open_dataset(input)
 
-    size = len(grid.x) * len(grid.y)
+    size = len(elevation.x) * len(elevation.y)
 
     time_count = len(data['time'])
 
     variables = {
-        'spatial_ref': grid.spatial_ref,
+        'spatial_ref': elevation['spatial_ref'],
+        'forecast_reference_time': xr.DataArray(
+            np.datetime64(data['time'].values[0]),
+            dims=(),
+            attrs={'long_name': 'forecast reference time'}
+        )
     }
 
     met_variables = {
@@ -44,31 +50,16 @@ def cli(grid, input, output):
         if variable not in data:
             print(f"Variable {variable} not found in input data.")
             continue
-        
-        param_data = data[variable].values[:, :size].reshape((time_count, len(grid.y), len(grid.x)))
+
+        param_data = data[variable].values[:, :size].reshape(
+            (time_count, len(elevation.y), len(elevation.x)))
         param = xr.DataArray(
-            param_data, 
-            coords=[data['time'], grid.y, grid.x], 
+            param_data,
+            coords=[data['time'], elevation.y, elevation.x],
             dims=['time', 'lat', 'lon'],
             attrs=attrs
         )
         variables[variable] = param
-
-
-    # variable = '2t'
-    # param_data = data[variable].values[:, :size].reshape((time_count, len(grid.y), len(grid.x)))
-    # param = xr.DataArray(
-    #     param_data, 
-    #     coords=[data['time'], grid.y, grid.x], 
-    #     dims=['time', 'lat', 'lon'],
-    #     attrs={
-    #         'units': 'K',
-    #         'long_name': 'air temperature',
-    #         'standard_name': 'air_temperature',
-    #         'grid_mapping': 'spatial_ref',
-    #     }
-    # )
-    # variables[variable] = param
 
     ds = xr.Dataset(
         variables
