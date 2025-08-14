@@ -1,6 +1,6 @@
 import zipfile
 import numpy as np
-from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional
+from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional, topography_zipfile_name
 
 from .make_graph import build_stretched_graph
 from .update import update
@@ -17,9 +17,7 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str):
 
 
 def _add_topography(topography_file: str, new_checkpoint: str):
-    folder = new_checkpoint.rsplit('/', 1)[-1].rsplit('.', 1)[0]
-
-    with zipfile.ZipFile(new_checkpoint, "a") as zipf:
+    with zipfile.ZipFile(topography_zipfile_name(new_checkpoint), "a") as zipf:
         zipf.write(topography_file, arcname=f"{folder}/bris-metadata/topography.tif")
 
 
