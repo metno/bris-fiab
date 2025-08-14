@@ -28,7 +28,7 @@ def combine_nodes(latitudes, longitudes, global_lats, global_lons):
     return lats, lons, mask, _mask
 
 
-def build_stretched_graph(latitudes, longitudes, global_grid: str = 'n320', lam_resolution: float = 8):
+def build_stretched_graph(latitudes, longitudes, global_grid: str = 'n320', lam_resolution: int = 8):
 
     from torch_geometric.data import HeteroData
     from anemoi.graphs.nodes import LatLonNodes, StretchedTriNodes

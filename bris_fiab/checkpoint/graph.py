@@ -4,7 +4,7 @@ from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, m
 from .make_graph import build_stretched_graph
 from .update import update
 
-def run(topography_file: str, lam_resolution: float, original_checkpoint: str, new_checkpoint: str):
+def run(topography_file: str, lam_resolution: int, original_checkpoint: str, new_checkpoint: str):
     lat, lon = get_latlon(topography_file)
     graph = build_stretched_graph(lat, lon, global_grid='n320', lam_resolution=lam_resolution)
 
