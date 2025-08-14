@@ -17,8 +17,9 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str):
 
 
 def _add_topography(topography_file: str, new_checkpoint: str):
-    with zipfile.ZipFile(topography_zipfile_name(new_checkpoint), "a") as zipf:
-        zipf.write(topography_file, arcname=f"{folder}/bris-metadata/topography.tif")
+    with zipfile.ZipFile(new_checkpoint, "a") as zipf:
+        arcname = topography_zipfile_name(zipf)
+        zipf.write(topography_file, arcname)
 
 
 def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray]:

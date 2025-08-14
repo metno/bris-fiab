@@ -1,4 +1,4 @@
-checkpoint: test.ckpt 
+checkpoint: malawi_0_025.ckpt
 
 date: -3
 

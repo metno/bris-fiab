@@ -29,7 +29,7 @@ class Topography:
     def from_zip(cls, zip_file: str) -> 'Topography':
         """Create a Topography instance from a zip file containing topography data."""
         with zipfile.ZipFile(zip_file, 'r') as zf:
-            topo_file = topography_zipfile_name(zip_file)
+            topo_file = topography_zipfile_name(zf)
             with zf.open(topo_file) as topo_src:
                 return cls(rasterio.MemoryFile(topo_src.read()))
 
@@ -131,6 +131,11 @@ def height_to_geopotential(h):
     g = 9.80665
     return (g * earth_radius * h) / (earth_radius + h)
 
-def topography_zipfile_name(path: str) -> str:
+def topography_zipfile_name(zf: zipfile.ZipFile) -> str:
+    for f in zf.filelist:
+        if f.filename.endswith('/bris-metadata/topography.tif'):
+            return f.filename
+
+    path = zf.filename or '.'
     folder = path.rsplit('/', 1)[-1].rsplit('.', 1)[0]
     return f"{folder}/bris-metadata/topography.tif"
