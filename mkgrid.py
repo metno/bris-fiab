@@ -29,7 +29,14 @@ def cli(grid: str, input: str, output: str):
     }
 
     coords = {
-        'time': data['time'],
+        'time': xr.DataArray(
+            data['time'].values,
+            dims='time',
+            attrs={
+                # 'units': 'seconds since 1970-01-01 00:00:00',
+                'standard_name': 'time'
+            }
+        ),
         'lat': xr.DataArray(
             elevation.y.values,
             dims='lat',
