@@ -55,7 +55,28 @@ def cli(grid: str, input: str, output: str):
         )
     }
 
+    # (variable name, attributes, value scale)
     met_variables = {
+        'msl': (
+            'air_pressure_at_sea_level',
+            {
+                'units': 'Pa',
+                'long_name': 'air_pressure_at_sea_level',
+                'standard_name': 'air_pressure_at_sea_level',
+                'grid_mapping': 'spatial_ref',
+            },
+            1
+        ),
+        'tp': (
+            'precipitation_amount',
+            {
+                'units': 'kg/m^2',
+                'long_name': 'precipitation_amount',
+                'standard_name': 'precipitation_amount',
+                'grid_mapping': 'spatial_ref',
+            },
+            1000
+        ),
         '2t': (
             'air_temperature_2m',
             {
@@ -63,7 +84,8 @@ def cli(grid: str, input: str, output: str):
                 'long_name': 'air temperature',
                 'standard_name': 'air_temperature',
                 'grid_mapping': 'spatial_ref',
-            }
+            },
+            1
         ),
         'tcc': (
             'cloud_area_fraction',
@@ -72,7 +94,8 @@ def cli(grid: str, input: str, output: str):
                 'long_name': 'cloud area fraction',
                 'standard_name': 'cloud_area_fraction',
                 'grid_mapping': 'spatial_ref',
-            }
+            },
+            1
         ),
         '10u': (
             'x_wind_10m',
@@ -81,7 +104,8 @@ def cli(grid: str, input: str, output: str):
                 'long_name': 'eastward wind',
                 'standard_name': 'x_wind',
             'grid_mapping': 'spatial_ref',
-        },
+            },
+            1
         ),
         '10v': (
             'y_wind_10m',
@@ -90,7 +114,8 @@ def cli(grid: str, input: str, output: str):
                 'long_name': 'northward wind',
                 'standard_name': 'y_wind',
                 'grid_mapping': 'spatial_ref',
-            }
+            },
+            1
         )
     }
 
@@ -107,6 +132,9 @@ def cli(grid: str, input: str, output: str):
             dims=['time', 'lat', 'lon'],
             attrs=meta[1]
         )
+        if variable == 'tp':
+            variables[meta[0]] = param * 1000
+
         variables[meta[0]] = param
 
     ds = xr.Dataset(
