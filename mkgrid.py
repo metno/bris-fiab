@@ -21,7 +21,30 @@ def cli(grid: str, input: str, output: str):
         'forecast_reference_time': xr.DataArray(
             np.datetime64(data['time'].values[0]),
             dims=(),
-            attrs={'long_name': 'forecast reference time'}
+            attrs={
+                'long_name': 'forecast reference time',
+                'standard_name': 'forecast_reference_time',
+            }
+        )
+    }
+
+    coords = {
+        'time': data['time'],
+        'lat': xr.DataArray(
+            elevation.y.values,
+            dims='lat',
+            attrs={
+                'units': 'degree',
+                'standard_name': 'latitude'
+            }
+        ),
+        'lon': xr.DataArray(
+            elevation.x.values,
+            dims='lon',
+            attrs={
+                'units': 'degree',
+                'standard_name': 'longitude'
+            }
         )
     }
 
@@ -80,7 +103,8 @@ def cli(grid: str, input: str, output: str):
         variables[meta[0]] = param
 
     ds = xr.Dataset(
-        variables
+        variables, 
+        coords=coords,
     )
 
     ds.to_netcdf(output)
