@@ -212,6 +212,7 @@ dependencies = [
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
     { name = "ecmwf-api-client" },
+    { name = "pydantic" },
     { name = "rioxarray" },
     { name = "trimesh" },
 ]
@@ -225,6 +226,7 @@ requires-dist = [
     { name = "anemoi-transform", specifier = "==0.1.14" },
     { name = "anemoi-utils", specifier = "==0.4.29" },
     { name = "ecmwf-api-client", specifier = "==1.6.5" },
+    { name = "pydantic", specifier = ">=2.11.7" },
     { name = "rioxarray", specifier = ">=0.19.0" },
     { name = "trimesh", specifier = ">=4.7.3" },
 ]
