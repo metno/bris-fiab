@@ -90,6 +90,7 @@
     q_100:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 100
         param: q
         step: 0
@@ -99,6 +100,7 @@
     q_1000:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 1000
         param: q
         step: 0
@@ -108,6 +110,7 @@
     q_150:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 150
         param: q
         step: 0
@@ -117,6 +120,7 @@
     q_200:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 200
         param: q
         step: 0
@@ -126,6 +130,7 @@
     q_250:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 250
         param: q
         step: 0
@@ -135,6 +140,7 @@
     q_300:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 300
         param: q
         step: 0
@@ -144,6 +150,7 @@
     q_400:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 400
         param: q
         step: 0
@@ -153,6 +160,7 @@
     q_50:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 50
         param: q
         step: 0
@@ -162,6 +170,7 @@
     q_500:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 500
         param: q
         step: 0
@@ -171,6 +180,7 @@
     q_700:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 700
         param: q
         step: 0
@@ -180,6 +190,7 @@
     q_850:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 850
         param: q
         step: 0
@@ -189,6 +200,7 @@
     q_925:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 925
         param: q
         step: 0
@@ -246,6 +258,7 @@
     t_100:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 100
         param: t
         step: 0
@@ -255,6 +268,7 @@
     t_1000:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 1000
         param: t
         step: 0
@@ -264,6 +278,7 @@
     t_150:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 150
         param: t
         step: 0
@@ -273,6 +288,7 @@
     t_200:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 200
         param: t
         step: 0
@@ -282,6 +298,7 @@
     t_250:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 250
         param: t
         step: 0
@@ -291,6 +308,7 @@
     t_300:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 300
         param: t
         step: 0
@@ -300,6 +318,7 @@
     t_400:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 400
         param: t
         step: 0
@@ -309,6 +328,7 @@
     t_50:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 50
         param: t
         step: 0
@@ -318,6 +338,7 @@
     t_500:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 500
         param: t
         step: 0
@@ -327,6 +348,7 @@
     t_700:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 700
         param: t
         step: 0
@@ -336,6 +358,7 @@
     t_850:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 850
         param: t
         step: 0
@@ -345,6 +368,7 @@
     t_925:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 925
         param: t
         step: 0
@@ -381,6 +405,7 @@
     u_100:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 100
         param: u
         step: 0
@@ -390,6 +415,7 @@
     u_1000:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 1000
         param: u
         step: 0
@@ -399,6 +425,7 @@
     u_150:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 150
         param: u
         step: 0
@@ -408,6 +435,7 @@
     u_200:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 200
         param: u
         step: 0
@@ -417,6 +445,7 @@
     u_250:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 250
         param: u
         step: 0
@@ -426,6 +455,7 @@
     u_300:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 300
         param: u
         step: 0
@@ -435,6 +465,7 @@
     u_400:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 400
         param: u
         step: 0
@@ -444,6 +475,7 @@
     u_50:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 50
         param: u
         step: 0
@@ -453,6 +485,7 @@
     u_500:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 500
         param: u
         step: 0
@@ -462,6 +495,7 @@
     u_700:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 700
         param: u
         step: 0
@@ -471,6 +505,7 @@
     u_850:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 850
         param: u
         step: 0
@@ -480,6 +515,7 @@
     u_925:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 925
         param: u
         step: 0
@@ -489,6 +525,7 @@
     v_100:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 100
         param: v
         step: 0
@@ -498,6 +535,7 @@
     v_1000:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 1000
         param: v
         step: 0
@@ -507,6 +545,7 @@
     v_150:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 150
         param: v
         step: 0
@@ -516,6 +555,7 @@
     v_200:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 200
         param: v
         step: 0
@@ -525,6 +565,7 @@
     v_250:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 250
         param: v
         step: 0
@@ -534,6 +575,7 @@
     v_300:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 300
         param: v
         step: 0
@@ -543,6 +585,7 @@
     v_400:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 400
         param: v
         step: 0
@@ -552,6 +595,7 @@
     v_50:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 50
         param: v
         step: 0
@@ -561,6 +605,7 @@
     v_500:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 500
         param: v
         step: 0
@@ -570,6 +615,7 @@
     v_700:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 700
         param: v
         step: 0
@@ -579,6 +625,7 @@
     v_850:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 850
         param: v
         step: 0
@@ -588,6 +635,7 @@
     v_925:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 925
         param: v
         step: 0
@@ -597,6 +645,7 @@
     w_100:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 100
         param: w
         step: 0
@@ -606,6 +655,7 @@
     w_1000:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 1000
         param: w
         step: 0
@@ -615,6 +665,7 @@
     w_150:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 150
         param: w
         step: 0
@@ -624,6 +675,7 @@
     w_200:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 200
         param: w
         step: 0
@@ -633,6 +685,7 @@
     w_250:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 250
         param: w
         step: 0
@@ -642,6 +695,7 @@
     w_300:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 300
         param: w
         step: 0
@@ -651,6 +705,7 @@
     w_400:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 400
         param: w
         step: 0
@@ -660,6 +715,7 @@
     w_50:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 50
         param: w
         step: 0
@@ -669,6 +725,7 @@
     w_500:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 500
         param: w
         step: 0
@@ -678,6 +735,7 @@
     w_700:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 700
         param: w
         step: 0
@@ -687,6 +745,7 @@
     w_850:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 850
         param: w
         step: 0
@@ -696,6 +755,7 @@
     w_925:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 925
         param: w
         step: 0
@@ -715,6 +775,7 @@
     z_100:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 100
         param: z
         step: 0
@@ -724,6 +785,7 @@
     z_1000:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 1000
         param: z
         step: 0
@@ -733,6 +795,7 @@
     z_150:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 150
         param: z
         step: 0
@@ -742,6 +805,7 @@
     z_200:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 200
         param: z
         step: 0
@@ -751,6 +815,7 @@
     z_250:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 250
         param: z
         step: 0
@@ -760,6 +825,7 @@
     z_300:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 300
         param: z
         step: 0
@@ -769,6 +835,7 @@
     z_400:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 400
         param: z
         step: 0
@@ -778,6 +845,7 @@
     z_50:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 50
         param: z
         step: 0
@@ -787,6 +855,7 @@
     z_500:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 500
         param: z
         step: 0
@@ -796,6 +865,7 @@
     z_700:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 700
         param: z
         step: 0
@@ -805,6 +875,7 @@
     z_850:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 850
         param: z
         step: 0
@@ -814,6 +885,7 @@
     z_925:
       mars:
         date: '20200205'
+        levtype: pl
         levelist: 925
         param: z
         step: 0
