@@ -4,26 +4,24 @@ from anemoi.inference.context import Context
 from anemoi.inference.processor import Processor
 from earthkit.data.sources.array_list import ArrayField
 import earthkit.data as ekd
-import gridpp
 import rioxarray
 import rasterio
-import xarray as xr
 import numpy as np
 import typing
 import zipfile
+import scipy.interpolate
+from scipy.spatial import Delaunay
 
 
 class Topography:
     '''A simple holder for output topography data'''
 
-    def __init__(self, topography_file: str|rasterio.MemoryFile):
+    def __init__(self, topography_file: str | rasterio.MemoryFile):
         topography = rioxarray.open_rasterio(topography_file)
         self.x_values = topography['x'].values  # type: ignore
         self.y_values = topography['y'].values  # type: ignore
         self.spatial_ref = topography.spatial_ref  # type: ignore
         self.elevation = topography.values[0]  # type: ignore
-        x, y = make_two_dimensional(self.x_values, self.y_values)
-        self.grid = gridpp.Grid(y, x, self.elevation)  # type: ignore
 
     @classmethod
     def from_zip(cls, zip_file: str) -> 'Topography':
@@ -32,6 +30,27 @@ class Topography:
             topo_file = topography_zipfile_name(zf)
             with zf.open(topo_file) as topo_src:
                 return cls(rasterio.MemoryFile(topo_src.read()))
+            
+def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -> typing.Callable[[np.ndarray], np.ndarray]:
+
+    if len(ix.shape) == 1:
+        if len(iy.shape) != 1:
+            raise ValueError("ix must be 1D if iy is not 1D")
+        ix, iy = make_two_dimensional(ix, iy)
+    ipoints = np.column_stack((iy.flatten(), ix.flatten()))
+
+    triangulation = Delaunay(ipoints)
+
+    if len(ox.shape) == 1:
+        if len(oy.shape) != 1:
+            raise ValueError("ox must be 1D if oy is not 1D")
+        ox, oy = make_two_dimensional(ox, oy)
+    opoints = np.column_stack((oy.flatten(), ox.flatten()))
+
+    def interpolate(values: np.ndarray) -> np.ndarray:
+        interpolator = scipy.interpolate.LinearNDInterpolator(triangulation, values.flatten())
+        return interpolator(opoints)
+    return interpolate
 
 
 class DownscalePreProcessor(Processor):
@@ -84,8 +103,8 @@ def downscale(source_ds: ekd.FieldList, output_grid: Topography) -> ekd.FieldLis
 
     field: ekd.FieldList = source_ds.sel(param="z")  # type: ignore
     latlon = field.to_latlon()
-    input_grid = gridpp.Grid(
-        latlon['lat'], latlon['lon'], geopotential_to_height(field.to_numpy()[0]))
+
+    downscale = downscaler(latlon['lat'], latlon['lon'], output_grid.y_values, output_grid.x_values)  # type: ignore
 
     for field in source_ds:  # type: ignore
         name: str = field.metadata("shortName")  # type: ignore
@@ -93,10 +112,7 @@ def downscale(source_ds: ekd.FieldList, output_grid: Topography) -> ekd.FieldLis
         # original_data = source_ds.sel(param=name).to_numpy()  # type: ignore
         original_data = field.to_numpy()  # type: ignore
 
-        data = gridpp.bilinear(
-            input_grid, output_grid.grid,
-            original_data  # type: ignore
-        )
+        data = downscale(original_data)
 
         metadata = field.metadata().override(  # type: ignore
             Ni=len(output_grid.x_values),
@@ -130,6 +146,7 @@ def height_to_geopotential(h):
     earth_radius = 6371008.7714
     g = 9.80665
     return (g * earth_radius * h) / (earth_radius + h)
+
 
 def topography_zipfile_name(zf: zipfile.ZipFile) -> str:
     for f in zf.filelist:
