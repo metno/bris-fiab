@@ -36,15 +36,18 @@ def cli(grid: str, config: str, input: str, output: str):
     elevation = rioxarray.open_rasterio(grid)
     data = xr.open_dataset(input)
 
+    x: np.ndarray = elevation.x.values # type: ignore
+    y: np.ndarray = elevation.y.values # type: ignore
+
     with open(config) as f:
         config_json = json.load(f)
         met_variables = MkGridConfig.model_validate(config_json)
 
-    size = len(elevation.x) * len(elevation.y)
+    size = len(x) * len(y)
     time_count = len(data['time'])
 
     variables = {
-        'spatial_ref': elevation['spatial_ref'],
+        'spatial_ref': elevation['spatial_ref'], # type: ignore
         'forecast_reference_time': xr.DataArray(
             np.datetime64(data['time'].values[0]),
             dims=(),
@@ -60,12 +63,11 @@ def cli(grid: str, config: str, input: str, output: str):
             data['time'].values,
             dims='time',
             attrs={
-                # 'units': 'seconds since 1970-01-01 00:00:00',
                 'standard_name': 'time'
             }
         ),
         'lat': xr.DataArray(
-            elevation.y.values,
+            y,
             dims='lat',
             attrs={
                 'units': 'degree',
@@ -73,7 +75,7 @@ def cli(grid: str, config: str, input: str, output: str):
             }
         ),
         'lon': xr.DataArray(
-            elevation.x.values,
+            x,
             dims='lon',
             attrs={
                 'units': 'degree',
@@ -100,10 +102,10 @@ def cli(grid: str, config: str, input: str, output: str):
             continue
 
         param_data = data[variable].values[:, :size].reshape(
-            (time_count, len(elevation.y), len(elevation.x)))
+            (time_count, len(y), len(x)))
         param = xr.DataArray(
             param_data,
-            coords=[data['time'], elevation.y, elevation.x],
+            coords=[data['time'], y, x],
             dims=['time', 'lat', 'lon'],
             attrs={**cfg.attributes, "grid_mapping": "spatial_ref"}
         )
@@ -115,12 +117,12 @@ def cli(grid: str, config: str, input: str, output: str):
             continue
 
         variable_names = [f'{variable}_{level}' for level in met_variables.variables.pl.levels]        
-        param_data = [data[vn].values[:, :size].reshape((time_count, len(elevation.y), len(elevation.x))) for vn in variable_names]
+        param_data = [data[vn].values[:, :size].reshape((time_count, len(y), len(x))) for vn in variable_names]
         param_data = np.stack(param_data, axis=1)
 
         param = xr.DataArray(
             param_data,
-            coords=[data['time'], met_variables.variables.pl.levels, elevation.y, elevation.x],
+            coords=[data['time'], met_variables.variables.pl.levels, y, x],
             dims=['time', 'pl', 'lat', 'lon'],
             attrs=cfg.attributes
         )
