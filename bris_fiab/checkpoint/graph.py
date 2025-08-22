@@ -5,11 +5,25 @@ from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, m
 from .make_graph import build_stretched_graph
 from .update import update
 
-def run(topography_file: str, original_checkpoint: str, new_checkpoint: str):
-    lat, lon = _get_latlon(topography_file)
-    graph = build_stretched_graph(lat, lon, global_grid='n320', lam_resolution=8) # what is the point of lam_resolution?
+def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str):
 
-    # torch.save(graph, args.output)
+    lam_resolution = 10
+    global_resolution = 7
+    margin_radius_km = 11
+
+    lat, lon = _get_latlon(topography_file)
+    graph = build_stretched_graph(
+        lat, lon, 
+        global_grid='n320', 
+        lam_resolution=lam_resolution, 
+        global_resolution=global_resolution, 
+        margin_radius_km=margin_radius_km
+    )
+
+    if save_graph_to:
+        import torch
+        torch.save(graph, save_graph_to)
+        print('saved graph')
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
     
     update(graph, original_checkpoint, new_checkpoint)
