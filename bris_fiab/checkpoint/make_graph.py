@@ -28,7 +28,7 @@ def combine_nodes(latitudes, longitudes, global_lats, global_lons):
     return lats, lons, mask, _mask
 
 
-def build_stretched_graph(latitudes, longitudes, global_grid: str = 'n320', lam_resolution: int = 8):
+def build_stretched_graph(latitudes, longitudes, global_grid: str, lam_resolution: int, global_resolution: int, margin_radius_km: int):
 
     from torch_geometric.data import HeteroData
     from anemoi.graphs.nodes import LatLonNodes, StretchedTriNodes
@@ -56,7 +56,12 @@ def build_stretched_graph(latitudes, longitudes, global_grid: str = 'n320', lam_
     # All of the following can easily be moved to a configuration file and substituted by:
     # graph = GraphCreator("recipe_forecast_in_a_box.yaml").update_graph(graph)
     hidden = StretchedTriNodes(
-        lam_resolution=lam_resolution, global_resolution=5, reference_node_name="data", mask_attr_name="cutout_mask", name="hidden"
+        lam_resolution=lam_resolution, 
+        global_resolution=global_resolution, 
+        margin_radius_km=margin_radius_km,
+        reference_node_name="data", 
+        mask_attr_name="cutout_mask", 
+        name="hidden",
     )
     enc = KNNEdges("data", "hidden", num_nearest_neighbours=12)
     proc = MultiScaleEdges("hidden", "hidden", x_hops=1, scale_resolutions=list(range(1, lam_resolution + 1)))

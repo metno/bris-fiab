@@ -1,14 +1,24 @@
 # Bris in Forecast-in-a-Box
 
-This can run the bris model an [anemoi inference](https://anemoi.readthedocs.io/projects/inference/en/latest/) and [Forecast-in-a-Box](https://github.com/ecmwf/forecast-in-a-box).
+**WIP** - this is not yet ready to be used for anything.
 
-## Setting up
+This contains the neccessary components to run the bris model in [anemoi inference](https://anemoi.readthedocs.io/projects/inference/en/latest/) and [Forecast-in-a-Box](https://github.com/ecmwf/forecast-in-a-box). It consists of several parts: 
+
+* Plugins for anemoi-inference
+* A tool to adapt a checkpoint so it can run in anemoi-inference
+* Later, docs for how to add this to Forecast-in-a-Box will be added
+
+## Getting started
+
+In order to get started, you need access to a bris checkpoint, such as [Cloudy Skies](https://huggingface.co/met-no/bris_cloudy-skies).
+
+### Setting up
 
 ```shell
 uv sync
 ```
 
-## Running
+### Running inference
 
 ```shell
 uv run main.py
@@ -16,7 +26,7 @@ uv run main.py
 
 This works around bugs related to running on a mac, at the cost of a little flexibility.
 
-### In the future
+#### In the future
 
 ```shell
 uv run anemoi-inference run config.yaml
@@ -24,7 +34,7 @@ uv run anemoi-inference run config.yaml
 
 ## Checkpoint
 
-In order to run, you need a bris checkpoint, and a geotiff file, containing orograpghy data for your target area.
+In order to run, you need a bris checkpoint, and a geotiff file containing orograpghy data for your target area.
 
 ### Preparing
 

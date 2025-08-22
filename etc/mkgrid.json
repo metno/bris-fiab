@@ -1,0 +1,183 @@
+{
+    "variables": {
+        "sfc": {
+            "variables": {
+                "10u": {
+                    "variable_name": "x_wind_10m",
+                    "attributes": {
+                        "units": "m/s",
+                        "long_name": "eastward wind",
+                        "standard_name": "x_wind"
+                    }
+                },
+                "10v": {
+                    "variable_name": "y_wind_10m",
+                    "attributes": {
+                        "units": "m/s",
+                        "long_name": "northward wind",
+                        "standard_name": "y_wind"
+                    }
+                },
+                "2d": {
+                    "variable_name": "dew_point_temperature_2m",
+                    "attributes": {
+                        "units": "K",
+                        "long_name": "dew point temperature",
+                        "standard_name": "dew_point_temperature"
+                    }
+                },
+                "2t": {
+                    "variable_name": "air_temperature_2m",
+                    "attributes": {
+                        "units": "K",
+                        "long_name": "air temperature",
+                        "standard_name": "air_temperature"
+                    }
+                },
+                "lcc": {
+                    "variable_name": "low_type_cloud_area_fraction",
+                    "attributes": {
+                        "units": "1",
+                        "long_name": "low type cloud area fraction",
+                        "standard_name": "low_type_cloud_area_fraction"
+                    }
+                },
+                "lsm": {
+                    "variable_name": "land_sea_mask",
+                    "attributes": {
+                        "units": "1",
+                        "long_name": "land-sea mask",
+                        "standard_name": "land_sea_mask"
+                    }
+                },
+                "mcc": {
+                    "variable_name": "medium_type_cloud_area_fraction_0m",
+                    "attributes": {
+                        "units": "1",
+                        "long_name": "medium type cloud area fraction",
+                        "standard_name": "medium_type_cloud_area_fraction"
+                    }
+                },
+                "msl": {
+                    "variable_name": "air_pressure_at_mean_sea_level",
+                    "attributes": {
+                        "units": "Pa",
+                        "long_name": "air pressure at mean sea level",
+                        "standard_name": "air_pressure_at_mean_sea_level"
+                    }
+                },
+                "skt": {
+                    "variable_name": "",
+                    "attributes": {}
+                },
+                "sp": {
+                    "variable_name": "surface_air_pressure",
+                    "attributes": {
+                        "units": "Pa",
+                        "long_name": "surface air pressure",
+                        "standard_name": "surface_air_pressure"
+                    }
+                },
+                "ssrd": {
+                    "variable_name": "",
+                    "attributes": {}
+                },
+                "strd": {
+                    "variable_name": "",
+                    "attributes": {}
+                },
+                "tcc": {
+                    "variable_name": "cloud_area_fraction",
+                    "attributes": {
+                        "units": "1",
+                        "long_name": "cloud area fraction",
+                        "standard_name": "cloud_area_fraction"
+                    }
+                },
+                "tcw": {
+                    "variable_name": "",
+                    "attributes": {}
+                },
+                "tp": {
+                    "variable_name": "precipitation_amount",
+                    "attributes": {
+                        "units": "m",
+                        "long_name": "precipitation amount",
+                        "standard_name": "precipitation_amount"
+                    }
+                },
+                "z": {
+                    "variable_name": "geopotential",
+                    "attributes": {
+                        "units": "m^2/s^2",
+                        "long_name": "geopotential",
+                        "standard_name": "geopotential"
+                    }
+                }
+            }
+        },
+        "pl": {
+            "levels": [
+                50,
+                100,
+                150,
+                200,
+                250,
+                300,
+                400,
+                500,
+                700,
+                850,
+                925,
+                1000
+            ],
+            "variables": {
+                "q": {
+                    "variable_name": "specific_humidity_pl",
+                    "attributes": {
+                        "units": "kg/kg",
+                        "standard_name": "specific_humidity"
+                    }
+                },
+                "t": {
+                    "variable_name": "air_temperature_pl",
+                    "attributes": {
+                        "units": "K",
+                        "long_name": "air temperature",
+                        "standard_name": "air_temperature"
+                    }
+                },
+                "u": {
+                    "variable_name": "x_wind_pl",
+                    "attributes": {
+                        "units": "m/s",
+                        "long_name": "eastward wind",
+                        "standard_name": "x_wind"
+                    }
+                },
+                "v": {
+                    "variable_name": "y_wind_pl",
+                    "attributes": {
+                        "units": "m/s",
+                        "long_name": "northward wind",
+                        "standard_name": "y_wind"
+                    },
+                    "w": {
+                        "variable_name": "vertical_velocity_pl",
+                        "attributes": {
+                            "standard_name": "vertical_velocity",
+                            "units": "m/s"
+                        }
+                    },
+                    "z": {
+                        "variable_name": "geopotential_pl",
+                        "attributes": {
+                            "standard_name": "geopotential",
+                            "units": "m^2/s^2"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
