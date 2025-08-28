@@ -55,14 +55,10 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
 
 class DownscalePreProcessor(Processor):
     def __init__(self, context: Context, **kwargs):
-        if "grid" in kwargs:
-            grid = kwargs["grid"]
-            if isinstance(grid, str):
-                if len(grid) > 0 and grid[0] in ("O", "N", "H"):
-                    raise ValueError(
-                        "only regular grids are supported for downscaling")
-
-        self._topography = Topography.from_zip(context.checkpoint.path)
+        if 'orography_file' in kwargs:
+            self._topography = Topography(kwargs['orography_file'])
+        else:
+            self._topography = Topography.from_zip(context.checkpoint.path)
         super().__init__(context, **kwargs)
 
     def process(self, fields: ekd.FieldList) -> ekd.FieldList:  # type: ignore
