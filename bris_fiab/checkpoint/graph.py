@@ -1,23 +1,26 @@
 import zipfile
 import numpy as np
 from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional, topography_zipfile_name
-
+from dataclasses import dataclass
 from .make_graph import build_stretched_graph
 from .update import update
 
-def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str):
+@dataclass
+class GraphConfig:
+    lam_resolution: int = 10
+    global_resolution: int = 7
+    margin_radius_km: int = 11
 
-    lam_resolution = 10
-    global_resolution = 7
-    margin_radius_km = 11
+
+def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, graph_config: GraphConfig = GraphConfig()):
 
     lat, lon = _get_latlon(topography_file)
     graph = build_stretched_graph(
         lat, lon, 
         global_grid='n320', 
-        lam_resolution=lam_resolution, 
-        global_resolution=global_resolution, 
-        margin_radius_km=margin_radius_km
+        lam_resolution=graph_config.lam_resolution, 
+        global_resolution=graph_config.global_resolution, 
+        margin_radius_km=graph_config.margin_radius_km
     )
 
     if save_graph_to:
