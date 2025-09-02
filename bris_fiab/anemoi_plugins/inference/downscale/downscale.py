@@ -85,6 +85,7 @@ class DownscaledMarsInput(CachedMarsInput):
 
         if 'orography_file' in kwargs:
             self._topography = Topography(kwargs['orography_file'])
+            del kwargs['orography_file'] 
         else:
             self._topography = Topography.from_zip(context.checkpoint.path)
 
