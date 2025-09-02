@@ -124,7 +124,7 @@ def cli(grid: str, config: str, input: str, output: str):
             param_data,
             coords=[data['time'], met_variables.variables.pl.levels, y, x],
             dims=['time', 'pl', 'lat', 'lon'],
-            attrs=cfg.attributes
+            attrs={**cfg.attributes, "grid_mapping": "spatial_ref"}
         )
         variables[cfg.variable_name] = param
 
