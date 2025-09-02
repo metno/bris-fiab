@@ -83,7 +83,12 @@ class DownscaledMarsInput(CachedMarsInput):
                     raise ValueError(
                         "only regular grids are supported for downscaling")
 
-        self._topography = Topography.from_zip(context.checkpoint.path)
+        if 'orography_file' in kwargs:
+            self._topography = Topography(kwargs['orography_file'])
+        else:
+            self._topography = Topography.from_zip(context.checkpoint.path)
+
+        # self._topography = Topography.from_zip(context.checkpoint.path)
         super().__init__(context, **kwargs)
 
     def retrieve(
