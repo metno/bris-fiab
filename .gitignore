@@ -10,3 +10,6 @@ wheels/
 .venv
 *.nc
 *.ckpt
+.cache
+.vscode
+share
