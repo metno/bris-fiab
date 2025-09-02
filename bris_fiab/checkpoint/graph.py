@@ -12,9 +12,15 @@ class GraphConfig:
     margin_radius_km: int = 11
 
 
-def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, graph_config: GraphConfig = GraphConfig()):
+def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
 
     lat, lon = _get_latlon(topography_file)
+    if save_latlon:
+        with open('latitudes.npy', 'wb') as f:
+            np.save(f, lat)
+        with open('longitudes.npy', 'wb') as f:
+            np.save(f, lon)
+
     graph = build_stretched_graph(
         lat, lon, 
         global_grid='n320', 
