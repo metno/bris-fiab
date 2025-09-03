@@ -1,4 +1,4 @@
-checkpoint: malawi_0_025.ckpt
+checkpoint: share/malawi_0_05.ckpt
 
 date: "2025-08-29"
 
