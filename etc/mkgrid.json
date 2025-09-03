@@ -59,11 +59,11 @@
                     }
                 },
                 "msl": {
-                    "variable_name": "air_pressure_at_mean_sea_level",
+                    "variable_name": "air_pressure_at_sea_level",
                     "attributes": {
                         "units": "Pa",
-                        "long_name": "air pressure at mean sea level",
-                        "standard_name": "air_pressure_at_mean_sea_level"
+                        "long_name": "air pressure at sea level",
+                        "standard_name": "air_pressure_at_sea_level"
                     }
                 },
                 "skt": {
