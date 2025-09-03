@@ -28,7 +28,7 @@ class MkGridConfig(pydantic.BaseModel):
 
 
 @click.command()
-@click.option('--grid', type=click.Path(exists=True), default='malawi_0_025.tif', help='Grid to convert to')
+@click.option('--grid', type=click.Path(exists=True), help='Grid to convert to')
 @click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', help='Configuration file for variable mapping')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
