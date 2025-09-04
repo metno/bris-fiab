@@ -46,7 +46,7 @@ def cli(grid: str, config: str, input: str, output: str):
         spatial_ref = elevation['spatial_ref'] # type: ignore
     else:
         x = np.unique(data.longitude.values)
-        y = np.unique(data.latitude.values)
+        y = np.unique(data.latitude.values)[::-1]
         spatial_ref = xr.DataArray(
             data=0,
             attrs={
@@ -61,7 +61,8 @@ def cli(grid: str, config: str, input: str, output: str):
                 'horizontal_datum_name': 'World Geodetic System 1984', 
                 'grid_mapping_name': 'latitude_longitude', 
                 'spatial_ref': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]', 
-                'GeoTransform': '29.999583333285614 0.025 0.0 -7.9995833333178865 0.0 -0.025'
+                # 'GeoTransform': f'29.999583333285614 0.025 0.0 -7.9995833333178865 0.0 -0.025'
+                'GeoTransform': f'{x[0]} {(x[1] - x[0]):.3g} 0.0 {y[-1]} 0.0 {(y[-1] - y[-2]):.3g}'
             }
         )
 
