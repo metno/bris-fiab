@@ -54,11 +54,24 @@ Make sure to change the correct one.
 
 You need to modify your checkpoint's graph in order to run for a specific area.
 For this to work, you need to have a file with orography data for that area.
+
+#### Getting detailed orography information
+
+One way to get orograpy data is by adapting data from [opentopography](https://portal.opentopography.org/raster?opentopoID=OTSRTM.042013.4326.1). 
+Make sure you download for your exact area.
+After having downloaded data from there, you can run a command like this to generate an orography file with the resolution:
+
+```shell
+gdalwarp -tr 0.05 0.05 -r average <hires_topography.tif> orography.tif
+```
+
+#### Updating checkpoint
+
 Run the following command to generate a new checkpoint:
 
 ```shell
 uv run update_checkpoint.py \
-    --topography-file topgraphy.tif \
+    --topography-file orography.tif \
     --original-checkpoint bris-checkpoint.ckpt \
     --create-checkpoint new-checkpoint.ckpt
 ```

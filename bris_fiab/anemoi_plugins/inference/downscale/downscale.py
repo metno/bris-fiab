@@ -35,7 +35,7 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
 
     if len(ix.shape) == 1:
         if len(iy.shape) != 1:
-            raise ValueError("ix must be 1D if iy is not 1D")
+            raise ValueError("ix must be 1D if iy is 1D")
         ix, iy = make_two_dimensional(ix, iy)
     ipoints = np.column_stack((iy.flatten(), ix.flatten()))
 
@@ -43,7 +43,7 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
 
     if len(ox.shape) == 1:
         if len(oy.shape) != 1:
-            raise ValueError("ox must be 1D if oy is not 1D")
+            raise ValueError("ox must be 1D if oy is 1D")
         ox, oy = make_two_dimensional(ox, oy)
     opoints = np.column_stack((oy.flatten(), ox.flatten()))
 
@@ -55,14 +55,10 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
 
 class DownscalePreProcessor(Processor):
     def __init__(self, context: Context, **kwargs):
-        if "grid" in kwargs:
-            grid = kwargs["grid"]
-            if isinstance(grid, str):
-                if len(grid) > 0 and grid[0] in ("O", "N", "H"):
-                    raise ValueError(
-                        "only regular grids are supported for downscaling")
-
-        self._topography = Topography.from_zip(context.checkpoint.path)
+        if 'orography_file' in kwargs:
+            self._topography = Topography(kwargs['orography_file'])
+        else:
+            self._topography = Topography.from_zip(context.checkpoint.path)
         super().__init__(context, **kwargs)
 
     def process(self, fields: ekd.FieldList) -> ekd.FieldList:  # type: ignore
@@ -87,7 +83,13 @@ class DownscaledMarsInput(CachedMarsInput):
                     raise ValueError(
                         "only regular grids are supported for downscaling")
 
-        self._topography = Topography.from_zip(context.checkpoint.path)
+        if 'orography_file' in kwargs:
+            self._topography = Topography(kwargs['orography_file'])
+            del kwargs['orography_file'] 
+        else:
+            self._topography = Topography.from_zip(context.checkpoint.path)
+
+        # self._topography = Topography.from_zip(context.checkpoint.path)
         super().__init__(context, **kwargs)
 
     def retrieve(
@@ -104,7 +106,12 @@ def downscale(source_ds: ekd.FieldList, output_grid: Topography) -> ekd.FieldLis
     field: ekd.FieldList = source_ds.sel(param="z")  # type: ignore
     latlon = field.to_latlon()
 
-    downscale = downscaler(latlon['lat'], latlon['lon'], output_grid.y_values, output_grid.x_values)  # type: ignore
+    downscale = downscaler(
+        iy=latlon['lat'], 
+        ix=latlon['lon'], 
+        oy=output_grid.y_values, 
+        ox=output_grid.x_values,
+    )  # type: ignore
 
     for field in source_ds:  # type: ignore
         name: str = field.metadata("shortName")  # type: ignore
@@ -119,8 +126,8 @@ def downscale(source_ds: ekd.FieldList, output_grid: Topography) -> ekd.FieldLis
             Nj=len(output_grid.y_values),
             latitudeOfFirstGridPointInDegrees=output_grid.y_values[0],
             latitudeOfLastGridPointInDegrees=output_grid.y_values[-1],
-            longitudeOfFirstGridPointInDegrees=output_grid.y_values[0],
-            longitudeOfLastGridPointInDegrees=output_grid.y_values[-1],
+            longitudeOfFirstGridPointInDegrees=output_grid.x_values[0],
+            longitudeOfLastGridPointInDegrees=output_grid.x_values[-1],
         )
         af = ArrayField(data, metadata)
         fields.append(af)
