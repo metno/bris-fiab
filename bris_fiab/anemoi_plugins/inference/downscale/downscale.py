@@ -11,17 +11,40 @@ import typing
 import zipfile
 import scipy.interpolate
 from scipy.spatial import Delaunay
+from dataclasses import dataclass
 
-
+@dataclass
 class Topography:
     '''A simple holder for output topography data'''
+    x_values: np.ndarray
+    y_values: np.ndarray
+    elevation: np.ndarray
+    spatial_ref: typing.Any  # rasterio.crs.CRS
 
-    def __init__(self, topography_file: str | rasterio.MemoryFile):
+
+    @classmethod
+    def from_topography_file(cls, topography_file: str | rasterio.MemoryFile):
         topography = rioxarray.open_rasterio(topography_file)
-        self.x_values = topography['x'].values  # type: ignore
-        self.y_values = topography['y'].values  # type: ignore
-        self.spatial_ref = topography.spatial_ref  # type: ignore
-        self.elevation = topography.values[0]  # type: ignore
+        return Topography(
+            x_values=topography['x'].values,  # type: ignore
+            y_values=topography['y'].values,  # type: ignore
+            elevation=topography.values[0],  # type: ignore
+            spatial_ref=topography.spatial_ref,  # type: ignore
+        )
+
+    @classmethod
+    def from_supporting_array(cls, context: Context) -> 'Topography':
+        """Create a Topography instance from a supporting array in the checkpoint."""
+        latitudes = context.checkpoint.supporting_arrays['source0/latitudes']
+        longitudes = context.checkpoint.supporting_arrays['source0/longitudes']
+        elevation = context.checkpoint.supporting_arrays['source0/correct_elevation']
+
+        return Topography(
+            x_values=longitudes,  # type: ignore
+            y_values=latitudes,  # type: ignore
+            elevation=elevation,  # type: ignore
+            spatial_ref=None,  # type: ignore
+        )
 
     @classmethod
     def from_zip(cls, zip_file: str) -> 'Topography':
@@ -29,7 +52,7 @@ class Topography:
         with zipfile.ZipFile(zip_file, 'r') as zf:
             topo_file = topography_zipfile_name(zf)
             with zf.open(topo_file) as topo_src:
-                return cls(rasterio.MemoryFile(topo_src.read()))
+                return cls.from_topography_file(rasterio.MemoryFile(topo_src.read()))
             
 def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -> typing.Callable[[np.ndarray], np.ndarray]:
 
@@ -58,7 +81,8 @@ class DownscalePreProcessor(Processor):
         if 'orography_file' in kwargs:
             self._topography = Topography(kwargs['orography_file'])
         else:
-            self._topography = Topography.from_zip(context.checkpoint.path)
+            self._topography = Topography.from_supporting_array(context)
+
         super().__init__(context, **kwargs)
 
     def process(self, fields: ekd.FieldList) -> ekd.FieldList:  # type: ignore
@@ -100,7 +124,6 @@ class DownscaledMarsInput(CachedMarsInput):
 
 
 def downscale(source_ds: ekd.FieldList, output_grid: Topography) -> ekd.FieldList:
-
     fields = []
 
     field: ekd.FieldList = source_ds.sel(param="z")  # type: ignore

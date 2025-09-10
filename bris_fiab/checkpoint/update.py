@@ -24,7 +24,7 @@ def update(graph, model_file: str, output_file: str, elevation: typing.Optional[
     supporting_arrays['longitudes'] = np.array(graph['data']['longitudes'])
     supporting_arrays['grid_indices'] = np.ones(graph['data']['cutout_mask'].shape, dtype=np.int64)
     if elevation is not None:
-        supporting_arrays['lam_0/correct_elevation'] = elevation
+        supporting_arrays['source0/correct_elevation'] = elevation
 
     model = update_model(model, graph, ckpt)
     torch.save(model, output_file)
