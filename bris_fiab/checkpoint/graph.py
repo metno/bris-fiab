@@ -14,7 +14,7 @@ class GraphConfig:
 
 def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
 
-    lat, lon = _get_latlon(topography_file)
+    lat, lon, elevation = _get_latlon(topography_file)
     if save_latlon:
         with open('latitudes.npy', 'wb') as f:
             np.save(f, lat)
@@ -35,7 +35,7 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, sav
         print('saved graph')
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
     
-    update(graph, original_checkpoint, new_checkpoint)
+    update(graph, original_checkpoint, new_checkpoint, elevation)
     _add_topography(topography_file, new_checkpoint)
 
 
@@ -45,14 +45,17 @@ def _add_topography(topography_file: str, new_checkpoint: str):
         zipf.write(topography_file, arcname)
 
 
-def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray]:
+def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     topo = Topography(topography_file)
 
     x, y = make_two_dimensional(topo.x_values, topo.y_values)
     latitudes = y.flatten()
     longitudes = x.flatten()
+    elevations = topo.elevation.flatten()
 
-    return latitudes, longitudes
+    assert latitudes.shape == longitudes.shape == elevations.shape
+
+    return latitudes, longitudes, elevations
 
 
 

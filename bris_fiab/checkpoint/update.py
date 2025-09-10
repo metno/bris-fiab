@@ -6,10 +6,10 @@ from copy import deepcopy
 import numpy as np
 import torch
 from anemoi.inference.checkpoint import Checkpoint
+import typing
 
 
-
-def update(graph, model_file: str, output_file: str):
+def update(graph, model_file: str, output_file: str, elevation: typing.Optional[np.ndarray]):
     model = torch.load(model_file, weights_only=False, map_location=torch.device('cpu'))
     # graph = torch.load(graph, weights_only=False, map_location=torch.device('cpu'))
 
@@ -23,6 +23,8 @@ def update(graph, model_file: str, output_file: str):
     supporting_arrays['latitudes'] = np.array(graph['data']['latitudes'])
     supporting_arrays['longitudes'] = np.array(graph['data']['longitudes'])
     supporting_arrays['grid_indices'] = np.ones(graph['data']['cutout_mask'].shape, dtype=np.int64)
+    if elevation is not None:
+        supporting_arrays['lam_0/correct_elevation'] = elevation
 
     model = update_model(model, graph, ckpt)
     torch.save(model, output_file)
