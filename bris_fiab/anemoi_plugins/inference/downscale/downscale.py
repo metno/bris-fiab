@@ -45,14 +45,6 @@ class Topography:
             elevation=elevation,  # type: ignore
             spatial_ref=None,  # type: ignore
         )
-
-    @classmethod
-    def from_zip(cls, zip_file: str) -> 'Topography':
-        """Create a Topography instance from a zip file containing topography data."""
-        with zipfile.ZipFile(zip_file, 'r') as zf:
-            topo_file = topography_zipfile_name(zf)
-            with zf.open(topo_file) as topo_src:
-                return cls.from_topography_file(rasterio.MemoryFile(topo_src.read()))
             
 def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -> typing.Callable[[np.ndarray], np.ndarray]:
 
@@ -79,14 +71,14 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
 class DownscalePreProcessor(Processor):
     def __init__(self, context: Context, **kwargs):
         if 'orography_file' in kwargs:
-            self._topography = Topography(kwargs['orography_file'])
+            self._topography = Topography.from_topography_file(kwargs['orography_file'])
         else:
             self._topography = Topography.from_supporting_array(context)
 
         super().__init__(context, **kwargs)
 
     def process(self, fields: ekd.FieldList) -> ekd.FieldList:  # type: ignore
-        return downscale(fields, self._topography)
+        return downscale(fields, self._topography.x_values, self._topography.y_values)
 
 
 class DownscaledMarsInput(CachedMarsInput):
@@ -108,33 +100,32 @@ class DownscaledMarsInput(CachedMarsInput):
                         "only regular grids are supported for downscaling")
 
         if 'orography_file' in kwargs:
-            self._topography = Topography(kwargs['orography_file'])
+            self._topography = Topography.from_topography_file(kwargs['orography_file'])
             del kwargs['orography_file'] 
         else:
-            self._topography = Topography.from_zip(context.checkpoint.path)
+            self._topography = Topography.from_supporting_array(context)
 
-        # self._topography = Topography.from_zip(context.checkpoint.path)
         super().__init__(context, **kwargs)
 
     def retrieve(
         self, variables: typing.List[str], dates: typing.List[Date]
     ) -> typing.Any:
         original: ekd.FieldList = super().retrieve(variables, dates)  # type: ignore
-        return downscale(original, self._topography)
+        return downscale(original, self._topography.x_values, self._topography.y_values)
 
 
-def downscale(source_ds: ekd.FieldList, output_grid: Topography) -> ekd.FieldList:
+def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_values: np.ndarray) -> ekd.FieldList:
     fields = []
 
     field: ekd.FieldList = source_ds.sel(param="z")  # type: ignore
     latlon = field.to_latlon()
 
     downscale = downscaler(
-        iy=latlon['lat'], 
-        ix=latlon['lon'], 
-        oy=output_grid.y_values, 
-        ox=output_grid.x_values,
-    )  # type: ignore
+        iy=latlon['lat'], # type: ignore
+        ix=latlon['lon'], # type: ignore
+        oy=output_y_values, 
+        ox=output_x_values,
+    )
 
     for field in source_ds:  # type: ignore
         name: str = field.metadata("shortName")  # type: ignore
@@ -145,12 +136,12 @@ def downscale(source_ds: ekd.FieldList, output_grid: Topography) -> ekd.FieldLis
         data = downscale(original_data)
 
         metadata = field.metadata().override(  # type: ignore
-            Ni=len(output_grid.x_values),
-            Nj=len(output_grid.y_values),
-            latitudeOfFirstGridPointInDegrees=output_grid.y_values[0],
-            latitudeOfLastGridPointInDegrees=output_grid.y_values[-1],
-            longitudeOfFirstGridPointInDegrees=output_grid.x_values[0],
-            longitudeOfLastGridPointInDegrees=output_grid.x_values[-1],
+            Ni=len(output_x_values),
+            Nj=len(output_y_values),
+            latitudeOfFirstGridPointInDegrees=output_y_values[0],
+            latitudeOfLastGridPointInDegrees=output_y_values[-1],
+            longitudeOfFirstGridPointInDegrees=output_x_values[0],
+            longitudeOfLastGridPointInDegrees=output_x_values[-1],
         )
         af = ArrayField(data, metadata)
         fields.append(af)
@@ -176,13 +167,3 @@ def height_to_geopotential(h):
     earth_radius = 6371008.7714
     g = 9.80665
     return (g * earth_radius * h) / (earth_radius + h)
-
-
-def topography_zipfile_name(zf: zipfile.ZipFile) -> str:
-    for f in zf.filelist:
-        if f.filename.endswith('/bris-metadata/topography.tif'):
-            return f.filename
-
-    path = zf.filename or '.'
-    folder = path.rsplit('/', 1)[-1].rsplit('.', 1)[0]
-    return f"{folder}/bris-metadata/topography.tif"

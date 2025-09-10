@@ -1,6 +1,6 @@
 import zipfile
 import numpy as np
-from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional, topography_zipfile_name
+from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional
 from dataclasses import dataclass
 from .make_graph import build_stretched_graph
 from .update import update
@@ -36,17 +36,10 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, sav
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
     
     update(graph, original_checkpoint, new_checkpoint, elevation)
-    _add_topography(topography_file, new_checkpoint)
-
-
-def _add_topography(topography_file: str, new_checkpoint: str):
-    with zipfile.ZipFile(new_checkpoint, "a") as zipf:
-        arcname = topography_zipfile_name(zipf)
-        zipf.write(topography_file, arcname)
 
 
 def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    topo = Topography(topography_file)
+    topo = Topography.from_topography_file(topography_file)
 
     x, y = make_two_dimensional(topo.x_values, topo.y_values)
     latitudes = y.flatten()
@@ -56,6 +49,3 @@ def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarra
     assert latitudes.shape == longitudes.shape == elevations.shape
 
     return latitudes, longitudes, elevations
-
-
-
