@@ -9,7 +9,7 @@ from anemoi.inference.checkpoint import Checkpoint
 
 
 
-def update(graph, model_file: str, output_file: str):
+def update(graph, model_file: str, output_file: str, model_elevation: np.ndarray | None):
     model = torch.load(model_file, weights_only=False, map_location=torch.device('cpu'))
     # graph = torch.load(graph, weights_only=False, map_location=torch.device('cpu'))
 
@@ -23,6 +23,8 @@ def update(graph, model_file: str, output_file: str):
     supporting_arrays['latitudes'] = np.array(graph['data']['latitudes'])
     supporting_arrays['longitudes'] = np.array(graph['data']['longitudes'])
     supporting_arrays['grid_indices'] = np.ones(graph['data']['cutout_mask'].shape, dtype=np.int64)
+    if model_elevation is not None:
+        supporting_arrays['lam_0/model_elevation'] = model_elevation
 
     model = update_model(model, graph, ckpt)
     torch.save(model, output_file)

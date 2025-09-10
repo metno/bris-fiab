@@ -4,6 +4,7 @@ from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, m
 from dataclasses import dataclass
 from .make_graph import build_stretched_graph
 from .update import update
+from .elevation import get_model_elevation
 
 @dataclass
 class GraphConfig:
@@ -12,14 +13,18 @@ class GraphConfig:
     margin_radius_km: int = 11
 
 
-def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
-
+def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, add_model_elevation: bool, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
     lat, lon = _get_latlon(topography_file)
     if save_latlon:
         with open('latitudes.npy', 'wb') as f:
             np.save(f, lat)
         with open('longitudes.npy', 'wb') as f:
             np.save(f, lon)
+
+    if add_model_elevation:
+        model_elevation = get_model_elevation(lat, lon)
+    else:
+        model_elevation = None
 
     graph = build_stretched_graph(
         lat, lon, 
@@ -35,7 +40,7 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, sav
         print('saved graph')
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
     
-    update(graph, original_checkpoint, new_checkpoint)
+    update(graph, original_checkpoint, new_checkpoint, model_elevation)
     _add_topography(topography_file, new_checkpoint)
 
 
