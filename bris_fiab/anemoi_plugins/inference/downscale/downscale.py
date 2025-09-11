@@ -25,9 +25,18 @@ class Topography:
     @classmethod
     def from_topography_file(cls, topography_file: str | rasterio.MemoryFile):
         topography = rioxarray.open_rasterio(topography_file)
+
+        x_values, y_values = make_two_dimensional(
+            topography['x'].values,  # type: ignore
+            topography['y'].values,  # type: ignore
+        )
+
+        if x_values.shape != y_values.shape or y_values.shape != topography.values[0].shape:
+            raise ValueError("topography x, y, and elevation must have the same shape")
+
         return Topography(
-            x_values=topography['x'].values,  # type: ignore
-            y_values=topography['y'].values,  # type: ignore
+            x_values=x_values,
+            y_values=y_values,
             elevation=topography.values[0],  # type: ignore
             spatial_ref=topography.spatial_ref,  # type: ignore
         )
@@ -127,22 +136,25 @@ def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_va
         ox=output_x_values,
     )
 
+
+
+    metadata_overrides = {
+        'Ni': output_x_values.shape[0],
+        'Nj': output_y_values.shape[1],
+        'latitudeOfFirstGridPointInDegrees': output_y_values.flatten()[0],
+        'latitudeOfLastGridPointInDegrees': output_y_values.flatten()[-1],
+        'longitudeOfFirstGridPointInDegrees': output_x_values.flatten()[0],
+        'longitudeOfLastGridPointInDegrees': output_x_values.flatten()[-1],
+    }
+
     for field in source_ds:  # type: ignore
-        name: str = field.metadata("shortName")  # type: ignore
+        # name: str = field.metadata("shortName")  # type: ignore
 
         # original_data = source_ds.sel(param=name).to_numpy()  # type: ignore
-        original_data = field.to_numpy()  # type: ignore
+        original_data = field.to_numpy()
 
-        data = downscale(original_data)
-
-        metadata = field.metadata().override(  # type: ignore
-            Ni=len(output_x_values),
-            Nj=len(output_y_values),
-            latitudeOfFirstGridPointInDegrees=output_y_values[0],
-            latitudeOfLastGridPointInDegrees=output_y_values[-1],
-            longitudeOfFirstGridPointInDegrees=output_x_values[0],
-            longitudeOfLastGridPointInDegrees=output_x_values[-1],
-        )
+        data = downscale(original_data) # type: ignore
+        metadata = field.metadata().override(**metadata_overrides) # type: ignore
         af = ArrayField(data, metadata)
         fields.append(af)
 

@@ -41,9 +41,8 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, sav
 def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     topo = Topography.from_topography_file(topography_file)
 
-    x, y = make_two_dimensional(topo.x_values, topo.y_values)
-    latitudes = y.flatten()
-    longitudes = x.flatten()
+    latitudes = topo.y_values.flatten()
+    longitudes = topo.x_values.flatten()
     elevations = topo.elevation.flatten()
 
     assert latitudes.shape == longitudes.shape == elevations.shape
