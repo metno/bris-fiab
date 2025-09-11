@@ -1,4 +1,4 @@
-import os
+import sys
 import click
 from bris_fiab.checkpoint import graph
 
@@ -17,7 +17,7 @@ def cli(topography_file: str | None, area_latlon: tuple[float, float, float, flo
     if topography_file is None and area_latlon is None:
         print(
             'Either topography_file or area_latlon must be provided.')
-        os.exit(1)
+        sys.exit(1)
 
     graph.run(
         topography_file=topography_file,
