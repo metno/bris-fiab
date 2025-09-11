@@ -73,7 +73,7 @@ def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]
 
     # resolution is area_latlon[4]
     # return lat, lon arrays
-    area = [area_latlon[0], area_latlon[1], area_latlon[3], area_latlon[4]]
+    area = [area_latlon[0], area_latlon[1], area_latlon[2], area_latlon[3]]
     ds = ekd.from_source('mars',
                          {
                              'AREA': area,
