@@ -18,7 +18,7 @@ class GraphConfig:
 def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
     if topography_file is not None:
         lat, lon, elevation = _get_latlon(topography_file)
-    if graph_config.area_latlon is not None:
+    elif graph_config.area_latlon is not None:
         lat, lon = _get_lat_lon_from_area(graph_config.area_latlon)
         elevation = None
     else:
