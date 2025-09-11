@@ -45,7 +45,7 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
 
     update(graph, original_checkpoint, new_checkpoint)
-    if topography_file:
+    if topography_file is not None:
         _add_topography(topography_file, new_checkpoint)
 
 
@@ -67,14 +67,13 @@ def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray]:
 
 def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]) -> tuple[np.ndarray, np.ndarray]:
     """The function use earthkit.data to download lat/lon for the specified area from Mars.
-    area_latlon: (min_lat, max_lat, min_lon, max_lon, resolution)
+    area_latlon: (north, west, south, east, resolution)
     returns: lat, lon arrays
-    """""
+    """
 
-    # Convert (min_lat, max_lat, min_lon, max_lon) to (north, west, south, east)
     # resolution is area_latlon[4]
     # return lat, lon arrays
-    area = [area_latlon[0], area_latlon[2], area_latlon[1], area_latlon[3]]
+    area = [area_latlon[0], area_latlon[1], area_latlon[3], area_latlon[4]]
     ds = ekd.from_source('mars',
                          {
                              'AREA': area,
