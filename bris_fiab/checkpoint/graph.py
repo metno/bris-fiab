@@ -1,20 +1,29 @@
 import zipfile
 import numpy as np
+import earthkit.data as ekd
 from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional, topography_zipfile_name
 from dataclasses import dataclass
 from .make_graph import build_stretched_graph
 from .update import update
+
 
 @dataclass
 class GraphConfig:
     lam_resolution: int = 10
     global_resolution: int = 7
     margin_radius_km: int = 11
+    area_latlon: tuple[float, float, float, float, float] | None = None
 
 
-def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
+def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
+    if topography_file is not None:
+        lat, lon = _get_latlon(topography_file)
+    if graph_config.area_latlon is not None:
+        lat, lon = _get_lat_lon_from_area(graph_config.area_latlon)
+    else:
+        raise ValueError(
+            'Either topography_file or area_latlon must be provided.')
 
-    lat, lon = _get_latlon(topography_file)
     if save_latlon:
         with open('latitudes.npy', 'wb') as f:
             np.save(f, lat)
@@ -22,10 +31,10 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, sav
             np.save(f, lon)
 
     graph = build_stretched_graph(
-        lat, lon, 
-        global_grid='n320', 
-        lam_resolution=graph_config.lam_resolution, 
-        global_resolution=graph_config.global_resolution, 
+        lat, lon,
+        global_grid='n320',
+        lam_resolution=graph_config.lam_resolution,
+        global_resolution=graph_config.global_resolution,
         margin_radius_km=graph_config.margin_radius_km
     )
 
@@ -34,9 +43,10 @@ def run(topography_file: str, original_checkpoint: str, new_checkpoint: str, sav
         torch.save(graph, save_graph_to)
         print('saved graph')
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
-    
+
     update(graph, original_checkpoint, new_checkpoint)
-    _add_topography(topography_file, new_checkpoint)
+    if topography_file:
+        _add_topography(topography_file, new_checkpoint)
 
 
 def _add_topography(topography_file: str, new_checkpoint: str):
@@ -55,4 +65,26 @@ def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray]:
     return latitudes, longitudes
 
 
+def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]) -> tuple[np.ndarray, np.ndarray]:
+    """The function use earthkit.data to download lat/lon for the specified area from Mars.
+    area_latlon: (min_lat, max_lat, min_lon, max_lon, resolution)
+    returns: lat, lon arrays
+    """""
 
+    # Convert (min_lat, max_lat, min_lon, max_lon) to (north, west, south, east)
+    # resolution is area_latlon[4]
+    # return lat, lon arrays
+    area = [area_latlon[0], area_latlon[2], area_latlon[1], area_latlon[3]]
+    ds = ekd.from_source('mars',
+                         {
+                             'AREA': area,
+                             'GRID': f"{area_latlon[4]}/{area_latlon[4]}",
+                             'param': '2t',
+                             'date': -34,
+                             'stream': 'oper',
+                             'type': 'an',
+                             'levtype': 'sfc',
+                         }
+                         )
+    lat, lon = ds[0].grid_points()
+    return lat, lon
