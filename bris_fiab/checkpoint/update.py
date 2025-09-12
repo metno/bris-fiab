@@ -6,11 +6,15 @@ import numpy as np
 from copy import deepcopy
 import logging
 LOG = logging.getLogger(__name__)
+from copy import deepcopy
+import numpy as np
+import torch
+from anemoi.inference.checkpoint import Checkpoint
+import typing
 
 
-def update(graph, model_file: str, output_file: str):
-    model = torch.load(model_file, weights_only=False,
-                       map_location=torch.device('cpu'))
+def update(graph, model_file: str, output_file: str, elevation_data: typing.Tuple[np.ndarray,np.ndarray,np.ndarray|None]):
+    model = torch.load(model_file, weights_only=False, map_location=torch.device('cpu'))
     # graph = torch.load(graph, weights_only=False, map_location=torch.device('cpu'))
 
     ckpt = Checkpoint(model_file)
@@ -18,12 +22,14 @@ def update(graph, model_file: str, output_file: str):
     supporting_arrays = ckpt._metadata._supporting_arrays
 
     supporting_arrays['global/cutout_mask'] = graph['data']['global/cutout_mask']
-    supporting_arrays['lam_0/cutout_mask'] = np.array(
-        graph['data']['lam_0/cutout_mask'])
+    supporting_arrays['lam_0/cutout_mask'] = np.array(graph['data']['lam_0/cutout_mask'])
     supporting_arrays['latitudes'] = np.array(graph['data']['latitudes'])
     supporting_arrays['longitudes'] = np.array(graph['data']['longitudes'])
-    supporting_arrays['grid_indices'] = np.ones(
-        graph['data']['cutout_mask'].shape, dtype=np.int64)
+    supporting_arrays['grid_indices'] = np.ones(graph['data']['cutout_mask'].shape, dtype=np.int64)
+    supporting_arrays['lam_0/latitudes'] = elevation_data[0]
+    supporting_arrays['lam_0/longitudes'] = elevation_data[1]
+    if elevation_data[2] is not None:
+        supporting_arrays['lam_0/correct_elevation'] = elevation_data[2]
 
     model = update_model(model, graph, ckpt)
     torch.save(model, output_file)
