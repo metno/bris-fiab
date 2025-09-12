@@ -35,7 +35,7 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
                 np.save(f, elevation)
 
     graph = build_stretched_graph(
-        lat, lon,
+        lat.flatten(), lon.flatten(),
         global_grid='n320',
         lam_resolution=graph_config.lam_resolution,
         global_resolution=graph_config.global_resolution,
@@ -48,19 +48,12 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
         print('saved graph')
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
     
-    update(graph, original_checkpoint, new_checkpoint, elevation)
+    update(graph, original_checkpoint, new_checkpoint, (lat, lon, elevation))
 
 
 def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     topo = Topography.from_topography_file(topography_file)
-
-    latitudes = topo.y_values.flatten()
-    longitudes = topo.x_values.flatten()
-    elevations = topo.elevation.flatten()
-
-    assert latitudes.shape == longitudes.shape == elevations.shape
-
-    return latitudes, longitudes, elevations
+    return topo.y_values, topo.x_values, topo.elevation
 
 
 def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]) -> tuple[np.ndarray, np.ndarray]:
@@ -72,16 +65,20 @@ def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]
     # resolution is area_latlon[4]
     # return lat, lon arrays
     area = [area_latlon[0], area_latlon[1], area_latlon[2], area_latlon[3]]
-    ds = ekd.from_source('mars',
-                         {
-                             'AREA': area,
-                             'GRID': f"{area_latlon[4]}/{area_latlon[4]}",
-                             'param': '2t',
-                             'date': -34,
-                             'stream': 'oper',
-                             'type': 'an',
-                             'levtype': 'sfc',
-                         }
-                         )
+    ds = ekd.from_source(
+        'mars',
+        {
+            'AREA': area,
+            'GRID': f"{area_latlon[4]}/{area_latlon[4]}",
+            'param': '2t',
+            'date': -34,
+            'stream': 'oper',
+            'type': 'an',
+            'levtype': 'sfc',
+        }
+    )
+    
     lat, lon = ds[0].grid_points()
-    return lat, lon
+    data = ds[0].to_numpy()
+
+    return lat.reshape(data.shape), lon.reshape(data.shape)

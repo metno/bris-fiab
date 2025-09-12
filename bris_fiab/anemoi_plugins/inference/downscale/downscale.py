@@ -16,9 +16,9 @@ from dataclasses import dataclass
 @dataclass
 class Topography:
     '''A simple holder for output topography data'''
-    x_values: np.ndarray
-    y_values: np.ndarray
-    elevation: np.ndarray
+    x_values: np.ndarray # longitudes in a two-dimensional array
+    y_values: np.ndarray # latitudes in a two-dimensional array
+    elevation: np.ndarray|None # elevation in a two-dimensional array
     spatial_ref: typing.Any  # rasterio.crs.CRS
 
 
@@ -44,9 +44,12 @@ class Topography:
     @classmethod
     def from_supporting_array(cls, context: Context) -> 'Topography':
         """Create a Topography instance from a supporting array in the checkpoint."""
-        latitudes = context.checkpoint.supporting_arrays['source0/latitudes']
-        longitudes = context.checkpoint.supporting_arrays['source0/longitudes']
-        elevation = context.checkpoint.supporting_arrays['source0/correct_elevation']
+        latitudes = context.checkpoint.supporting_arrays['lam_0/latitudes']
+        longitudes = context.checkpoint.supporting_arrays['lam_0/longitudes']
+        try:
+            elevation = context.checkpoint.supporting_arrays['lam_0/correct_elevation']
+        except KeyError:
+            elevation = None
 
         return Topography(
             x_values=longitudes,  # type: ignore
@@ -136,15 +139,13 @@ def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_va
         ox=output_x_values,
     )
 
-
-
     metadata_overrides = {
         'Ni': output_x_values.shape[0],
         'Nj': output_y_values.shape[1],
-        'latitudeOfFirstGridPointInDegrees': output_y_values.flatten()[0],
-        'latitudeOfLastGridPointInDegrees': output_y_values.flatten()[-1],
-        'longitudeOfFirstGridPointInDegrees': output_x_values.flatten()[0],
-        'longitudeOfLastGridPointInDegrees': output_x_values.flatten()[-1],
+        'latitudeOfFirstGridPointInDegrees': output_y_values[0, 0],
+        'latitudeOfLastGridPointInDegrees': output_y_values[-1, 0],
+        'longitudeOfFirstGridPointInDegrees': output_x_values[0, 0],
+        'longitudeOfLastGridPointInDegrees': output_x_values[0, -1],
     }
 
     for field in source_ds:  # type: ignore
