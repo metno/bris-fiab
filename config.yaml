@@ -1,25 +1,25 @@
-checkpoint: share/malawi_0_05.ckpt
+checkpoint: checkpoint.ckpt
 
-date: "2025-08-29"
+date: "2025-03-05"
 
-lead_time: 0
+#lead_time: 72
 
 input:
   cutout:
     lam_0:
-      downscaled_mars:
+      mars:
         log: false
-        grid: "0.1/0.1"
+        grid: "0.025/0.025"
         area: "-8/30/-22/43"
-        cache_dir: .cache
     global:
-      cached_mars:
+      mars:
         log: false
-        cache_dir: .cache
       mask: 'global/cutout_mask'
 
 output:
-  netcdf: out.nc
-
-# pre_processors:
-#   - downscale: {}
+  tee:
+    outputs:
+      - printer
+      - extract_lam:
+          output:
+            netcdf: out.nc

@@ -1,19 +1,22 @@
 # Adapted from code by Harrison Cook
 
+from anemoi.inference.checkpoint import Checkpoint
+import torch
+import numpy as np
+from copy import deepcopy
 import logging
 LOG = logging.getLogger(__name__)
 from copy import deepcopy
 import numpy as np
 import torch
 from anemoi.inference.checkpoint import Checkpoint
+import typing
 
 
-
-def update(graph, model_file: str, output_file: str):
+def update(graph, model_file: str, output_file: str, model_elevation: np.ndarray | None, elevation_data: typing.Tuple[np.ndarray,np.ndarray,np.ndarray|None]):
     model = torch.load(model_file, weights_only=False, map_location=torch.device('cpu'))
     # graph = torch.load(graph, weights_only=False, map_location=torch.device('cpu'))
 
-    
     ckpt = Checkpoint(model_file)
 
     supporting_arrays = ckpt._metadata._supporting_arrays
@@ -23,6 +26,12 @@ def update(graph, model_file: str, output_file: str):
     supporting_arrays['latitudes'] = np.array(graph['data']['latitudes'])
     supporting_arrays['longitudes'] = np.array(graph['data']['longitudes'])
     supporting_arrays['grid_indices'] = np.ones(graph['data']['cutout_mask'].shape, dtype=np.int64)
+    supporting_arrays['lam_0/latitudes'] = elevation_data[0]
+    supporting_arrays['lam_0/longitudes'] = elevation_data[1]
+    if elevation_data[2] is not None:
+        supporting_arrays['lam_0/correct_elevation'] = elevation_data[2]
+    if model_elevation is not None:
+        supporting_arrays['lam_0/model_elevation'] = model_elevation
 
     model = update_model(model, graph, ckpt)
     torch.save(model, output_file)
@@ -32,9 +41,9 @@ def update(graph, model_file: str, output_file: str):
 
     metadata = ckpt._metadata._metadata
 
-    metadata.dataset.data_request = { # type: ignore
+    metadata.dataset.data_request = {  # type: ignore
         'grid': graph['data']['global_grid'],
-        'area': [90, 0.0, -90, 360], 
+        'area': [90, 0.0, -90, 360],
     }
 
     save_metadata(
@@ -42,7 +51,6 @@ def update(graph, model_file: str, output_file: str):
         metadata=metadata,
         supporting_arrays=supporting_arrays,
     )
-
 
 
 def contains_any(key, specifications):
@@ -65,17 +73,20 @@ def update_state_dict(
         keywords = [keywords]
 
     # select relevant part of external_state_dict
-    reduced_state_dict = {k: v for k, v in external_state_dict.items() if contains_any(k, keywords)}
+    reduced_state_dict = {
+        k: v for k, v in external_state_dict.items() if contains_any(k, keywords)}
     model_state_dict = model.state_dict()
 
     # check layers and their shapes
     for key in list(reduced_state_dict):
         if key not in model_state_dict:
             if ignore_additional_layers:
-                LOG.info("Skipping injection of %s, which is not in the model.", key)
+                LOG.info(
+                    "Skipping injection of %s, which is not in the model.", key)
                 del reduced_state_dict[key]
             else:
-                raise AssertionError(f"Layer {key} not in model. Consider setting 'ignore_additional_layers = True'.")
+                raise AssertionError(
+                    f"Layer {key} not in model. Consider setting 'ignore_additional_layers = True'.")
         elif reduced_state_dict[key].shape != model_state_dict[key].shape:
             if ignore_mismatched_layers:
                 LOG.info("Skipping injection of %s due to shape mismatch.", key)
@@ -106,7 +117,8 @@ def update_model(model_instance, graph, checkpoint):
     # using transfer learning, where the statistics as stored in the checkpoint
     # do not match the statistics used to build the normalizer in the checkpoint.
     model_instance = update_state_dict(
-        model_instance, state_dict_ckpt, keywords=["bias", "weight", "processors.normalizer"]
+        model_instance, state_dict_ckpt, keywords=[
+            "bias", "weight", "processors.normalizer"]
     )
 
     return model_instance
