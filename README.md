@@ -57,8 +57,25 @@ For this to work, you need to have a file with orography data for that area.
 
 #### Getting detailed orography information
 
-One way to get orograpy data is by adapting data from [opentopography](https://portal.opentopography.org/raster?opentopoID=OTSRTM.042013.4326.1). 
+One way to get orography data is by adapting data from [opentopography](https://portal.opentopography.org/raster?opentopoID=OTSRTM.042013.4326.1). 
 Make sure you download for your exact area.
+
+To help with downloading the orography use:
+```shell
+uv run download_orography.py --area-latlon -8 30 -22 43 --dest-path <hires_topography.tif>
+```
+
+For this to work you need an api-key to access the rest api on [opentopography](https://portal.opentopography.org/apidocs/)
+
+To create an account on opentopography.org go to [https://portal.opentopography.org/login](https://portal.opentopography.org/login). You will find the API key by pressing menu item _MyOpenTopo_.
+Save the key in $HOME/..opentopographyrc. This is a json file with format:
+
+```json
+{
+  "api_key": "THE API KEY"
+}
+```
+
 After having downloaded data from there, you can run a command like this to generate an orography file with the resolution:
 
 ```shell
