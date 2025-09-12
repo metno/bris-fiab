@@ -5,7 +5,7 @@ import os
 
 DEFAULT_API_KEY_FILE = '.opentopographyrc'
 
-def find_api_key_file(filename=DEFAULT_API_KEY_FILE):
+def find_api_key_file(filename: str=DEFAULT_API_KEY_FILE):
   # Check current working directory
   cwd_path = os.path.join(os.getcwd(), filename)
   if os.path.exists(cwd_path):
@@ -16,7 +16,7 @@ def find_api_key_file(filename=DEFAULT_API_KEY_FILE):
     return home_path
   return None
 
-def read_api_key(filepath):
+def read_api_key(filepath: str) -> str | None:
   with open(filepath, 'r') as f:
     data = json.load(f)
   return data.get('api_key')
@@ -25,6 +25,7 @@ def read_api_key(filepath):
       "Download a DEM from OpenTopography (https://opentopography.org).\n\n"
       "The API key file must be a JSON file with the following format:\n"
       '{\n  "api_key": "YOUR_API_KEY_HERE"\n}\n\n'
+      "Default api_key file is '.opentopographyrc' in the current or home directory.\n\n"
       "Create an account and get an API key from https://portal.opentopography.org/login.\n"
     )
   )
