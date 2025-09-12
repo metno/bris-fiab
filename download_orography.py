@@ -20,6 +20,7 @@ def read_api_key(filepath: str) -> str | None:
   with open(filepath, 'r') as f:
     data = json.load(f)
   return data.get('api_key')
+
 @click.command(
     help=(
       "Download a DEM from OpenTopography (https://opentopography.org).\n\n"
