@@ -13,3 +13,4 @@ wheels/
 .cache
 .vscode
 share
+*.grib
