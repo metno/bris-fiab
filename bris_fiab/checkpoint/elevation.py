@@ -5,6 +5,7 @@ from metpy.units import units
 from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, downscaler
 
 def get_model_elevation(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
+    '''Fetch model elevation from ECMWF MARS, interpolated to the given latitudes and longitudes.'''
     max_lat = np.ceil(np.max(lats) * 10) / 10
     min_lat = np.floor(np.min(lats) * 10) / 10
     max_lon = np.ceil(np.max(lons) * 10) / 10
@@ -31,10 +32,3 @@ def get_model_elevation(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
     latlons = raw_data.to_latlon()
     return downscaler(latlons['lon'], latlons['lat'], lons, lats)(height).astype('int16')
 
-if __name__ == '__main__':
-    topo = Topography('share/malawi_0_05.tif')
-
-    elevation = get_model_elevation(topo.y_values, topo.x_values)
-
-    print(topo.y_values.shape, topo.x_values.shape)
-    print(elevation.shape)
