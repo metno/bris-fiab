@@ -47,13 +47,13 @@ uv run anemoi-inference metadata --dump --yaml --output cloudy-skies-metadata.ym
 
 ```
 
-Update the metadat with:
+Update the metadata with:
 
 ```shell
 uv run update_metadata.py --metadata-file cloudy-skies-metadata.yml --update-with-metadata etc/checkpoint_metadata_part.yaml --output cloudy-skies-metadata_updated.yml
 ```
 
-Update the metadata in the checkpoint with:
+Update the metadata in the checkpoint with the metadata in __cloudy-skies-metadata_updated.yml__:
 
 ```shell
 uv run anemoi-inference metadata --load --input cloudy-skies-metadata_updated.yml cloudy-skies.ckpt
@@ -61,7 +61,7 @@ uv run anemoi-inference metadata --load --input cloudy-skies-metadata_updated.ym
 
 **Note** This will change (not copy) your checkpoint file. 
 
-update_metadat.py find the variable `dataset.variables_metadata`, and replace with [this](etc/checkpoint_metadata_part.yaml) yaml.
+update_metadata.py find the variable `dataset.variables_metadata`, and replace with [this](etc/checkpoint_metadata_part.yaml) yaml.
 
 
 ### Setting area
