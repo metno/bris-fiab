@@ -1,8 +1,11 @@
 import numpy as np
 import earthkit.data as ekd
+import metpy.calc
+from metpy.units import units
 from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, downscaler
 
 def get_model_elevation(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
+    '''Fetch model elevation from ECMWF MARS, interpolated to the given latitudes and longitudes.'''
     max_lat = np.ceil(np.max(lats) * 10) / 10
     min_lat = np.floor(np.min(lats) * 10) / 10
     max_lon = np.ceil(np.max(lons) * 10) / 10
@@ -17,14 +20,15 @@ def get_model_elevation(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
         'step': 0,
         'time': '0000'
     }
-    data = ekd.from_source('mars', request)
-    latlons = data[0].to_latlon()
-    return downscaler(latlons['lon'], latlons['lat'], lons, lats)(data.to_numpy())
 
-if __name__ == '__main__':
-    topo = Topography('share/malawi_0_05.tif')
+    raw_data = ekd.from_source('mars', request)[0]
 
-    elevation = get_model_elevation(topo.y_values, topo.x_values)
+    geopotential = units.Quantity(raw_data.to_numpy(), 'm^2/s^2')
+    height = metpy.calc.geopotential_to_height(geopotential)
 
-    print(topo.y_values.shape, topo.x_values.shape)
-    print(elevation.shape)
+    print(height.shape)
+    print(height)
+
+    latlons = raw_data.to_latlon()
+    return downscaler(latlons['lon'], latlons['lat'], lons, lats)(height).astype('int16')
+

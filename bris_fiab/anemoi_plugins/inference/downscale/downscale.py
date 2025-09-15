@@ -76,7 +76,7 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
 
     def interpolate(values: np.ndarray) -> np.ndarray:
         interpolator = scipy.interpolate.LinearNDInterpolator(triangulation, values.flatten())
-        return interpolator(opoints)
+        return interpolator(opoints).reshape(ox.shape)
     return interpolate
 
 
