@@ -1,18 +1,36 @@
 import yaml
 import click
+import os
+
+description = '''
+A command-line tool to update a YAML metadata file with values from another YAML file.
+
+The script loads both YAML files, traverses the specified path, replaces the value in the original
+metadata with the value from the update file, and writes the result to the output file.
+'''
+default_update_metadata_file = 'etc/checkpoint_metadata_part.yaml'
+default_replace_path = 'dataset.variables_metadata'
 
 
-@click.command()
-@click.option('--metadata-file', type=click.Path(exists=True),  required=True, help='Path to the metadata YAML file.')
-@click.option('--update-with', type=click.Path(exists=True), required=True, help='Path to a file with metadata to update the checkpoint file with.')
-@click.option('--output', type=str, required=True, help='Path to save the updated metadata file.')
-@click.option('--replace-path',  type=str, help='Find the path in the metadata and replace it with data from update.', default='dataset.variables_metadata')
-def cli(metadata_file: str, update_with: str, output: str, replace_path: str):
+@click.command(help=description)
+@click.option('--metadata-file', type=click.Path(exists=True),  required=True,
+              help='Path to the original metadata YAML file to be updated.')
+@click.option('--update-with-metadata', type=click.Path(exists=True), required=True, default=f"{default_update_metadata_file}",
+              help=f'Path to the YAML file containing updated metadata values. Default: {default_update_metadata_file}')
+@click.option('--output', type=click.Path(), default=None,
+              help='Path to save the updated metadata file. If not provided, a default filename is generated. The name will be based on the original metadata file with _updated suffix added.')
+@click.option('--replace-path',  type=str, default=f'{default_replace_path}',
+              help=f'Dot-separated path to the key in the metadata to be replaced. Default: {default_replace_path}')
+def cli(metadata_file: str, update_with_metadata: str, output: str | None, replace_path: str):
+    if output is None:
+        base, ext = os.path.splitext(os.path.basename(metadata_file))
+        output = f"{base}_updated.{ext}"
+
     metadata = None
     with open(metadata_file, 'r') as f:
         metadata = yaml.load(f, Loader=yaml.FullLoader)
 
-    with open(update_with, 'r') as f:
+    with open(update_with_metadata, 'r') as f:
         updates = yaml.load(f, Loader=yaml.FullLoader)
 
         # Split the replace_path into keys
