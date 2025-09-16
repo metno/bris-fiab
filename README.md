@@ -40,23 +40,10 @@ In order to run, you need a bris checkpoint, and a geotiff file containing orogr
 
 The variable definition in the metadata for the original bris checkpoint needs to be update to run on anemoi-inference.
 
-To update the metadata. First dump the metadata from the the original bris checkpoint with:
+To update the metadata:
 
 ```shell
-uv run anemoi-inference metadata --dump --yaml --output cloudy-skies-metadata.yml cloudy-skies.ckpt
-
-```
-
-Update the metadata with:
-
-```shell
-uv run update_metadata.py --metadata-file cloudy-skies-metadata.yml --update-with-metadata etc/checkpoint_metadata_part.yaml --output cloudy-skies-metadata_updated.yml
-```
-
-Update the metadata in the checkpoint with the metadata in __cloudy-skies-metadata_updated.yml__:
-
-```shell
-uv run anemoi-inference metadata --load --input cloudy-skies-metadata_updated.yml cloudy-skies.ckpt
+uv run update_metadata.py --checkpoint cloudy-skies.ckpt
 ```
 
 **Note** This will change (not copy) your checkpoint file. 

@@ -1,6 +1,8 @@
-import yaml
 import click
 import os
+import subprocess
+import tempfile
+from bris_fiab.checkpoint.metadata import update_metadata
 
 description = '''
 A command-line tool to update a YAML metadata file with values from another YAML file.
@@ -13,45 +15,64 @@ default_replace_path = 'dataset.variables_metadata'
 
 
 @click.command(help=description)
-@click.option('--metadata-file', type=click.Path(exists=True),  required=True,
-              help='Path to the original metadata YAML file to be updated.')
+@click.option('--checkpoint', type=click.Path(exists=True),  required=True,
+              help='Path to checkpoint to update metadata.')
 @click.option('--update-with-metadata', type=click.Path(exists=True), required=True, default=f"{default_update_metadata_file}",
               help=f'Path to the YAML file containing updated metadata values. Default: {default_update_metadata_file}')
-@click.option('--output', type=click.Path(), default=None,
-              help='Path to save the updated metadata file. If not provided, a default filename is generated. The name will be based on the original metadata file with _updated suffix added.')
 @click.option('--replace-path',  type=str, default=f'{default_replace_path}',
               help=f'Dot-separated path to the key in the metadata to be replaced. Default: {default_replace_path}')
-def cli(metadata_file: str, update_with_metadata: str, output: str | None, replace_path: str):
-    if output is None:
-        base, ext = os.path.splitext(os.path.basename(metadata_file))
-        output = f"{base}_updated.{ext}"
+def cli(checkpoint: str, update_with_metadata: str, replace_path: str):
+    if not os.path.exists(checkpoint):
+        print(f"Checkpoint file '{checkpoint}' does not exist.")
+        exit(1)
+    if not os.path.exists(update_with_metadata):
+        print(f"Update metadata file '{update_with_metadata}' does not exist.")
+        exit(1)
 
-    metadata = None
-    with open(metadata_file, 'r') as f:
-        metadata = yaml.load(f, Loader=yaml.FullLoader)
+    print(f'Updating metadata in checkpoint: {checkpoint}')
+    print(f'Using metadata from file: {update_with_metadata}')
+    print(f'Keys updated: {replace_path}')
 
-    with open(update_with_metadata, 'r') as f:
-        updates = yaml.load(f, Loader=yaml.FullLoader)
+    basename = os.path.join(tempfile.gettempdir(), os.path.basename(
+        os.path.splitext(checkpoint)[0]))
+    metadata_file = basename + "_metadata.yml"
+    output = basename + "_updated_metadata.yml"
 
-        # Split the replace_path into keys
-        keys = replace_path.split('.')
+    if os.path.exists(metadata_file):
+        os.remove(metadata_file)
 
-        # Traverse metadata to the parent of the target key
-        meta_parent = metadata
-        for key in keys[:-1]:
-            meta_parent = meta_parent[key]
+    if os.path.exists(output):
+        os.remove(output)
 
-        # Traverse updates to the value to replace with
-        updates_parent = updates
-        for key in keys[:-1]:
-            updates_parent = updates_parent[key]
+    print(f'Extracting metadata from {checkpoint} to {metadata_file}')
+    dump_cmd = [
+        "anemoi-inference", "metadata",
+        "--dump", "--yaml",
+        "--output", metadata_file,
+        checkpoint
+    ]
+    result = subprocess.run(dump_cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Error running anemoi-inference: {result.stderr}")
+        exit(1)
 
-        # Replace the value in metadata with the value from updates
-        meta_parent[keys[-1]] = updates_parent[keys[-1]]
-        # Write the updated metadata to the output file
-        with open(output, 'w') as out_f:
-            yaml.dump(metadata, out_f, Dumper=yaml.Dumper)
-            print(f'Updated metadata saved to {output}')
+    updated_metadata = update_metadata(
+        metadata_file, update_with_metadata, output, replace_path)
+    print(f'Updated metadata written to {updated_metadata}')
+    load_cmd = [
+        "anemoi-inference", "metadata",
+        "--load",
+        "--input", updated_metadata,
+        checkpoint
+    ]
+    print(
+        f'Loading updated metadata from {updated_metadata} into {checkpoint}')
+    result = subprocess.run(load_cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"Error running anemoi-inference: {result.stderr}")
+        exit(1)
+
+    print(f'Updated metadata saved to checkpoint {checkpoint}')
 
 
 if __name__ == "__main__":
