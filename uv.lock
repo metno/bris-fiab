@@ -211,6 +211,7 @@ dependencies = [
     { name = "anemoi-models" },
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
+    { name = "earthkit-data" },
     { name = "ecmwf-api-client" },
     { name = "metpy" },
     { name = "pydantic" },
@@ -228,6 +229,7 @@ requires-dist = [
     { name = "anemoi-models", specifier = "==0.4.1" },
     { name = "anemoi-transform", specifier = "==0.1.14" },
     { name = "anemoi-utils", specifier = "==0.4.29" },
+    { name = "earthkit-data", specifier = "==0.16.4" },
     { name = "ecmwf-api-client", specifier = "==1.6.5" },
     { name = "metpy", specifier = ">=1.7.1" },
     { name = "pydantic", specifier = ">=2.11.7" },
@@ -589,7 +591,7 @@ wheels = [
 
 [[package]]
 name = "earthkit-data"
-version = "0.16.1"
+version = "0.16.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cfgrib" },
@@ -612,9 +614,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "xarray" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5b/01/724278d7efef59311a4f8f9486cddd8212b42beccbf7c5797bd577fa71cc/earthkit_data-0.16.1.tar.gz", hash = "sha256:9b1a66af43390d74998c660fbc0cb4286198272cc65a0d2ec3b3f5dd62b23ce2", size = 5336588, upload-time = "2025-08-11T13:44:47.386Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/72/5c/ae33b1abf05e49edfd3305ad8ffc9bc3c9e38a8ee9e21b32728c7279e8a2/earthkit_data-0.16.4.tar.gz", hash = "sha256:e5762532c28f4ddbe0008f81a6140c3aef7fcc32342b3553fe4c500d6a45842d", size = 5519365, upload-time = "2025-09-04T10:13:07.938Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cf/69/898ae101bb0ddd700ef60a417154720c42db28a528afe7bf22afa81bc1c7/earthkit_data-0.16.1-py3-none-any.whl", hash = "sha256:f1fec732fe3dbffe3bca65896d026b8f9dfa2cee06ade4e3e220fe87f7134103", size = 378264, upload-time = "2025-08-11T13:44:45.393Z" },
+    { url = "https://files.pythonhosted.org/packages/59/c9/cf3e19734eb04156c09ef6481e3197af08b5d2cf784054d0860f9d28b203/earthkit_data-0.16.4-py3-none-any.whl", hash = "sha256:729b581ebfd8758726aba8a437921e6b862b7b7709b58d8f3570a3722a185005", size = 378330, upload-time = "2025-09-04T10:13:05.868Z" },
 ]
 
 [[package]]

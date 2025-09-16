@@ -140,8 +140,8 @@ def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_va
     )
 
     metadata_overrides = {
-        'Ni': output_x_values.shape[0],
-        'Nj': output_y_values.shape[1],
+        'Ni': output_x_values.shape[1],
+        'Nj': output_y_values.shape[0],
         'latitudeOfFirstGridPointInDegrees': output_y_values[0, 0],
         'latitudeOfLastGridPointInDegrees': output_y_values[-1, 0],
         'longitudeOfFirstGridPointInDegrees': output_x_values[0, 0],
