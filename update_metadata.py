@@ -52,6 +52,7 @@ def cli(checkpoint: str, update_with_metadata: str, replace_path: str):
         checkpoint
     ]
     result = subprocess.run(dump_cmd, capture_output=True, text=True)
+
     if result.returncode != 0:
         print(f"Error running anemoi-inference: {result.stderr}")
         exit(1)
@@ -59,6 +60,7 @@ def cli(checkpoint: str, update_with_metadata: str, replace_path: str):
     updated_metadata = update_metadata(
         metadata_file, update_with_metadata, output, replace_path)
     print(f'Updated metadata written to {updated_metadata}')
+
     load_cmd = [
         "anemoi-inference", "metadata",
         "--load",
@@ -68,6 +70,7 @@ def cli(checkpoint: str, update_with_metadata: str, replace_path: str):
     print(
         f'Loading updated metadata from {updated_metadata} into {checkpoint}')
     result = subprocess.run(load_cmd, capture_output=True, text=True)
+
     if result.returncode != 0:
         print(f"Error running anemoi-inference: {result.stderr}")
         exit(1)
