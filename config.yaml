@@ -1,18 +1,22 @@
-checkpoint: checkpoint.ckpt
+checkpoint: bris-fiab-malawi.ckpt 
 
-date: "2025-03-05"
+date: "2025-03-06"
 
-#lead_time: 72
+lead_time: 0
 
 input:
   cutout:
     lam_0:
-      mars:
+      downscaled_mars:
         log: false
-        grid: "0.025/0.025"
+        grid: "0.1/0.1"
         area: "-8/30/-22/43"
+        cache_dir: .cache
+        pre_processors:
+          - apply_adiabatic_corrections
     global:
-      mars:
+      cached_mars:
+        cache_dir: .cache
         log: false
       mask: 'global/cutout_mask'
 
