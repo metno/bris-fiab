@@ -12,7 +12,7 @@ def get_model_elevation(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
     min_lon = np.floor(np.min(lons) * 10) / 10
     request = {
         'area': [max_lat, min_lon, min_lat, max_lon],
-        'date': ['2025-03-05'],
+        'date': -10,
         'expver': '0001',
         'grid': '0.1/0.1',
         'levtype': 'sfc',
@@ -25,9 +25,6 @@ def get_model_elevation(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
 
     geopotential = units.Quantity(raw_data.to_numpy(), 'm^2/s^2')
     height = metpy.calc.geopotential_to_height(geopotential)
-
-    print(height.shape)
-    print(height)
 
     latlons = raw_data.to_latlon()
     return downscaler(latlons['lon'], latlons['lat'], lons, lats)(height).astype('int16')
