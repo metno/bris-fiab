@@ -31,6 +31,9 @@ class AdiabaticallyCorrectedMarsInput(downscale.DownscaledMarsInput):
         self, variables: typing.List[str], dates: typing.List[Date]
     ) -> typing.Any:
         original: ekd.FieldList = super().retrieve(variables, dates)  # type: ignore
+
+
+
         return self._corrector.apply(original)
 
 class AdiabaticCorrectionPreProcessor(Processor):
@@ -57,7 +60,7 @@ class AdiabaticCorrector:
 
         corrected_temperatures = {}
         original_temperatures = {}
-        temperatures = fields.sel(param='2t')
+        temperatures = fields.sel(param='2t', levtype='sfc')
         for t in temperatures:
             values = t.to_numpy() * units.kelvin
             original_temperatures[t.metadata('step')] = values
@@ -66,6 +69,10 @@ class AdiabaticCorrector:
         
         ret = []
         for field in fields:
+            # Only correct surface fields
+            if field.metadata('levtype') != 'sfc':
+                ret.append(field)
+                continue
             step = field.metadata('step')
             param = field.metadata('param')
             if param == '2t':
