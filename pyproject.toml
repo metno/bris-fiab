@@ -2,7 +2,13 @@
 requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 
 [tool.setuptools]
-packages = ["bris_fiab"]
+packages = [
+    "bris_fiab", 
+    "bris_fiab.anemoi_plugins.inference.downscale", 
+    "bris_fiab.anemoi_plugins.inference.cached_mars",
+    "bris_fiab.checkpoint",
+    "bris_fiab.orography",
+]
 
 [project]
 name = "bris-fiab"
@@ -23,6 +29,7 @@ dependencies = [
     "rioxarray>=0.19.0",
     "scipy>=1.16.1",
     "trimesh>=4.7.3",
+    "pyyaml>=6.0.1",
 ]
 
 [project.entry-points."anemoi.inference.inputs"]
