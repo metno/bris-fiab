@@ -36,7 +36,8 @@ dependencies = [
 
 [project.entry-points."anemoi.inference.inputs"]
 downscaled_mars = "bris_fiab.anemoi_plugins.inference.downscale:DownscaledMarsInput"
+adiabatically_corrected_mars = "bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections:AdiabaticallyCorrectedMarsInput"
 
-[project.entry-points."anemoi.inference.pre_processors"]
-downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
-apply_adiabatic_corrections = "bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"
+# [project.entry-points."anemoi.inference.pre_processors"]
+# downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
+# apply_adiabatic_corrections = "bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"

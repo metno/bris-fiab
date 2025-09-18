@@ -7,16 +7,12 @@ lead_time: 0
 input:
   cutout:
     lam_0:
-      downscaled_mars:
+      adiabatically_corrected_mars:
         log: false
         grid: "0.1/0.1"
         area: "-8/30/-22/43"
-        cache_dir: .cache
-        pre_processors:
-          - apply_adiabatic_corrections
     global:
-      cached_mars:
-        cache_dir: .cache
+      mars:
         log: false
       mask: 'global/cutout_mask'
 

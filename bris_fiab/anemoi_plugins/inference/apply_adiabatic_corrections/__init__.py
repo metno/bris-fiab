@@ -1,1 +1,2 @@
 from .apply_adiabatic_corrections import AdiabaticCorrectionPreProcessor as AdiabaticCorrectionPreProcessor
+from .apply_adiabatic_corrections import AdiabaticallyCorrectedMarsInput as AdiabaticallyCorrectedMarsInput
