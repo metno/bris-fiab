@@ -26,9 +26,6 @@ def get_model_elevation(lats: np.ndarray, lons: np.ndarray) -> np.ndarray:
     geopotential = units.Quantity(raw_data.to_numpy(), 'm^2/s^2')
     height = metpy.calc.geopotential_to_height(geopotential)
 
-    print(height.shape)
-    print(height)
-
     latlons = raw_data.to_latlon()
     return downscaler(latlons['lon'], latlons['lat'], lons, lats)(height).astype('int16')
 
