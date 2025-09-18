@@ -43,21 +43,20 @@ class AdiabaticCorrector:
             step = field.metadata('step')
             param = field.metadata('param')
             if param == '2t':
-                values = corrected_temperatures[step].magnitude
-                new_field = field.copy(values=values)
-                ret.append(new_field)
+                values = corrected_temperatures[step]
+                ret.append(field.copy(values=values.magnitude))
             elif param == '2d':
                 old_values = field.to_numpy() * units.kelvin
                 values = adiabatic_correct.correct_dewpoint(old_values, original_temperatures[step], corrected_temperatures[step])
                 ret.append(field.copy(values=values.magnitude))
             elif param == 'sp':
                 old_values = pint.Quantity(field.to_numpy(), field.metadata('units'))
-                corrected_surface_pressure = adiabatic_correct.correct_surface_pressure(old_values, self._altitude_difference)
-                ret.append(ekd.ArrayField(corrected_surface_pressure.magnitude, field.metadata()))
+                values = adiabatic_correct.correct_surface_pressure(old_values, self._altitude_difference)
+                ret.append(field.copy(values=values.magnitude))
             elif param == 'z':
-                corrected_z =  adiabatic_correct.convert_to_geopotential(self._correct_elevation)
-                ret.append(ekd.ArrayField(corrected_z.magnitude, field.metadata()))
+                values =  adiabatic_correct.convert_to_geopotential(self._correct_elevation)
+                ret.append(field.copy(values=values.magnitude))
             else:
-                ret.append(ekd.ArrayField(field.values, field.metadata()))
+                ret.append(field)
 
         return ekd.SimpleFieldList(ret)
