@@ -39,17 +39,15 @@ In order to run, you need a bris checkpoint, and a geotiff file containing orogr
 ### Preparing
 
 The variable definition in the metadata for the original bris checkpoint needs to be update to run on anemoi-inference.
+Updateing the checkpoint owerwrite the checkpoint so it's a good idea to make a copy of the original checkpoint before running the update command.
 
-To update the metadata:
-
+ex.
 ```shell
-uv run update_metadata.py --checkpoint cloudy-skies.ckpt
+cp cloudy-skies.ckpt  anemoi-cloudy-skies.ckpt
+uv run update_metadata.py --checkpoint anemoi-cloudy-skies.ckpt
 ```
 
-**Note** This will change (not copy) your checkpoint file. 
-
 update_metadata.py find the variable `dataset.variables_metadata`, and replace with [this](etc/checkpoint_metadata_part.yaml) yaml.
-
 
 ### Setting area
 
