@@ -1,4 +1,4 @@
-from bris_fiab.anemoi_plugins.inference.cached_mars.cached_mars import CachedMarsInput
+from anemoi.inference.inputs.mars import MarsInput
 from anemoi.inference.types import Date
 from anemoi.inference.context import Context
 from anemoi.inference.processor import Processor
@@ -93,7 +93,7 @@ class DownscalePreProcessor(Processor):
         return downscale(fields, self._topography.x_values, self._topography.y_values)
 
 
-class DownscaledMarsInput(CachedMarsInput):
+class DownscaledMarsInput(MarsInput):
     def __init__(self, context: Context, **kwargs):
         """Initialize the Downscaled Mars Input.
 
