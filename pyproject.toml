@@ -30,6 +30,7 @@ dependencies = [
     "scipy>=1.16.1",
     "trimesh>=4.7.3",
     "pyyaml>=6.0.1",
+    "metpy>=1.7.1",
 ]
 
 [project.entry-points."anemoi.inference.inputs"]
