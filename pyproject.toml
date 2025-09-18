@@ -29,6 +29,7 @@ dependencies = [
     "rioxarray>=0.19.0",
     "scipy>=1.16.1",
     "trimesh>=4.7.3",
+    "pyyaml>=6.0.1",
 ]
 
 [project.entry-points."anemoi.inference.inputs"]
