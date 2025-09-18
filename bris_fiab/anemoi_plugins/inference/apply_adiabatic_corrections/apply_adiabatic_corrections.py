@@ -44,18 +44,18 @@ class AdiabaticCorrector:
             param = field.metadata('param')
             if param == '2t':
                 values = corrected_temperatures[step]
-                ret.append(field.copy(values=values.magnitude))
+                ret.append(field.copy(values=values.magnitude))  # type: ignore
             elif param == '2d':
                 old_values = field.to_numpy() * units.kelvin
                 values = adiabatic_correct.correct_dewpoint(old_values, original_temperatures[step], corrected_temperatures[step])
-                ret.append(field.copy(values=values.magnitude))
+                ret.append(field.copy(values=values.magnitude))  # type: ignore
             elif param == 'sp':
                 old_values = pint.Quantity(field.to_numpy(), field.metadata('units'))
-                values = adiabatic_correct.correct_surface_pressure(old_values, self._altitude_difference)
-                ret.append(field.copy(values=values.magnitude))
+                values = adiabatic_correct.correct_surface_pressure(old_values, self._altitude_difference)  # type: ignore
+                ret.append(field.copy(values=values.magnitude))  # type: ignore
             elif param == 'z':
                 values =  adiabatic_correct.convert_to_geopotential(self._correct_elevation)
-                ret.append(field.copy(values=values.magnitude))
+                ret.append(field.copy(values=values.magnitude))  # type: ignore
             else:
                 ret.append(field)
 
