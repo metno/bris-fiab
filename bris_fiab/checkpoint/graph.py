@@ -1,10 +1,10 @@
-import zipfile
 import numpy as np
 from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional
 import earthkit.data as ekd
 from dataclasses import dataclass
 from .make_graph import build_stretched_graph
 from .update import update
+from .elevation import get_model_elevation
 
 
 @dataclass
@@ -15,7 +15,7 @@ class GraphConfig:
     area_latlon: tuple[float, float, float, float, float] | None = None
 
 
-def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
+def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, add_model_elevation: bool, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
     if topography_file is not None:
         lat, lon, elevation = _get_latlon(topography_file)
     elif graph_config.area_latlon is not None:
@@ -34,6 +34,11 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
             with open('elevations.npy', 'wb') as f:
                 np.save(f, elevation)
 
+    if add_model_elevation:
+        model_elevation = get_model_elevation(lat, lon)
+    else:
+        model_elevation = None
+
     graph = build_stretched_graph(
         lat.flatten(), lon.flatten(),
         global_grid='n320',
@@ -48,10 +53,10 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
         print('saved graph')
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
     
-    update(graph, original_checkpoint, new_checkpoint, (lat, lon, elevation))
+    update(graph, original_checkpoint, new_checkpoint, model_elevation, (lat, lon, elevation))
 
 
-def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray|None]:
     topo = Topography.from_topography_file(topography_file)
     return topo.y_values, topo.x_values, topo.elevation
 

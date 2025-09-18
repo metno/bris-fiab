@@ -13,7 +13,7 @@ from anemoi.inference.checkpoint import Checkpoint
 import typing
 
 
-def update(graph, model_file: str, output_file: str, elevation_data: typing.Tuple[np.ndarray,np.ndarray,np.ndarray|None]):
+def update(graph, model_file: str, output_file: str, model_elevation: np.ndarray | None, elevation_data: typing.Tuple[np.ndarray,np.ndarray,np.ndarray|None]):
     model = torch.load(model_file, weights_only=False, map_location=torch.device('cpu'))
     # graph = torch.load(graph, weights_only=False, map_location=torch.device('cpu'))
 
@@ -30,6 +30,8 @@ def update(graph, model_file: str, output_file: str, elevation_data: typing.Tupl
     supporting_arrays['lam_0/longitudes'] = elevation_data[1]
     if elevation_data[2] is not None:
         supporting_arrays['lam_0/correct_elevation'] = elevation_data[2]
+    if model_elevation is not None:
+        supporting_arrays['lam_0/model_elevation'] = model_elevation
 
     model = update_model(model, graph, ckpt)
     torch.save(model, output_file)
