@@ -1,15 +1,15 @@
-checkpoint: checkpoint.ckpt
+checkpoint: bris-fiab-malawi.ckpt 
 
-date: "2025-03-05"
+date: "2025-03-06"
 
-#lead_time: 72
+lead_time: 0
 
 input:
   cutout:
     lam_0:
-      mars:
+      adiabatically_corrected_mars:
         log: false
-        grid: "0.025/0.025"
+        grid: "0.1/0.1"
         area: "-8/30/-22/43"
     global:
       mars:

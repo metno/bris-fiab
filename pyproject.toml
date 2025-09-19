@@ -22,7 +22,9 @@ dependencies = [
     "anemoi-models==0.4.1",
     "anemoi-transform==0.1.14",
     "anemoi-utils==0.4.29",
+    "earthkit-data==0.16.4",
     "ecmwf-api-client==1.6.5",
+    "metpy>=1.7.1",
     "pydantic>=2.11.7",
     "pytest>=8.4.1",
     "rioxarray>=0.19.0",
@@ -34,6 +36,8 @@ dependencies = [
 
 [project.entry-points."anemoi.inference.inputs"]
 downscaled_mars = "bris_fiab.anemoi_plugins.inference.downscale:DownscaledMarsInput"
+adiabatically_corrected_mars = "bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections:AdiabaticallyCorrectedMarsInput"
 
-[project.entry-points."anemoi.inference.pre_processors"]
-downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
+# [project.entry-points."anemoi.inference.pre_processors"]
+# downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
+# apply_adiabatic_corrections = "bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"
