@@ -22,6 +22,33 @@ class Topography:
     spatial_ref: typing.Any  # rasterio.crs.CRS
 
 
+    @property
+    def spacing(self) -> tuple[float, float]:
+        '''Return the spacing in x and y directions'''
+
+        if not (np.allclose(np.diff(self.x_values[0]), np.diff(self.x_values[0])[0]) and np.allclose(np.diff(self.y_values[:, 0]), np.diff(self.y_values[:, 0])[0])):
+            raise ValueError("Spacing in x or y is not constant, cannot set metadata")
+
+        spacing_x = round(np.abs(np.diff(self.x_values[0, :])[0]), 10)
+        spacing_y = round(np.abs(np.diff(self.y_values[:, 0])[0]), 10)
+        return spacing_x, spacing_y
+
+
+    @property
+    def metadata(self) -> dict[str, typing.Any]:
+        '''Return metadata dictionary for use in earthkit'''
+        iSpacing, jSpacing = self.spacing
+        return {
+            'Ni': self.x_values.shape[0],
+            'Nj': self.y_values.shape[1],
+            'iDirectionIncrementInDegrees': iSpacing,
+            'jDirectionIncrementInDegrees': jSpacing,
+            'latitudeOfFirstGridPointInDegrees': self.y_values[0, 0],
+            'latitudeOfLastGridPointInDegrees': self.y_values[-1, 0],
+            'longitudeOfFirstGridPointInDegrees': self.x_values[0, 0],
+            'longitudeOfLastGridPointInDegrees': self.x_values[0, -1],
+        }
+
     @classmethod
     def from_topography_file(cls, topography_file: str | rasterio.MemoryFile):
         topography = rioxarray.open_rasterio(topography_file)
@@ -90,7 +117,7 @@ class DownscalePreProcessor(Processor):
         super().__init__(context, **kwargs)
 
     def process(self, fields: ekd.FieldList) -> ekd.FieldList:  # type: ignore
-        return downscale(fields, self._topography.x_values, self._topography.y_values)
+        return downscale(fields, self._topography)
 
 
 class DownscaledMarsInput(MarsInput):
@@ -123,11 +150,14 @@ class DownscaledMarsInput(MarsInput):
         self, variables: typing.List[str], dates: typing.List[Date]
     ) -> typing.Any:
         original: ekd.FieldList = super().retrieve(variables, dates)  # type: ignore
-        return downscale(original, self._topography.x_values, self._topography.y_values)
+        return downscale(original, self._topography)
 
 
-def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_values: np.ndarray) -> ekd.FieldList:
+def downscale(source_ds: ekd.FieldList, topography: Topography) -> ekd.FieldList:
     fields = []
+
+    output_x_values = topography.x_values
+    output_y_values = topography.y_values
 
     field: ekd.FieldList = source_ds.sel(param="z")  # type: ignore
     latlon = field.to_latlon()
@@ -139,14 +169,7 @@ def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_va
         ox=output_x_values,
     )
 
-    metadata_overrides = {
-        'Ni': output_x_values.shape[0],
-        'Nj': output_y_values.shape[1],
-        'latitudeOfFirstGridPointInDegrees': output_y_values[0, 0],
-        'latitudeOfLastGridPointInDegrees': output_y_values[-1, 0],
-        'longitudeOfFirstGridPointInDegrees': output_x_values[0, 0],
-        'longitudeOfLastGridPointInDegrees': output_x_values[0, -1],
-    }
+    metadata_overrides = topography.metadata
 
     for field in source_ds:  # type: ignore
         # name: str = field.metadata("shortName")  # type: ignore
