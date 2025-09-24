@@ -1,40 +1,10 @@
-from anemoi.inference.types import Date
 from anemoi.inference.processor import Processor
 from anemoi.inference.context import Context
-import numpy as np
-import typing
 from metpy.units import units
 import earthkit.data as ekd
 import pint
 import bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections.adiabatic_correct as adiabatic_correct
-import bris_fiab.anemoi_plugins.inference.downscale.downscale as downscale
 
-class AdiabaticallyCorrectedMarsInput(downscale.DownscaledMarsInput):
-    def __init__(self, context: Context, **kwargs):
-        """Initialize the Adiabatic Corrected Input.
-
-        Parameters
-        ----------
-        context : Context
-            The context in which the input operates.
-        """
-        model_elevation = context.checkpoint.supporting_arrays['lam_0/model_elevation']
-        correct_elevation = context.checkpoint.supporting_arrays['lam_0/correct_elevation']
-
-        self._corrector = AdiabaticCorrector(
-            model_elevation * units.meters,
-            correct_elevation * units.meters
-        )
-        super().__init__(context, **kwargs)
-
-    def retrieve(
-        self, variables: typing.List[str], dates: typing.List[Date]
-    ) -> typing.Any:
-        original: ekd.FieldList = super().retrieve(variables, dates)  # type: ignore
-
-
-
-        return self._corrector.apply(original)
 
 class AdiabaticCorrectionPreProcessor(Processor):
     def __init__(self, context: Context, **kwargs):
