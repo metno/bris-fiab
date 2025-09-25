@@ -7,10 +7,12 @@ lead_time: 0
 input:
   cutout:
     lam_0:
-      adiabatically_corrected_mars:
+      downscaled_mars:
         log: false
         grid: "0.1/0.1"
         area: "-8/30/-22/43"
+        pre_processors:
+          - apply_adiabatic_corrections
     global:
       mars:
         log: false
