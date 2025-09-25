@@ -4,7 +4,7 @@ import earthkit.data as ekd
 from dataclasses import dataclass
 from .make_graph import build_stretched_graph
 from .update import update
-from .elevation import get_model_elevation
+from .elevation import get_model_elevation, get_model_elevation_mars_grid
 
 
 @dataclass
@@ -35,10 +35,17 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
                 np.save(f, elevation)
 
     if add_model_elevation:
-        model_elevation = get_model_elevation(lat, lon)
+        # model_elevation = get_model_elevation(lat, lon)
+        if graph_config.area_latlon is not None:
+            model_elevation = get_model_elevation_mars_grid(
+                graph_config.area_latlon)
+        else:
+            model_elevation = get_model_elevation(lat, lon)
     else:
         model_elevation = None
 
+    print(f'DEBUG: exit now')
+    exit(1)
     graph = build_stretched_graph(
         lat.flatten(), lon.flatten(),
         global_grid='n320',
@@ -52,11 +59,12 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
         torch.save(graph, save_graph_to)
         print('saved graph')
     # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
-    
-    update(graph, original_checkpoint, new_checkpoint, model_elevation, (lat, lon, elevation))
+
+    update(graph, original_checkpoint, new_checkpoint,
+           model_elevation, (lat, lon, elevation))
 
 
-def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray|None]:
+def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
     topo = Topography.from_topography_file(topography_file)
     return topo.y_values, topo.x_values, topo.elevation
 
@@ -64,13 +72,13 @@ def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarra
 def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]) -> tuple[np.ndarray, np.ndarray]:
     """The function use earthkit.data to download lat/lon for the specified area from Mars.
     area_latlon: (north, west, south, east, resolution)
-    returns: lat, lon arrays
+    returns: lat, lon
     """
 
     # resolution is area_latlon[4]
     # return lat, lon arrays
     area = [area_latlon[0], area_latlon[1], area_latlon[2], area_latlon[3]]
-    ds = ekd.from_source(
+    ds = ekd.from_source(  # type: ignore
         'mars',
         {
             'AREA': area,
@@ -82,8 +90,10 @@ def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]
             'levtype': 'sfc',
         }
     )
-    
-    lat, lon = ds[0].grid_points()
-    data = ds[0].to_numpy()
 
-    return lat.reshape(data.shape), lon.reshape(data.shape)
+    lat, lon = ds[0].grid_points()  # type: ignore
+    data = ds[0].to_numpy()  # type: ignore
+    print(
+        f"get_lat_lon_from_area: Downloaded lat/lon with shapes {lat.shape}, {lon.shape}, data shape {data.shape}")
+
+    return lat.reshape(data.shape), lon.reshape(data.shape)  # type: ignore
