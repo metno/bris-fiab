@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -115,11 +115,12 @@ wheels = [
 
 [[package]]
 name = "anemoi-utils"
-version = "0.4.35"
+version = "0.4.36"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aniso8601" },
     { name = "deprecation" },
+    { name = "entrypoints" },
     { name = "multiurl" },
     { name = "numpy" },
     { name = "pydantic" },
@@ -128,9 +129,9 @@ dependencies = [
     { name = "rich" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/70/50e7bd93327bd610b0d808d017c5dc9b87a21a3f6172a449307ca1480cfe/anemoi_utils-0.4.35.tar.gz", hash = "sha256:c259c918e7ae9582c6f8cac3bb137fb1326759703d82334c7ec568c00a07afe5", size = 136476, upload-time = "2025-08-12T16:11:52.902Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/45/8b/8ede2a61f92805f87272a6ebfe96eb139eb86efc81d5abad56195cb3535c/anemoi_utils-0.4.36.tar.gz", hash = "sha256:14030da77da82a7e9dca18ad52040c6b547ef91e70ea82b0e089ddcf8c8deb27", size = 141501, upload-time = "2025-09-22T10:12:41.139Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d4/d0/219f4f280745d7462bb534a1de9197afe1ab81e81ae2768e23569cb1cdce/anemoi_utils-0.4.35-py3-none-any.whl", hash = "sha256:b0c98359852231c3e18c5b90dd8a5ba278a106d527fa97d9b578fbf162b185a2", size = 91019, upload-time = "2025-08-12T16:11:51.43Z" },
+    { url = "https://files.pythonhosted.org/packages/56/2a/c87f5b247df73158226a95886ae9e32c141a9ef3e0a88b2346caec9bf314/anemoi_utils-0.4.36-py3-none-any.whl", hash = "sha256:d690378264e35ab0335d60c8b3c04e1a25a155e48844eefa56edbde5e1248401", size = 91856, upload-time = "2025-09-22T10:12:39.476Z" },
 ]
 
 [package.optional-dependencies]
@@ -616,7 +617,7 @@ wheels = [
 
 [[package]]
 name = "earthkit-data"
-version = "0.16.5"
+version = "0.16.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cfgrib" },
@@ -639,9 +640,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "xarray" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/74/a4/9bd7d982e8efdeca0b1998f9add7439c45bef75821d44291dffdb9f1497a/earthkit_data-0.16.5.tar.gz", hash = "sha256:90b3ea0cf432e117d54a1d2d047eee07b222bb520b90dc174d5c9ef094e4b86f", size = 5519179, upload-time = "2025-09-17T14:10:15.518Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/64/e3/9c388d441f811039cb3e28f7bcc134c2da793da7c78fc37c5e64a58e5e76/earthkit_data-0.16.6.tar.gz", hash = "sha256:0483cc4b30bb1a58fdc0af4d8c1bf982d538738ccb08fcf7e3d5466ad00ec11b", size = 5519708, upload-time = "2025-09-19T07:06:48.783Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/32/2a/0042481df57e5dea97fed85eed55a25074d80ce0a1434b6bf73622de014d/earthkit_data-0.16.5-py3-none-any.whl", hash = "sha256:59210e52b97935456578e67271101a70d016caa017b97c119e2cb7ec283cbe99", size = 378347, upload-time = "2025-09-17T14:10:13.538Z" },
+    { url = "https://files.pythonhosted.org/packages/17/8c/0f13c0a455f5b2bb06d5ee95c9a898164a95e8bd6c27d139c8afebce7104/earthkit_data-0.16.6-py3-none-any.whl", hash = "sha256:c8a083ea05ef3f79b6df534a19d38215fe902c8b15f8c7629fb617555c63da53", size = 378375, upload-time = "2025-09-19T07:06:47.387Z" },
 ]
 
 [[package]]
@@ -1907,11 +1908,11 @@ wheels = [
 
 [[package]]
 name = "pyparsing"
-version = "3.2.4"
+version = "3.2.5"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/98/c9/b4594e6a81371dfa9eb7a2c110ad682acf985d96115ae8b25a1d63b4bf3b/pyparsing-3.2.4.tar.gz", hash = "sha256:fff89494f45559d0f2ce46613b419f632bbb6afbdaed49696d322bcf98a58e99", size = 1098809, upload-time = "2025-09-13T05:47:19.732Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f2/a5/181488fc2b9d093e3972d2a472855aae8a03f000592dbfce716a512b3359/pyparsing-3.2.5.tar.gz", hash = "sha256:2df8d5b7b2802ef88e8d016a2eb9c7aeaa923529cd251ed0fe4608275d4105b6", size = 1099274, upload-time = "2025-09-21T04:11:06.277Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/53/b8/fbab973592e23ae313042d450fc26fa24282ebffba21ba373786e1ce63b4/pyparsing-3.2.4-py3-none-any.whl", hash = "sha256:91d0fcde680d42cd031daf3a6ba20da3107e08a75de50da58360e7d94ab24d36", size = 113869, upload-time = "2025-09-13T05:47:17.863Z" },
+    { url = "https://files.pythonhosted.org/packages/10/5e/1aa9a93198c6b64513c9d7752de7422c06402de6600a8767da1524f9570b/pyparsing-3.2.5-py3-none-any.whl", hash = "sha256:e38a4f02064cf41fe6593d328d0512495ad1f3d8a91c4f73fc401b3079a59a5e", size = 113890, upload-time = "2025-09-21T04:11:04.117Z" },
 ]
 
 [[package]]
@@ -2598,11 +2599,11 @@ wheels = [
 
 [[package]]
 name = "wcwidth"
-version = "0.2.13"
+version = "0.2.14"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6c/63/53559446a878410fc5a5974feb13d31d78d752eb18aeba59c7fef1af7598/wcwidth-0.2.13.tar.gz", hash = "sha256:72ea0c06399eb286d978fdedb6923a9eb47e1c486ce63e9b4e64fc18303972b5", size = 101301, upload-time = "2024-01-06T02:10:57.829Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/24/30/6b0809f4510673dc723187aeaf24c7f5459922d01e2f794277a3dfb90345/wcwidth-0.2.14.tar.gz", hash = "sha256:4d478375d31bc5395a3c55c40ccdf3354688364cd61c4f6adacaa9215d0b3605", size = 102293, upload-time = "2025-09-22T16:29:53.023Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fd/84/fd2ba7aafacbad3c4201d395674fc6348826569da3c0937e75505ead3528/wcwidth-0.2.13-py2.py3-none-any.whl", hash = "sha256:3da69048e4540d84af32131829ff948f1e022c1c6bdb8d6102117aac784f6859", size = 34166, upload-time = "2024-01-06T02:10:55.763Z" },
+    { url = "https://files.pythonhosted.org/packages/af/b5/123f13c975e9f27ab9c0770f514345bd406d0e8d3b7a0723af9d43f710af/wcwidth-0.2.14-py2.py3-none-any.whl", hash = "sha256:a7bb560c8aee30f9957e5f9895805edd20602f2d7f720186dfd906e82b4982e1", size = 37286, upload-time = "2025-09-22T16:29:51.641Z" },
 ]
 
 [[package]]

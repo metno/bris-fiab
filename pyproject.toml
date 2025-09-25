@@ -20,6 +20,7 @@ dependencies = [
     "anemoi-graphs",
     "anemoi-inference",
     "anemoi-models==0.4.1",
+    "metpy>=1.7.1",
     "anemoi-transform",
     "anemoi-utils",
     "ecmwf-api-client",
@@ -36,4 +37,5 @@ dependencies = [
 downscaled_mars = "bris_fiab.anemoi_plugins.inference.downscale:DownscaledMarsInput"
 
 [project.entry-points."anemoi.inference.pre_processors"]
-downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
+# downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
+apply_adiabatic_corrections = "bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"
