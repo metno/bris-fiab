@@ -12,15 +12,16 @@ import zipfile
 import scipy.interpolate
 from scipy.spatial import Delaunay
 from dataclasses import dataclass
+from bris_fiab.checkpoint.interpolate import interpolate_to_grid
+
 
 @dataclass
 class Topography:
     '''A simple holder for output topography data'''
-    x_values: np.ndarray # longitudes in a two-dimensional array
-    y_values: np.ndarray # latitudes in a two-dimensional array
-    elevation: np.ndarray|None # elevation in a two-dimensional array
+    x_values: np.ndarray  # longitudes in a two-dimensional array
+    y_values: np.ndarray  # latitudes in a two-dimensional array
+    elevation: np.ndarray | None  # elevation in a two-dimensional array
     spatial_ref: typing.Any  # rasterio.crs.CRS
-
 
     @classmethod
     def from_topography_file(cls, topography_file: str | rasterio.MemoryFile):
@@ -32,13 +33,27 @@ class Topography:
         )
 
         if x_values.shape != y_values.shape or y_values.shape != topography.values[0].shape:
-            raise ValueError("topography x, y, and elevation must have the same shape")
+            raise ValueError(
+                "topography x, y, and elevation must have the same shape")
 
         return Topography(
             x_values=x_values,
             y_values=y_values,
             elevation=topography.values[0],  # type: ignore
             spatial_ref=topography.spatial_ref,  # type: ignore
+        )
+
+    @classmethod
+    def from_topography_file_to_grid(cls, topography_file: str | rasterio.MemoryFile, latitudes: np.ndarray, longitudes: np.ndarray) -> 'Topography':
+        topo = cls.from_topography_file(topography_file)
+
+        values = interpolate_to_grid(topo.y_values, topo.x_values,
+                                     topo.elevation, latitudes, longitudes)
+        return Topography(
+            x_values=longitudes,
+            y_values=latitudes,
+            elevation=values,
+            spatial_ref=topo.spatial_ref,  # This is not very useful without the original grid
         )
 
     @classmethod
@@ -57,7 +72,8 @@ class Topography:
             elevation=elevation,  # type: ignore
             spatial_ref=None,  # type: ignore
         )
-            
+
+
 def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -> typing.Callable[[np.ndarray], np.ndarray]:
 
     if len(ix.shape) == 1:
@@ -75,7 +91,8 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
     opoints = np.column_stack((oy.flatten(), ox.flatten()))
 
     def interpolate(values: np.ndarray) -> np.ndarray:
-        interpolator = scipy.interpolate.LinearNDInterpolator(triangulation, values.flatten())
+        interpolator = scipy.interpolate.LinearNDInterpolator(
+            triangulation, values.flatten())
         return interpolator(opoints).reshape(ox.shape)
     return interpolate
 
@@ -83,7 +100,8 @@ def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -
 class DownscalePreProcessor(Processor):
     def __init__(self, context: Context, **kwargs):
         if 'orography_file' in kwargs:
-            self._topography = Topography.from_topography_file(kwargs['orography_file'])
+            self._topography = Topography.from_topography_file(
+                kwargs['orography_file'])
         else:
             self._topography = Topography.from_supporting_array(context)
 
@@ -112,8 +130,9 @@ class DownscaledMarsInput(MarsInput):
                         "only regular grids are supported for downscaling")
 
         if 'orography_file' in kwargs:
-            self._topography = Topography.from_topography_file(kwargs['orography_file'])
-            del kwargs['orography_file'] 
+            self._topography = Topography.from_topography_file(
+                kwargs['orography_file'])
+            del kwargs['orography_file']
         else:
             self._topography = Topography.from_supporting_array(context)
 
@@ -133,9 +152,9 @@ def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_va
     latlon = field.to_latlon()
 
     downscale = downscaler(
-        iy=latlon['lat'], # type: ignore
-        ix=latlon['lon'], # type: ignore
-        oy=output_y_values, 
+        iy=latlon['lat'],  # type: ignore
+        ix=latlon['lon'],  # type: ignore
+        oy=output_y_values,
         ox=output_x_values,
     )
 
@@ -154,8 +173,8 @@ def downscale(source_ds: ekd.FieldList, output_x_values: np.ndarray, output_y_va
         # original_data = source_ds.sel(param=name).to_numpy()  # type: ignore
         original_data = field.to_numpy()
 
-        data = downscale(original_data) # type: ignore
-        metadata = field.metadata().override(**metadata_overrides) # type: ignore
+        data = downscale(original_data)  # type: ignore
+        metadata = field.metadata().override(**metadata_overrides)  # type: ignore
         af = ArrayField(data, metadata)
         fields.append(af)
 

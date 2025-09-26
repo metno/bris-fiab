@@ -16,11 +16,13 @@ class GraphConfig:
 
 
 def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, add_model_elevation: bool, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
-    if topography_file is not None:
-        lat, lon, elevation = _get_latlon(topography_file)
-    elif graph_config.area_latlon is not None:
+    elevation: np.ndarray | None = None
+
+    if graph_config.area_latlon is not None:
         lat, lon = _get_lat_lon_from_area(graph_config.area_latlon)
         elevation = None
+    elif topography_file is not None:
+        lat, lon, elevation = _get_latlon(topography_file)
     else:
         raise ValueError(
             'Either topography_file or area_latlon must be provided.')
@@ -34,6 +36,15 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
             with open('elevations.npy', 'wb') as f:
                 np.save(f, elevation)
 
+    if elevation is None and topography_file is not None:
+        print(
+            f'Loading correct elevation from {topography_file} interpolated to the mars grid')
+        _tlat, _tlon, elevation = _get_topography_on_grid(
+            topography_file, lat, lon)
+
+    if elevation is None:
+        print(f'No elevation data found in {topography_file}')
+
     if add_model_elevation:
         # model_elevation = get_model_elevation(lat, lon)
         if graph_config.area_latlon is not None:
@@ -44,8 +55,6 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
     else:
         model_elevation = None
 
-    print(f'DEBUG: exit now')
-    exit(1)
     graph = build_stretched_graph(
         lat.flatten(), lon.flatten(),
         global_grid='n320',
@@ -66,6 +75,12 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
 
 def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
     topo = Topography.from_topography_file(topography_file)
+    return topo.y_values, topo.x_values, topo.elevation
+
+
+def _get_topography_on_grid(topography_file: str, latitude: np.ndarray, longitude: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
+    topo = Topography.from_topography_file_to_grid(
+        topography_file, latitude, longitude)
     return topo.y_values, topo.x_values, topo.elevation
 
 

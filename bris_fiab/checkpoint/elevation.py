@@ -53,9 +53,7 @@ def get_model_elevation_mars_grid(area_latlon: tuple[float, float, float, float,
             'levtype': 'sfc',
         }
     )
+    xarr = ds.to_xarray()  # type: ignore
     geopotential = units.Quantity(ds[0].to_numpy(), 'm^2/s^2')
     height = metpy.calc.geopotential_to_height(geopotential)
-    print(
-        f"get_model_elevation_mars_grid: Downloaded elevation with shape {height.shape}")
-
     return height.astype('int16')  # type: ignore
