@@ -83,7 +83,7 @@ wheels = [
 
 [[package]]
 name = "anemoi-models"
-version = "0.4.1"
+version = "0.9.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anemoi-utils" },
@@ -92,9 +92,9 @@ dependencies = [
     { name = "torch" },
     { name = "torch-geometric" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d7/d4/3af23606e3be6a3d48265f87797a21484bb8daeab15ce5d5c618cc3cf494/anemoi_models-0.4.1.tar.gz", hash = "sha256:9101e1170b00aab0f5d9f6afab72039a18fd89841368ba7d5e381ae85384986e", size = 389969, upload-time = "2024-12-19T15:51:24.695Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/ab/4bd48b2262e55fcf359776608631c4fb6419e85595aac7a35c57f5048439/anemoi_models-0.9.5.tar.gz", hash = "sha256:cea895417790b0b5d835236a46ad1b0f87836f8dbcbf2903c4759afb3d00b13e", size = 483150, upload-time = "2025-09-15T12:47:41.661Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f0/58/d065a3714c33671bccb9a56309f13bd21836c6a728f5769287551a862b8b/anemoi_models-0.4.1-py3-none-any.whl", hash = "sha256:98c53c0ce71bb50f7649148aabd5d135874203628c33b0612573b9025fc8181f", size = 68490, upload-time = "2024-12-19T15:51:22.371Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/7e/5474ea2dd434ef5a0abd42cc1d4a02dd7cfe07f4fdbe35f1ba3405ffa5ec/anemoi_models-0.9.5-py3-none-any.whl", hash = "sha256:bddb6512a27aea62b7a0d07b1cba2596516872e5fb12bfe4cdc556ab2b2597e3", size = 127188, upload-time = "2025-09-15T12:47:39.571Z" },
 ]
 
 [[package]]
@@ -227,7 +227,7 @@ requires-dist = [
     { name = "anemoi-datasets" },
     { name = "anemoi-graphs" },
     { name = "anemoi-inference" },
-    { name = "anemoi-models", specifier = "==0.4.1" },
+    { name = "anemoi-models", specifier = "==0.9.5" },
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
     { name = "ecmwf-api-client" },

@@ -1,4 +1,4 @@
-checkpoint: bris-fiab-malawi.ckpt 
+checkpoint: malawi_20250929.ckpt
 
 date: "2025-03-06"
 
@@ -8,14 +8,14 @@ input:
   cutout:
     lam_0:
       downscaled_mars:
-        log: false
+        log: true
         grid: "0.1/0.1"
         area: "-8/30/-22/43"
-        pre_processors:
-          - apply_adiabatic_corrections
+        # pre_processors:
+        #   - apply_adiabatic_corrections
     global:
       mars:
-        log: false
+        log: true
       mask: 'global/cutout_mask'
 
 output:
