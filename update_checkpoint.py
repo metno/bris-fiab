@@ -4,7 +4,7 @@ from bris_fiab.checkpoint import graph
 
 
 @click.command()
-@click.option('--topography-file', type=click.Path(exists=True), default=None)
+@click.option('--topography-file', type=click.Path(exists=True), default=None, help='Path to the topography file with correct orography (GeoTIFF format).')
 @click.option('--area-latlon', type=(float, float, float, float, float), default=None, help='Area defined by (north, west, south, east, resolution)')
 @click.option('--original-checkpoint', type=click.Path(exists=True))
 @click.option('--create-checkpoint', type=click.Path())

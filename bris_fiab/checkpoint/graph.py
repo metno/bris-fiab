@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional
 import earthkit.data as ekd
@@ -39,9 +40,16 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
     if elevation is None and topography_file is not None:
         print(
             f'Loading correct elevation from {topography_file} interpolated to the mars grid')
-        _tlat, _tlon, elevation = _get_topography_on_grid(
-            topography_file, lat, lon)
+        base, ext = os.path.splitext(topography_file)
+        resolution = f"{graph_config.area_latlon[4]:.4f}" if graph_config.area_latlon is not None else "unknown"
+        resolution = resolution.replace('.', '_')
+        resolution = f"{graph_config.area_latlon[4]}" if graph_config.area_latlon is not None else "unknown"
+        resolution = resolution.replace('.', '_')
+        result_grid_file = f"{base}_interpolated_resolution_{resolution}{ext}"
+        _, _, elevation = _get_topography_on_grid(
+            topography_file, lat, lon, result_grid_file=result_grid_file)
 
+    exit(1)  # TODO remove
     if elevation is None:
         print(f'No elevation data found in {topography_file}')
 
@@ -54,7 +62,7 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
             model_elevation = get_model_elevation(lat, lon)
     else:
         model_elevation = None
-
+    print(f'building graph...')
     graph = build_stretched_graph(
         lat.flatten(), lon.flatten(),
         global_grid='n320',
@@ -78,9 +86,12 @@ def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarra
     return topo.y_values, topo.x_values, topo.elevation
 
 
-def _get_topography_on_grid(topography_file: str, latitude: np.ndarray, longitude: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
+def _get_topography_on_grid(topography_file: str, latitude: np.ndarray, longitude: np.ndarray, result_grid_file: str | None = None) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
     topo = Topography.from_topography_file_to_grid(
         topography_file, latitude, longitude)
+    if result_grid_file is not None:
+        print(f'Writing interpolated topography to {result_grid_file}')
+        topo.write_geotiff(result_grid_file)
     return topo.y_values, topo.x_values, topo.elevation
 
 

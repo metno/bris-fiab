@@ -1,3 +1,4 @@
+from os import path
 from anemoi.inference.inputs.mars import MarsInput
 from anemoi.inference.types import Date
 from anemoi.inference.context import Context
@@ -13,6 +14,8 @@ import scipy.interpolate
 from scipy.spatial import Delaunay
 from dataclasses import dataclass
 from bris_fiab.checkpoint.interpolate import interpolate_to_grid
+from rasterio.transform import from_bounds
+import xarray as xr
 
 
 @dataclass
@@ -72,6 +75,21 @@ class Topography:
             elevation=elevation,  # type: ignore
             spatial_ref=None,  # type: ignore
         )
+
+    def write_geotiff(self, path: str):
+        """Write the topography to a GeoTIFF file."""
+        lat_min, lat_max = float(np.nanmin(self.y_values)), float(
+            np.nanmax(self.y_values))
+        lon_min, lon_max = float(np.nanmin(self.x_values)), float(
+            np.nanmax(self.x_values))
+        Y, X = self.elevation.shape
+        transform = from_bounds(lon_min, lat_min, lon_max, lat_max, X, Y)
+
+        da = xr.DataArray(self.elevation.astype("int16"),
+                          dims=("y", "x"), name="elevation")
+        da = da.rio.write_crs(4326).rio.write_transform(transform)
+        da = da.rio.write_nodata(0, encoded=True)
+        da.rio.to_raster(path, compress="LZW")
 
 
 def downscaler(ix: np.ndarray, iy: np.ndarray, ox: np.ndarray, oy: np.ndarray) -> typing.Callable[[np.ndarray], np.ndarray]:
