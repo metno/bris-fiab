@@ -11,8 +11,8 @@ input:
         log: true
         grid: "0.025/0.025"
         area: "-8/30/-22/43"
-        # pre_processors:
-        #   - apply_adiabatic_corrections
+        pre_processors:
+          - apply_adiabatic_corrections
     global:
       mars:
         log: true
