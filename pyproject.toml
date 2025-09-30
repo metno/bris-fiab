@@ -19,7 +19,7 @@ dependencies = [
     "anemoi-datasets",
     "anemoi-graphs",
     "anemoi-inference",
-    "anemoi-models==0.4.1",
+    "anemoi-models==0.9.5",
     "metpy>=1.7.1",
     "anemoi-transform",
     "anemoi-utils",
