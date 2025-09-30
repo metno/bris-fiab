@@ -57,7 +57,7 @@ You need to modify your checkpoint's graph in order to run for a specific area.
 
 If you want to do adiabatic correction of the forecast data, you need to add real elevation information to the checkpoint. One way to get that is by adapting data from [opentopography](https://portal.opentopography.org/raster?opentopoID=OTSRTM.042013.4326.1).
 
-**Note** You need to download data for an area that is _larger_ than your target area!
+**Note** At the moment, you need to download data for an area that is _larger_ than your target area!
 
 To help with downloading the orography you can use this:
 
