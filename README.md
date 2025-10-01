@@ -34,7 +34,7 @@ uv run anemoi-inference run config.yaml
 
 ## Checkpoint
 
-In order to run, you need a bris checkpoint, and a geotiff file containing orograpghy data for your target area.
+In order to run, you need a bris checkpoint, and optionally a geotiff file containing orograpghy data for your target area.
 
 ### Preparing
 
@@ -52,16 +52,17 @@ update_metadata.py find the variable `dataset.variables_metadata`, and replace w
 ### Setting area
 
 You need to modify your checkpoint's graph in order to run for a specific area.
-For this to work, you need to have a file with orography data for that area.
 
 #### Getting detailed orography information
 
-One way to get orography data is by adapting data from [opentopography](https://portal.opentopography.org/raster?opentopoID=OTSRTM.042013.4326.1). 
-Make sure you download for your exact area.
+If you want to do adiabatic correction of the forecast data, you need to add real elevation information to the checkpoint. One way to get that is by adapting data from [opentopography](https://portal.opentopography.org/raster?opentopoID=OTSRTM.042013.4326.1).
 
-To help with downloading the orography use:
+**Note** At the moment, you need to download data for an area that is _larger_ than your target area!
+
+To help with downloading the orography you can use this:
+
 ```shell
-uv run download_orography.py --area-latlon -8 30 -22 43 --dest-path <hires_topography.tif>
+uv run download_orography.py --area-latlon -7 29 -23 44 --dest-path hires_topography.tif
 ```
 
 For this to work you need an api-key to access the rest api on [opentopography](https://portal.opentopography.org/apidocs/)
@@ -75,11 +76,7 @@ Save the key in $HOME/..opentopographyrc. This is a json file with format:
 }
 ```
 
-After having downloaded data from there, you can run a command like this to generate an orography file with the resolution:
-
-```shell
-gdalwarp -tr 0.05 0.05 -r average <hires_topography.tif> orography.tif
-```
+The downloaded high-resolution topography can then be used as input when updating the checkpoint.
 
 #### Updating checkpoint
 
@@ -87,7 +84,10 @@ Run the following command to generate a new checkpoint:
 
 ```shell
 uv run update_checkpoint.py \
-    --topography-file orography.tif \
+    --area-latlon -8 30 -22 43 0.025 \
+    --topography-file hires_topography.tif \
     --original-checkpoint bris-checkpoint.ckpt \
     --create-checkpoint new-checkpoint.ckpt
 ```
+
+You can skip the `--topography-file` option if you will not do orographic corrections of the data.
