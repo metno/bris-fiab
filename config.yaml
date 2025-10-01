@@ -18,6 +18,11 @@ input:
         log: true
       mask: 'global/cutout_mask'
 
+post_processors:
+  - accumulate_from_start_of_forecast:
+      accumulations:
+        - tp 
+
 output:
   tee:
     outputs:
