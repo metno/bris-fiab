@@ -1,18 +1,18 @@
-checkpoint: malawi_20250929.ckpt
+checkpoint: malawi_normalized_0_025.ckpt
 
-date: "2025-03-06"
+date: "2025-04-06"
 
 lead_time: 0
 
 input:
   cutout:
     lam_0:
-      downscaled_mars:
+      mars:
         log: true
-        grid: "0.1/0.1"
+        grid: "0.025/0.025"
         area: "-8/30/-22/43"
-        # pre_processors:
-        #   - apply_adiabatic_corrections
+        pre_processors:
+          - apply_adiabatic_corrections
     global:
       mars:
         log: true

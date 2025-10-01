@@ -33,9 +33,10 @@ class AdiabaticCorrector:
         temperatures = fields.sel(param='2t', levtype='sfc')
         for t in temperatures:
             values = t.to_numpy() * units.kelvin
-            original_temperatures[t.metadata('step')] = values
+            key = t.datetime()['valid_time']
+            original_temperatures[key] = values
             corrected_temperature = adiabatic_correct.correct_temperature(values, self._altitude_difference)
-            corrected_temperatures[t.metadata('step')] = corrected_temperature
+            corrected_temperatures[key] = corrected_temperature
         
         ret = []
         for field in fields:
@@ -43,14 +44,18 @@ class AdiabaticCorrector:
             if field.metadata('levtype') != 'sfc':
                 ret.append(field)
                 continue
-            step = field.metadata('step')
+            key = field.datetime()['valid_time']
             param = field.metadata('param')
             if param == '2t':
-                values = corrected_temperatures[step]
+                values = corrected_temperatures[key]
                 ret.append(field.copy(values=values.magnitude))  # type: ignore
             elif param == '2d':
                 old_values = field.to_numpy() * units.kelvin
-                values = adiabatic_correct.correct_dewpoint(old_values, original_temperatures[step], corrected_temperatures[step])
+                values = adiabatic_correct.correct_dewpoint(
+                    original_dewpoint=old_values, 
+                    original_temperature=original_temperatures[key], 
+                    corrected_temperature=corrected_temperatures[key]
+                )
                 ret.append(field.copy(values=values.magnitude))  # type: ignore
             elif param == 'sp':
                 old_values = pint.Quantity(field.to_numpy(), field.metadata('units'))
