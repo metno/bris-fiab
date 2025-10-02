@@ -1,4 +1,5 @@
 import sys
+import os
 import click
 from bris_fiab.checkpoint import graph
 
@@ -15,6 +16,13 @@ from bris_fiab.checkpoint import graph
 @click.option('--global-resolution', type=int, default=7)
 @click.option('--margin-radius-km', type=int, default=11)
 def cli(topography_file: str | None, area_latlon: tuple[float, float, float, float, float] | None, original_checkpoint: str, create_checkpoint: str, without_model_elevation: bool, save_graph_to: str, save_latlon: bool, lam_resolution: int, global_resolution: int, margin_radius_km: int):
+
+    for f in (topography_file, original_checkpoint):
+        if f is not None:
+            if not os.path.exists(f):
+                print(f'File {f} does not exist.')
+                sys.exit(1)
+
     if topography_file is None and area_latlon is None:
         print(
             'Either topography_file or area_latlon must be provided.')
