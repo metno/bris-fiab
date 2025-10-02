@@ -11,7 +11,7 @@ packages = [
 
 [project]
 name = "bris-fiab"
-version = "0.1.0"
+version = "0.1.1"
 description = "Running the bris model in Forecast-in-a-Box and anemoi-inference"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -38,6 +38,7 @@ dependencies = [
     "pyyaml>=6.0.1",
     "metpy>=1.7.1",
     "twine>=6.2.0",
+    "torch-geometric==2.4.0",
 ]
 
 [project.urls]
