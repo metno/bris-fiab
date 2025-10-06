@@ -31,7 +31,11 @@ dependencies = [
     "trimesh>=4.7.3",
     "pyyaml>=6.0.1",
     "metpy>=1.7.1",
+    "cartopy",
 ]
+[project.optional-dependencies]
+images = ["cartopy", "gridpp"]
+
 
 [project.entry-points."anemoi.inference.inputs"]
 downscaled_mars = "bris_fiab.anemoi_plugins.inference.downscale:DownscaledMarsInput"
