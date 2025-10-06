@@ -15,7 +15,8 @@ from bris_fiab.checkpoint import graph
 @click.option('--lam-resolution', type=int, default=10)
 @click.option('--global-resolution', type=int, default=7)
 @click.option('--margin-radius-km', type=int, default=11)
-def cli(topography_file: str | None, area_latlon: tuple[float, float, float, float, float] | None, original_checkpoint: str, create_checkpoint: str, without_model_elevation: bool, save_graph_to: str, save_latlon: bool, lam_resolution: int, global_resolution: int, margin_radius_km: int):
+def update_checkpoint(topography_file: str | None, area_latlon: tuple[float, float, float, float, float] | None, original_checkpoint: str, create_checkpoint: str, without_model_elevation: bool, save_graph_to: str, save_latlon: bool, lam_resolution: int, global_resolution: int, margin_radius_km: int):
+    '''Update a bris checkpoint with orography and graph data.'''
 
     for f in (topography_file, original_checkpoint):
         if f is not None:
@@ -45,4 +46,4 @@ def cli(topography_file: str | None, area_latlon: tuple[float, float, float, flo
 
 
 if __name__ == "__main__":
-    cli()
+    update_checkpoint()

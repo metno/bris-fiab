@@ -4,9 +4,12 @@ from anemoi.inference.runners.default import DefaultRunner
 import earthkit.data as ekd
 
 
+
+
 @click.command()
 @click.option('--config', type=click.Path(exists=True), default='config.yaml', help='Inference configuration file')
-def cli(config: str):
+def run(config: str):
+    '''Run inference based on a provided configuration file.'''
     configuration = RunConfiguration.load(config)
 
     ekd.config.set("cache-policy", "user")
@@ -25,4 +28,4 @@ def cli(config: str):
 
 
 if __name__ == '__main__':
-    cli()
+    run()

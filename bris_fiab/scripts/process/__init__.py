@@ -1,10 +1,16 @@
-import json
 import click
+import json
 import rioxarray
 import xarray as xr
 import numpy as np
 from typing import Dict
 import pydantic
+
+
+@click.group()
+def process():
+    '''Manipulate FIAB output files.'''
+    pass
 
 
 class VariableConfig(pydantic.BaseModel):
@@ -15,24 +21,28 @@ class VariableConfig(pydantic.BaseModel):
 class SurfaceVariablesConfig(pydantic.BaseModel):
     variables: Dict[str, VariableConfig]
 
+
 class PressureLevelVariablesConfig(pydantic.BaseModel):
     levels: list[int]
     variables: Dict[str, VariableConfig]
+
 
 class VariablesConfig(pydantic.BaseModel):
     sfc: SurfaceVariablesConfig
     pl: PressureLevelVariablesConfig
 
+
 class MkGridConfig(pydantic.BaseModel):
     variables: VariablesConfig
 
 
-@click.command()
+@process.command()
 @click.option('--grid', type=click.Path(exists=True), help='Grid to convert to')
 @click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', help='Configuration file for variable mapping')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
-def cli(grid: str, config: str, input: str, output: str):
+def make_grid(grid: str, config: str, input: str, output: str):
+    '''Convert FIAB output to a gridded NetCDF file.'''
     with open(config) as f:
         config_json = json.load(f)
         met_variables = MkGridConfig.model_validate(config_json)
@@ -41,26 +51,26 @@ def cli(grid: str, config: str, input: str, output: str):
 
     if grid:
         elevation = rioxarray.open_rasterio(grid)
-        x: np.ndarray = elevation.x.values # type: ignore
-        y: np.ndarray = elevation.y.values # type: ignore
-        spatial_ref = elevation['spatial_ref'] # type: ignore
+        x: np.ndarray = elevation.x.values  # type: ignore
+        y: np.ndarray = elevation.y.values  # type: ignore
+        spatial_ref = elevation['spatial_ref']  # type: ignore
     else:
         x = np.unique(data.longitude.values)
         y = np.unique(data.latitude.values)[::-1]
         spatial_ref = xr.DataArray(
             data=0,
             attrs={
-                'crs_wkt': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]', 
-                'semi_major_axis': 6378137.0, 
-                'semi_minor_axis': 6356752.314245179, 
-                'inverse_flattening': 298.257223563, 
-                'reference_ellipsoid_name': 'WGS 84', 
-                'longitude_of_prime_meridian': 0.0, 
-                'prime_meridian_name': 'Greenwich', 
-                'geographic_crs_name': 'WGS 84', 
-                'horizontal_datum_name': 'World Geodetic System 1984', 
-                'grid_mapping_name': 'latitude_longitude', 
-                'spatial_ref': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]', 
+                'crs_wkt': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]',
+                'semi_major_axis': 6378137.0,
+                'semi_minor_axis': 6356752.314245179,
+                'inverse_flattening': 298.257223563,
+                'reference_ellipsoid_name': 'WGS 84',
+                'longitude_of_prime_meridian': 0.0,
+                'prime_meridian_name': 'Greenwich',
+                'geographic_crs_name': 'WGS 84',
+                'horizontal_datum_name': 'World Geodetic System 1984',
+                'grid_mapping_name': 'latitude_longitude',
+                'spatial_ref': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]',
                 # 'GeoTransform': f'29.999583333285614 0.025 0.0 -7.9995833333178865 0.0 -0.025'
                 'GeoTransform': f'{x[0]} {(x[1] - x[0]):.3g} 0.0 {y[-1]} 0.0 {(y[-1] - y[-2]):.3g}'
             }
@@ -70,7 +80,7 @@ def cli(grid: str, config: str, input: str, output: str):
     time_count = len(data['time'])
 
     variables = {
-        'spatial_ref': spatial_ref, # type: ignore
+        'spatial_ref': spatial_ref,  # type: ignore
         'forecast_reference_time': xr.DataArray(
             np.datetime64(data['time'].values[0]),
             dims=(),
@@ -139,8 +149,10 @@ def cli(grid: str, config: str, input: str, output: str):
             print(f"Variable {variable} is not configured.")
             continue
 
-        variable_names = [f'{variable}_{level}' for level in met_variables.variables.pl.levels]        
-        param_data = [data[vn].values[:, :size].reshape((time_count, len(y), len(x))) for vn in variable_names]
+        variable_names = [
+            f'{variable}_{level}' for level in met_variables.variables.pl.levels]
+        param_data = [data[vn].values[:, :size].reshape(
+            (time_count, len(y), len(x))) for vn in variable_names]
         param_data = np.stack(param_data, axis=1)
 
         param = xr.DataArray(
@@ -150,7 +162,6 @@ def cli(grid: str, config: str, input: str, output: str):
             attrs={**cfg.attributes, "grid_mapping": "spatial_ref"}
         )
         variables[cfg.variable_name] = param
-
 
     ds = xr.Dataset(
         variables,
@@ -162,4 +173,4 @@ def cli(grid: str, config: str, input: str, output: str):
 
 
 if __name__ == "__main__":
-    cli()
+    process()

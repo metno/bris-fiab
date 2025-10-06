@@ -5,20 +5,20 @@ from bris_fiab.checkpoint.metadata import adapt_metdata
 
 import anemoi.utils.checkpoints
 
-description = '''
-A command-line tool to update the metadata of a bris-generated checkpoint, so that it is runnable by anemoi-inference with mars input.
-
-Note that this tool will _modify_ (not copy) the checkpoint file.
-'''
 default_replace_path = 'dataset.variables_metadata'
 
 
-@click.command(help=description)
+@click.command()
 @click.option('--checkpoint', type=click.Path(exists=True),  required=True,
               help='Path to checkpoint to update metadata.')
 @click.option('--replace-path',  type=str, default=f'{default_replace_path}',
               help=f'Dot-separated path to the key in the metadata to be replaced. Default: {default_replace_path}')
-def cli(checkpoint: str, replace_path: str):
+def update_metadata(checkpoint: str, replace_path: str):
+    '''
+    Update the metadata of a bris-generated checkpoint. This will make it runnable by anemoi-inference with mars input.
+
+    Note that this tool will _modify_ (not copy) the checkpoint file.
+    '''
 
     print(f'Updating metadata in checkpoint: {checkpoint}')
     print(f'Keys updated: {replace_path}')
@@ -35,4 +35,4 @@ def cli(checkpoint: str, replace_path: str):
 
 
 if __name__ == "__main__":
-    cli()
+    update_metadata()

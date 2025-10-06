@@ -34,7 +34,7 @@ def read_api_key(filepath: str) -> str | None:
 @click.option('--api-key-file', type=click.Path(exists=True), default=None, show_default=False, help='Path to JSON file containing the API key')
 @click.option('--dem-type', type=click.Choice(['SRTMGL3', 'SRTMGL1', 'AW3D30', 'TDM1', 'COP30']), default='SRTMGL3', show_default=True, help='Type of DEM to download')
 @click.option('--dest-path', type=click.Path(), default='orography.tif', show_default=True, help='Destination path for the downloaded DEM file')
-def main(area_latlon: tuple[float, float, float, float], api_key_file: str | None, dem_type: str, dest_path: str):
+def download_orography(area_latlon: tuple[float, float, float, float], api_key_file: str | None, dem_type: str, dest_path: str):
   if api_key_file is None:
     api_key_file = find_api_key_file()
     if not api_key_file:
@@ -57,4 +57,4 @@ def main(area_latlon: tuple[float, float, float, float], api_key_file: str | Non
   download.download(area_latlon, dest_path, api_key, dem_type)
 
 if __name__ == "__main__":
-  main()
+  download_orography()
