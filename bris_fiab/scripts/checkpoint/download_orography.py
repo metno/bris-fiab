@@ -1,25 +1,7 @@
 import click
-import json
 from bris_fiab.orography import download
-import os
+from bris_fiab.orography.api_key import find_api_key_file, read_api_key
 
-DEFAULT_API_KEY_FILE = '.opentopographyrc'
-
-def find_api_key_file(filename: str=DEFAULT_API_KEY_FILE):
-  # Check current working directory
-  cwd_path = os.path.join(os.getcwd(), filename)
-  if os.path.exists(cwd_path):
-    return cwd_path
-  # Check home directory
-  home_path = os.path.join(os.path.expanduser('~'), filename)
-  if os.path.exists(home_path):
-    return home_path
-  return None
-
-def read_api_key(filepath: str) -> str | None:
-  with open(filepath, 'r') as f:
-    data = json.load(f)
-  return data.get('api_key')
 
 @click.command(
     help=(

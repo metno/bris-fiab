@@ -9,13 +9,14 @@ from .elevation import get_model_elevation, get_model_elevation_mars_grid
 
 @dataclass
 class GraphConfig:
+    global_grid: str = 'n320'
     lam_resolution: int = 10
     global_resolution: int = 7
     margin_radius_km: int = 11
     area_latlon: tuple[float, float, float, float, float] | None = None
 
 
-def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, add_model_elevation: bool, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
+def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, add_model_elevation: bool, save_graph_to: str='', save_latlon: bool=False, graph_config: GraphConfig = GraphConfig()):
     elevation: np.ndarray | None = None
 
     if graph_config.area_latlon is not None:
@@ -57,7 +58,7 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
 
     graph = build_stretched_graph(
         lat.flatten(), lon.flatten(),
-        global_grid='n320',
+        global_grid=graph_config.global_grid,
         lam_resolution=graph_config.lam_resolution,
         global_resolution=graph_config.global_resolution,
         margin_radius_km=graph_config.margin_radius_km
@@ -67,7 +68,6 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
         import torch
         torch.save(graph, save_graph_to)
         print('saved graph')
-    # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
 
     update(graph, original_checkpoint, new_checkpoint,
            model_elevation, (lat, lon, elevation))

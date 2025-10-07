@@ -6,6 +6,8 @@ import torch
 import numpy as np
 from copy import deepcopy
 import logging
+
+from bris_fiab.checkpoint.metadata import adapt_metdata
 LOG = logging.getLogger(__name__)
 
 
@@ -48,6 +50,8 @@ def update(graph, model_file: str, output_file: str, model_elevation: np.ndarray
         'grid': graph['data']['global_grid'],
         'area': [90, 0.0, -90, 360],
     }
+
+    adapt_metdata(metadata)
 
     save_metadata(
         output_file,

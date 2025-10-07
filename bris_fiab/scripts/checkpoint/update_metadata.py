@@ -1,6 +1,4 @@
 import click
-import subprocess
-import json
 from bris_fiab.checkpoint.metadata import adapt_metdata
 
 import anemoi.utils.checkpoints
