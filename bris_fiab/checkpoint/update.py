@@ -1,6 +1,5 @@
 # Adapted from code by Harrison Cook
 
-import typing
 from anemoi.inference.checkpoint import Checkpoint
 import torch
 import numpy as np
@@ -11,14 +10,21 @@ from bris_fiab.checkpoint.metadata import adapt_metdata
 LOG = logging.getLogger(__name__)
 
 
-def update(graph, model_file: str, output_file: str, model_elevation: np.ndarray | None, elevation_data: typing.Tuple[np.ndarray, np.ndarray, np.ndarray | None]):
+def update(graph, model_file: str, output_file: str, latitudes: np.ndarray, longitudes: np.ndarray, model_elevation: np.ndarray | None, correct_elevation: np.ndarray | None):
     model = torch.load(model_file, weights_only=False,
                        map_location=torch.device('cpu'))
     # graph = torch.load(graph, weights_only=False, map_location=torch.device('cpu'))
-    print(
-        f"Model elevation shape: {model_elevation.shape if model_elevation is not None else None}")
-    print(
-        f"Elevation data shapes: {[e.shape if e is not None else None for e in elevation_data]}")
+    print(f"Grid shape: {longitudes.shape}")
+    
+    if latitudes.shape != longitudes.shape:
+        raise ValueError(
+            f"Latitude and longitude arrays must have the same shape. Got {latitudes.shape} and {longitudes.shape}.")
+    if correct_elevation is not None and correct_elevation.shape != latitudes.shape:
+        raise ValueError(
+            f"Correct elevation array must have the same shape as latitude and longitude arrays. Got {correct_elevation.shape} and {latitudes.shape}.")
+    if model_elevation is not None and model_elevation.shape != latitudes.shape:
+        raise ValueError(
+            f"Model elevation array must have the same shape as latitude and longitude arrays. Got {model_elevation.shape} and {latitudes.shape}.")
 
     ckpt = Checkpoint(model_file)
 
@@ -31,11 +37,10 @@ def update(graph, model_file: str, output_file: str, model_elevation: np.ndarray
     supporting_arrays['longitudes'] = np.array(graph['data']['longitudes'])
     supporting_arrays['grid_indices'] = np.ones(
         graph['data']['cutout_mask'].shape, dtype=np.int64)
-    supporting_arrays['lam_0/latitudes'] = elevation_data[0]
-    supporting_arrays['lam_0/longitudes'] = elevation_data[1]
-    if elevation_data[2] is not None:
-        supporting_arrays['lam_0/correct_elevation'] = elevation_data[2]
-    if model_elevation is not None:
+    supporting_arrays['lam_0/latitudes'] = latitudes
+    supporting_arrays['lam_0/longitudes'] = longitudes
+    if correct_elevation is not None:
+        supporting_arrays['lam_0/correct_elevation'] = correct_elevation
         supporting_arrays['lam_0/model_elevation'] = model_elevation
 
     model = update_model(model, graph, ckpt)

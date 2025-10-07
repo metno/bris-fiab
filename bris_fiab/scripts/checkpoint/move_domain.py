@@ -4,6 +4,7 @@ from bris_fiab.checkpoint import graph
 import tempfile
 import yaml
 import os
+import io
 
 
 @click.command()
@@ -28,36 +29,41 @@ def move_domain(grid: float, area: str, global_grid: str, lam_resolution: int, g
     click.echo(
         f'Moving domain from {src} to {dest} with grid {grid} and area {north}/{west}/{south}/{east}.')
 
+    orography_stream = get_orography_stream(orography_file, north, west, south, east)
+
     graph_config = graph.GraphConfig(
+        area=tuple(area_elements), # type: ignore
+        grid=grid,
         global_grid=global_grid,
         lam_resolution=lam_resolution,
         global_resolution=global_resolution,
         margin_radius_km=margin_radius_km,
-        area_latlon=(float(north), float(west),
-                     float(south), float(east), grid)
     )
-
-    if orography_file is None:
-        # switch to NamedTemporaryFile()?
-        orography_file = tempfile.mktemp(suffix=".tif")
-        download.download(
-            area_latlon=(float(north)+1, float(west)-1,
-                         float(south)-1, float(east)+1),
-            dest_path=orography_file,
-            api_key=api_key.read_api_key(),
-        )
-    else:
-        print(f'Using local orography file: {orography_file}')
-
     graph.run(
-        topography_file=orography_file,
         original_checkpoint=src,
         new_checkpoint=dest,
-        add_model_elevation=True,
-        graph_config=graph_config
+        topography_file=orography_stream,
+        graph_config=graph_config,
+        save_graph_to='out.pt'
     )
 
     create_sample_config(dest, grid, area)
+
+def get_orography_stream(orography_file: str | None, north: str, west: str, south: str, east: str) -> io.BufferedIOBase:
+    if orography_file is None:
+        orography_stream = io.BytesIO()
+        download.download(
+            area_latlon=(float(north)+1, float(west)-1,
+                         float(south)-1, float(east)+1),
+            dest_stream=orography_stream,
+            api_key=api_key.read_api_key(),
+        )
+        orography_stream.seek(0)
+        return orography_stream
+
+    print(f'Using local orography file: {orography_file}')
+    f = open(orography_file, 'r+b')
+    return f  # we don't care about closing this file - it will be closed on exit
 
 
 def create_sample_config(dest: str, grid: float, area: str) -> None:
@@ -115,3 +121,4 @@ def create_sample_config(dest: str, grid: float, area: str) -> None:
 
     with open(config_file, 'w') as f:
         yaml.dump(sample_config, f)
+
