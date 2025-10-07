@@ -56,7 +56,7 @@ def _get_topography_on_grid(topography_file: BufferedIOBase, latitude: np.ndarra
     topo = Topography.from_topography_file_to_grid(
         topography_file, latitude, longitude)
     assert topo.elevation is not None
-    return topo.elevation
+    return topo.elevation.astype('int16')
 
 
 def _get_lat_lon_from_area(area: tuple[float | str, float | str, float | str, float | str], grid: float | str) -> tuple[np.ndarray, np.ndarray]:
