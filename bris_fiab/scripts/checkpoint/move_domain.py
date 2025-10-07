@@ -44,7 +44,6 @@ def move_domain(grid: float, area: str, global_grid: str, lam_resolution: int, g
         new_checkpoint=dest,
         topography_file=orography_stream,
         graph_config=graph_config,
-        save_graph_to='out.pt'
     )
 
     create_sample_config(dest, grid, area)
