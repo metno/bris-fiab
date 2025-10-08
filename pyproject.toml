@@ -11,10 +11,16 @@ packages = [
 
 [project]
 name = "bris-fiab"
-version = "0.1.0"
-description = "Running the bris model in Forecast-in-a-Box"
+version = "0.1.1"
+description = "Running the bris model in Forecast-in-a-Box and anemoi-inference"
 readme = "README.md"
 requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 dependencies = [
     "anemoi-datasets",
     "anemoi-graphs",
@@ -31,10 +37,16 @@ dependencies = [
     "trimesh>=4.7.3",
     "pyyaml>=6.0.1",
     "metpy>=1.7.1",
-    "cartopy",
+    "twine>=6.2.0",
+    "torch-geometric==2.4.0",
 ]
+
 [project.optional-dependencies]
 images = ["cartopy", "gridpp"]
+
+[project.urls]
+Homepage = "https://github.com/metno/bris-fiab"
+Issues = "https://github.com/metno/bris-fiab/issues"
 
 
 [project.entry-points."anemoi.inference.inputs"]

@@ -1,51 +1,54 @@
-import yaml
-import click
-import os
-from typing import Any
-
-# type: ignore
+from dataclasses import dataclass
 
 
-def update_metadata(metadata_file: str, update_with_metadata: str,
-                    output: str, path: str) -> str:
-    """
-    Update the metadata in the metadata_file with the data from the update_with_metadata file.
-    The path is a dot-separated string that specifies the location in the metadata to update.
-    The updated metadata is written to the output file.
-    Args:
-        metadata_file (str): Path to the original metadata YAML file to be updated.
-        update_with_metadata (str): Path to the YAML file containing updated metadata values.
-        output (str): Path to save the updated metadata file.
-        path (str): Dot-separated path to the key in the metadata to be replaced.
-    Returns:
-        str: Path to the updated metadata file.
-    Raises:
-        KeyError: If the specified path does not exist in either metadata file.
-    """
-    metadata = None
-    with open(metadata_file, 'r') as f:
-        metadata = yaml.load(f, Loader=yaml.FullLoader)  # type: ignore
+@dataclass
+class BrisParameter:
+    '''BrisParameter decodes parameters, as used in bris checkpoints'''
 
-    with open(update_with_metadata, 'r') as f:
-        updates = yaml.load(f, Loader=yaml.FullLoader)  # type: ignore
+    parameter: str
+    level: int | None = None
 
-        # Split the path into keys
-        keys: list[str] = path.split('.')  # type: ignore
+    @classmethod
+    def from_string(cls, name: str) -> 'BrisParameter':
+        elements = name.split('_')
 
-        # Traverse metadata to the parent of the target key
-        meta_parent = metadata  # type: ignore
-        for key in keys[:-1]:
-            meta_parent = meta_parent[key]  # type: ignore
+        if len(elements) == 1:
+            return BrisParameter(elements[0], None)
+        elif len(elements) == 2:
+            return BrisParameter(elements[0], int(elements[1]))
 
-        # Traverse updates to the value to replace with
-        updates_parent = updates  # type: ignore
-        for key in keys[:-1]:
-            updates_parent = updates_parent[key]  # type: ignore
+        raise ValueError(f"Invalid parameter name: {name}")
 
-        # Replace the value in metadata with the value from updates
-        meta_parent[keys[-1]] = updates_parent[keys[-1]]  # type: ignore
-        # Write the updated metadata to the output file
-        with open(output, 'w') as out_f:
-            yaml.dump(metadata, out_f, Dumper=yaml.Dumper)  # type: ignore
+    def has_level(self) -> bool:
+        return self.level is not None
 
-    return output
+
+def adapt_metdata(original_metadata: dict, replace_path: str = 'dataset.variables_metadata'):
+    '''Rewrite all parameter metadata so that it is usable in a mars request. Note that this will modify the input dict!'''
+
+    variables = original_metadata
+    for p in replace_path.split('.'):
+        variables = variables[p]
+
+    for k, v in variables.items():
+        if not 'mars' in v:
+            continue
+        p = BrisParameter.from_string(k)
+        mars = v['mars']
+        if p.has_level():
+            mars["levtype"] = "pl"
+            mars["levelist"] = p.level
+            mars["param"] = p.parameter
+        else:
+            mars["levtype"] = "sfc"
+            if p.parameter in ('z', 'lsm'):
+                v["constant_in_time"] = True
+
+
+if __name__ == "__main__":
+    import json
+    with open('inference-last.json') as f:
+        metadata = json.load(f)
+    print(metadata['dataset']['variables_metadata']["z"])
+    adapt_metdata(metadata)
+    print(metadata['dataset']['variables_metadata']["z"])
