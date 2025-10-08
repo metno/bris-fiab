@@ -12,11 +12,11 @@ from bris_fiab.orography.api_key import find_api_key_file, read_api_key
       "Create an account and get an API key from https://portal.opentopography.org/login.\n"
     )
   )
-@click.option('--area-latlon', type=(float, float, float, float), required=True, help='Bounding box coordinates as (north, west, south, east)')
+@click.option('--area', type=str, required=True, help='Bounding box coordinates as (north/west/south/east)')
 @click.option('--api-key-file', type=click.Path(exists=True), default=None, show_default=False, help='Path to JSON file containing the API key')
 @click.option('--dem-type', type=click.Choice(['SRTMGL3', 'SRTMGL1', 'AW3D30', 'TDM1', 'COP30']), default='SRTMGL3', show_default=True, help='Type of DEM to download')
-@click.option('--dest-path', type=click.Path(), default='orography.tif', show_default=True, help='Destination path for the downloaded DEM file')
-def download_orography(area_latlon: tuple[float, float, float, float], api_key_file: str | None, dem_type: str, dest_path: str):
+@click.argument('dest')
+def download_orography(area: str, api_key_file: str | None, dem_type: str, dest: str):
   if api_key_file is None:
     api_key_file = find_api_key_file()
     if not api_key_file:
@@ -29,14 +29,14 @@ def download_orography(area_latlon: tuple[float, float, float, float], api_key_f
     print("API key not found in the provided file.")
     return
 
-  print(f"North: {area_latlon[0]}")
-  print(f"West: {area_latlon[1]}")
-  print(f"South: {area_latlon[2]}")
-  print(f"East: {area_latlon[3]}")
+  area_elements = area.split('/')
+  if len(area_elements) != 4:
+    raise click.BadParameter('Area must be in the format north/west/south/east.')
+
   print(f"Using API key from: {api_key_file}")
 
-
-  download.download(area_latlon, dest_path, api_key, dem_type)
+  with open(dest, 'wb') as f:
+    download.download(area_elements, f, api_key, dem_type)
 
 if __name__ == "__main__":
   download_orography()

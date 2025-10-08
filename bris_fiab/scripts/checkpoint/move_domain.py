@@ -42,11 +42,12 @@ def move_domain(grid: float, area: str, global_grid: str, lam_resolution: int, g
     graph.run(
         original_checkpoint=src,
         new_checkpoint=dest,
-        topography_file=orography_stream,
+        orography_stream=orography_stream,
         graph_config=graph_config,
     )
 
-    create_sample_config(dest, grid, area)
+    click.echo('created new checkpoint at ' + dest)
+
 
 def get_orography_stream(orography_file: str | None, north: str, west: str, south: str, east: str) -> io.BufferedIOBase:
     if orography_file is None:
@@ -63,61 +64,3 @@ def get_orography_stream(orography_file: str | None, north: str, west: str, sout
     print(f'Using local orography file: {orography_file}')
     f = open(orography_file, 'r+b')
     return f  # we don't care about closing this file - it will be closed on exit
-
-
-def create_sample_config(dest: str, grid: float, area: str) -> None:
-
-    config_file = os.path.splitext(os.path.basename(dest))[0] + '.yaml'
-
-    sample_config = {
-        "checkpoint": dest,
-        "date": -1,
-        "lead_time": 48,
-        "input": {
-            "cutout": {
-                "lam_0": {
-                    "mars": {
-                        # "log": True,
-                        "grid": f'{grid}/{grid}',
-                        "area": area,
-                        "pre_processors": [
-                            "apply_adiabatic_corrections"
-                        ]
-                    }
-                },
-                "global": {
-                    "mars": {
-                        # "log": True
-                    },
-                    "mask": "global/cutout_mask"
-                }
-            }
-        },
-        "post_processors": [
-            {
-                "accumulate_from_start_of_forecast": {
-                    "accumulations": [
-                        "tp"
-                    ]
-                }
-            }
-        ],
-        "output": {
-            "tee": {
-                "outputs": [
-                    "printer",
-                    {
-                        "extract_lam": {
-                            "output": {
-                                "netcdf": "out.nc"
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-    }
-
-    with open(config_file, 'w') as f:
-        yaml.dump(sample_config, f)
-

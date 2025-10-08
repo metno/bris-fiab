@@ -2,7 +2,7 @@ import requests
 from typing import BinaryIO
 
 def download(
-  area_latlon: tuple[float, float, float, float],
+  area_latlon: tuple[float|str, float|str, float|str, float|str],
   dest_stream: BinaryIO,
   api_key: str,
   dem_type: str = "SRTMGL3"

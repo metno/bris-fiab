@@ -18,15 +18,15 @@ class GraphConfig:
     margin_radius_km: int = 11
 
 
-def run(original_checkpoint: str, new_checkpoint: str, graph_config: GraphConfig, topography_file: BufferedIOBase | None, save_graph_to: str = ''):
+def run(original_checkpoint: str, new_checkpoint: str, graph_config: GraphConfig, orography_stream: BufferedIOBase | None, save_graph_to: str = ''):
 
     lat, lon, model_elevation = get_model_elevation_mars_grid(
             graph_config.area, graph_config.grid)
 
     correct_elevation: np.ndarray | None = None
-    if topography_file is not None:
+    if orography_stream is not None:
         correct_elevation = _get_topography_on_grid(
-            topography_file, lat, lon)
+            orography_stream, lat, lon)
 
     graph = build_stretched_graph(
         lat.flatten(), lon.flatten(),
@@ -52,9 +52,12 @@ def run(original_checkpoint: str, new_checkpoint: str, graph_config: GraphConfig
     )
 
 
-def _get_topography_on_grid(topography_file: BufferedIOBase, latitude: np.ndarray, longitude: np.ndarray) -> np.ndarray:
+def _get_topography_on_grid(orography_stream: BufferedIOBase, latitude: np.ndarray, longitude: np.ndarray) -> np.ndarray:
+
+    # TODO: Verify that orography_stream has a larger area than latitude/longitude
+
     topo = Topography.from_topography_file_to_grid(
-        topography_file, latitude, longitude)
+        orography_stream, latitude, longitude)
     assert topo.elevation is not None
     return topo.elevation.astype('int16')
 
