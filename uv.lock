@@ -212,7 +212,7 @@ wheels = [
 
 [[package]]
 name = "bris-fiab"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "anemoi-datasets" },
@@ -221,7 +221,6 @@ dependencies = [
     { name = "anemoi-models" },
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
-    { name = "cartopy" },
     { name = "ecmwf-api-client" },
     { name = "metpy" },
     { name = "pydantic" },
@@ -248,7 +247,6 @@ requires-dist = [
     { name = "anemoi-models", specifier = "==0.9.5" },
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
-    { name = "cartopy" },
     { name = "cartopy", marker = "extra == 'images'" },
     { name = "ecmwf-api-client" },
     { name = "gridpp", marker = "extra == 'images'" },
