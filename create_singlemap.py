@@ -26,6 +26,7 @@ import click
 @click.argument('global-area', type=click.Path(exists=True))
 @click.argument('local-area', type=click.Path(exists=True))
 def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: str, local_area: str, map_area: str):
+    """Create a single image file from global and local area netcdf files."""
     show_colorbar = True
     show_coastlines = True
     ds_global_area = xr.open_dataset(global_area)
@@ -38,11 +39,7 @@ def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: s
         list(colormaps)
         colormap = None
 
-    # Projection meps area
-    # map = mpl.gcf().add_axes([0, 0, 1, 1], projection=ccrs.LambertConformal(
-    #    15, 63.3, standard_parallels=[63.3, 63.3])))
-
-    # Projection Africa
+    # TODO: make projection confiagurable. Use Mercator as default.
     map = mpl.gcf().add_axes([0, 0, 1, 1], projection=ccrs.Mercator())
 
     print(f"Creating map {map_type} ... ")
@@ -60,6 +57,7 @@ def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: s
         # map.coastlines(resolution='50m', zorder=20, linewidth=0.5)
         print(f"{time.time() - start_time} seconds: Done coastlines")
 
+    # TODO: make map area configurable
     if map_area == 'northern-europe':
         # Northern Europe
         map.set_extent([-45, 55, 40, 70], ccrs.PlateCarree())
@@ -82,12 +80,7 @@ def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: s
         for t in cbar.ax.get_yticklabels():
             t.set_fontsize(8)
 
-    # This removes the black border of the map
-    # map.spines['geo'].set_edgecolor('white')
-
     if output is not None:
-        # mpl.gcf().set_size_inches(10, 6)
-        # mpl.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)
         mpl.savefig(output, bbox_inches='tight', dpi=200)
     else:
         mpl.show()

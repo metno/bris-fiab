@@ -133,6 +133,8 @@ class Interpolator:
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
 def cli(resolution: float, method: str, k: int, power: float, radius_km: float, config: str, input: str, output: str):
+    """Interpolate scattered data to a regular global lat/lon grid."""
+
     ds = xr.open_dataset(input, decode_times=True)
 
     interpol = Interpolator(ds, resolution, method, k,

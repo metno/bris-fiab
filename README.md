@@ -78,7 +78,7 @@ Save the key in $HOME/..opentopographyrc. This is a json file with format:
 
 The downloaded high-resolution topography can then be used as input when updating the checkpoint.
 
-#### Updating checkpoint
+### Updating checkpoint
 
 Run the following command to generate a new checkpoint:
 
@@ -92,7 +92,7 @@ uv run update_checkpoint.py \
 
 You can skip the `--topography-file` option if you will not do orographic corrections of the data.
 
-##### Creating image with globale and local area data
+### Creating image with globale and local area data
 
 To run the needed programs a few optional package need to be installed.
 
@@ -100,9 +100,9 @@ To run the needed programs a few optional package need to be installed.
 uv sync --extra images
 ```
 
-anemoi-inference must be configured to output the global data. 
+We need two configuration files to output both global and local data. anemoi-inference must be run two times, once for each configuration.
 
-Create a definition file with the following content added
+Global forcast configuration: create a configuration file with the following content.
 
 ```
  ...
@@ -125,15 +125,34 @@ output:
 
 ...
 ```
-The global netcdf is scattered points over the globe. To interpolate this on a regular grid use `mkglobal_grid`. 
+
+Local forecast configuration: create a configuration file with the following content.
 
 ```
-uv run mkglobal_grid global.nc global_0_25deg.nc
+...
+post_processors: 
+  - extract_from_state: 
+      cutout_source: 'lam_0'
+
+output:
+  tee:
+    outputs:
+      - printer
+      - netcdf: 
+          path: local.nc
+
+```
+
+**Note** At the momment, with the post_processors.extract_from_state, the cutout_source global and lam_0 are exlusive so we need to run two inferences.
+
+The global netcdf is scattered points over the globe. To interpolate this on a regular grid use `mkglobal_grid.py`. 
+
+```
+uv run mkglobal_grid.py global.nc global_0_25deg.nc
 ```
 
 We can now create an image with both global and local forecast.
 
 ```
-uv run  create_singlemap.py global_0_25deg.nc lam.nc
+uv run  create_singlemap.py global_0_25deg.nc local.nc
 ```
-
