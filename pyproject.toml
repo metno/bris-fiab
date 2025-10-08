@@ -41,6 +41,9 @@ dependencies = [
     "torch-geometric==2.4.0",
 ]
 
+[project.optional-dependencies]
+images = ["cartopy", "gridpp"]
+
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"
 Issues = "https://github.com/metno/bris-fiab/issues"
