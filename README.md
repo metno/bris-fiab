@@ -91,3 +91,49 @@ uv run update_checkpoint.py \
 ```
 
 You can skip the `--topography-file` option if you will not do orographic corrections of the data.
+
+##### Creating image with globale and local area data
+
+To run the needed programs a few optional package need to be installed.
+
+```
+uv sync --extra images
+```
+
+anemoi-inference must be configured to output the global data. 
+
+Create a definition file with the following content added
+
+```
+ ...
+post_processors: 
+  - extract_from_state: 
+      cutout_source: 'global'
+  
+output:
+  tee:
+    outputs:
+      - printer
+      - netcdf: 
+          path: global.nc
+          variables:
+            - '2t'
+            - msl
+            - '10u'
+            - '10v'
+            - 'tp'
+
+...
+```
+The global netcdf is scattered points over the globe. To interpolate this on a regular grid use `mkglobal_grid`. 
+
+```
+uv run mkglobal_grid global.nc global_0_25deg.nc
+```
+
+We can now create an image with both global and local forecast.
+
+```
+uv run  create_singlemap.py global_0_25deg.nc lam.nc
+```
+

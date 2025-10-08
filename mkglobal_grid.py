@@ -124,11 +124,11 @@ class Interpolator:
 
 
 @click.command()
-@click.option('--resolution', type=float, help='Grid resolution to interpolate to', default=0.25)
-@click.option('--method', type=click.Choice(['nearest', 'idw']), help='Interpolation method', default='idw')
-@click.option('--k', type=int, help='Number of neighbors for IDW (ignored for nearest if radius is None)', default=4)
-@click.option('--power', type=float, help='Power parameter for IDW', default=2.0)
-@click.option('--radius_km', type=float, help='Radius in km to limit neighbors; set to 0 or negative to disable', default=100.0)
+@click.option('--resolution', type=float, help='Grid resolution to interpolate to', show_default=True, default=0.25)
+@click.option('--method', type=click.Choice(['nearest', 'idw']), help='Interpolation method', show_default=True, default='idw')
+@click.option('--k', type=int, help='Number of neighbors for IDW (ignored for nearest if radius is None)', show_default=True, default=4)
+@click.option('--power', type=float, help='Power parameter for IDW', show_default=True, default=2.0)
+@click.option('--radius_km', type=float, help='Radius in km to limit neighbors; set to 0 or negative to disable', show_default=True, default=100.0)
 @click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', help='Configuration file for variable mapping')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())

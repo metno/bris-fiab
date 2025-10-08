@@ -19,10 +19,10 @@ import click
 
 @click.command()
 @click.option('--output', help='Output file name', required=False, default=None)
-@click.option('--timestep', type=int, help='Timestep', required=True, default=0)
+@click.option('--timestep', type=int, help='Timestep', show_default=True, required=True, default=0)
 @click.option('--colormap', help='Colormap', default=None)
-@click.option('--map-type', type=click.Choice(['temperature', 'wind']), help='What type of map to create', default='temperature')
-@click.option('--map-area', type=click.Choice(['africa', 'northern-europe']), help='Map area to use', default='africa')
+@click.option('--map-type', type=click.Choice(['temperature', 'wind']), help='What type of map to create', show_default=True, default='temperature')
+@click.option('--map-area', type=click.Choice(['africa', 'northern-europe']), help='Map area to use', show_default=True, default='africa')
 @click.argument('global-area', type=click.Path(exists=True))
 @click.argument('local-area', type=click.Path(exists=True))
 def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: str, local_area: str, map_area: str):
