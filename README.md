@@ -32,7 +32,7 @@ This works around bugs related to running on a mac, at the cost of a little flex
 uv run anemoi-inference run config.yaml
 ```
 
-## Checkpoint
+### Checkpoint
 
 In order to run, you need a bris checkpoint, and optionally a geotiff file containing orograpghy data for your target area.
 
