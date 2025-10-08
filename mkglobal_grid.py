@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-"""
-Interpolate scattered data (e.g. from ECMWF HRES) to a regular global lat/lon grid.
-Uses nearest-neighbor or inverse-distance-weighting (IDW) interpolation.
-Requires scikit-learn for BallTree nearest-neighbor search.
-"""
-
 import numpy as np
 import xarray as xr
 import click
@@ -133,7 +126,10 @@ class Interpolator:
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
 def cli(resolution: float, method: str, k: int, power: float, radius_km: float, config: str, input: str, output: str):
-    """Interpolate scattered data to a regular global lat/lon grid."""
+    """
+Interpolate scattered data to a regular global lat/lon grid.
+Uses nearest-neighbor or inverse-distance-weighting (IDW) interpolation.
+    """
 
     ds = xr.open_dataset(input, decode_times=True)
 
