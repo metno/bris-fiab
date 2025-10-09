@@ -31,6 +31,13 @@ def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: s
     show_coastlines = True
     ds_global_area = xr.open_dataset(global_area)
     ds_local_area = xr.open_dataset(local_area)
+    global_time = ds_global_area['time'].values[timestep]
+    local_time = ds_local_area['time'].values[timestep]
+
+    if global_time != local_time:
+        print(
+            f"Error: Global area time {timestring(global_time)} != Local area time {timestring(local_time)}")
+        exit(1)
 
     s_time = time.time()
 
@@ -42,7 +49,8 @@ def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: s
     # TODO: make projection confiagurable. Use Mercator as default.
     map = mpl.gcf().add_axes([0, 0, 1, 1], projection=ccrs.Mercator())
 
-    print(f"Creating map {map_type} ... ")
+    print(
+        f"Creating map {map_type}, timestep {timestep}  time {timestring(global_time)} ... ")
     if map_type == 'temperature':
         cm, param_label = create_temperature_map(
             ds_global_area, ds_local_area, map, timestep, colormap)
@@ -65,7 +73,7 @@ def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: s
         # Afrika modified
         map.set_extent([-10, 68, -45, 32],  ccrs.PlateCarree())
 
-    time_string = timestring(ds_global_area["time"][timestep].values)
+    time_string = timestring(global_time)
     label = f"{time_string}"
 
     # mpl.text(-43, 75, label, backgroundcolor='white')
@@ -106,10 +114,6 @@ def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset, map:
         edata["air_temperature_2m"], 1, gridpp.Mean)
     mdata["air_temperature_2m"] = gridpp.neighbourhood(
         mdata["air_temperature_2m"], 1, gridpp.Mean)
-    print(
-        f"globale temperature min/max: {np.nanmin(edata['air_temperature_2m'])}/{np.nanmax(edata['air_temperature_2m'])} ")
-    print(
-        f"meps temperature min/max: {np.nanmin(mdata['air_temperature_2m'])}/{np.nanmax(mdata['air_temperature_2m'])}")
     cm = map.pcolormesh(edata["lons"], edata["lats"],
                         edata["air_temperature_2m"], zorder=-10, **pargs)
     # Draw a magenta box around the regional domain
@@ -123,8 +127,9 @@ def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset, map:
 
 
 def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, timestep: int, colormap: str) -> tuple[QuadMesh, str]:
-    edata = get_wind_data(global_area, timestep)
     mdata = get_wind_data(local_area, timestep)
+    edata = get_wind_data(global_area, timestep)
+
     edges = np.arange(0, 27, 3)
     contour_lw = 0.5
     levels = np.arange(950, 1050, 5)
@@ -138,6 +143,7 @@ def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, t
     pargs = dict(cmap=colormap, norm=norm, transform=trans, alpha=1.0)
     cargs = dict(levels=levels, colors='b',
                  linewidths=contour_lw, transform=trans)
+
     edata["air_pressure_at_sea_level"] = gridpp.neighbourhood(
         edata["air_pressure_at_sea_level"], 1, gridpp.Mean)
     mdata["air_pressure_at_sea_level"] = gridpp.neighbourhood(
@@ -160,9 +166,18 @@ def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, t
     return (cm, "10m wind speed (m/s)")
 
 
+def _get_variable_by_standard_name(ds: xr.Dataset, standard_name: str) -> str:
+    for var in ds.variables:
+        if "standard_name" in ds[var].attrs and ds[var].attrs["standard_name"] == standard_name:
+            return var
+    raise ValueError(f"Variable with standard_name {standard_name} not found")
+
+
 def _get_area(ds: xr.Dataset) -> dict[str, np.ndarray]:
-    latName = "latitude"
-    lonName = "longitude"
+    latName = _get_variable_by_standard_name(ds, "latitude")
+    lonName = _get_variable_by_standard_name(ds, "longitude")
+
+    print(f"Using lat/lon variables: {latName}/{lonName}")
 
     data: dict[str, np.ndarray] = dict()
     lats = ds[latName].values
@@ -187,7 +202,7 @@ def get_wind_data(ds: xr.Dataset, timestep: int) -> dict:
 
     data["wind_speed_10m"] = np.sqrt(x**2 + y**2)
     if "air_pressure_at_sea_level" in ds.variables:
-        data["air_pressure_at_sea_level"] = ds["air_pressure_at_sea_level"][timestep, ...] / 100
+        data["air_pressure_at_sea_level"] = ds["air_pressure_at_sea_level"][timestep, ...].values / 100
     else:
         print("Missing air_pressure_at_sea_level")
         data["air_pressure_at_sea_level"] = np.zeros(x.shape, np.float32)
@@ -208,15 +223,6 @@ def get_temperature_data(ds: xr.Dataset, timestep: int) -> dict[str, np.ndarray]
 
 
 def timestring(dt: np.datetime64) -> str:
-    """Convert datetime to YYYYMMDDTHHMMSSZ
-
-    Args:
-       dt (datetime): datetime object
-
-    Returns:
-       string: timestamp in YYYYMMDDTHHMMSSZ
-    """
-
     if (dt is None):
         return "0000-00-00 00"
     else:
