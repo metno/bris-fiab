@@ -1,8 +1,8 @@
 import zipfile
 
 
-def add_metadata_to_checkpoint(grid: str | float, area: str, checkpoint: str):
-    metadata = _make_fiab_metadata(grid, area)
+def add_metadata_to_checkpoint(grid: str | float, area: str, global_grid: str, checkpoint: str):
+    metadata = _make_fiab_metadata(grid, area, global_grid)
     _add_metadata_to_checkpoint(metadata, checkpoint)
 
 
@@ -24,12 +24,13 @@ def _add_metadata_to_checkpoint(metadata, checkpoint: str):
         zf.writestr(target_path, metadata)
 
 
-def _make_fiab_metadata(grid: str | float, area: str) -> str:
+def _make_fiab_metadata(grid: str | float, area: str, global_grid: str) -> str:
     grid_str = f"{grid}/{grid}"
 
     return \
         _base_doc.replace("$grid_str", grid_str).\
-        replace("$area_str", area)
+        replace("$area_str", area).\
+        replace("$global_grid_str", global_grid)
 
 
 # anemoi-inference depends on the ordering of the keys under "nested".
@@ -48,7 +49,7 @@ _base_doc = '''{
         },
         "global": {
             "mars": {
-                "grid": "o96"
+                "grid": "$global_grid_str"
             }
         }
     },

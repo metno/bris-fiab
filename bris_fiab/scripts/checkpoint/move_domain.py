@@ -49,7 +49,7 @@ def move_domain(grid: float, area: str, add_fiab_metadata: bool, global_grid: st
 
     if add_fiab_metadata:
         from bris_fiab.checkpoint.fiab import add_metadata_to_checkpoint
-        add_metadata_to_checkpoint(grid, area, dest)
+        add_metadata_to_checkpoint(grid, area, global_grid, dest)
 
     click.echo('created new checkpoint at ' + dest)
 
