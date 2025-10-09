@@ -7,7 +7,7 @@ import earthkit.data as ekd
 
 
 @click.command()
-@click.option('--config', type=click.Path(exists=True), default='config.yaml', help='Inference configuration file')
+@click.option('--config', type=click.Path(exists=True), default='config.yaml', show_default=True, help='Inference configuration file')
 def run(config: str):
     '''Run inference based on a provided configuration file.'''
     configuration = RunConfiguration.load(config)

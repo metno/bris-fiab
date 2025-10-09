@@ -31,7 +31,7 @@ class MkGridConfig(pydantic.BaseModel):
 
 
 @click.command()
-@click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', help='Configuration file for variable mapping')
+@click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', show_default=True, help='Configuration file for variable mapping')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
 def make_grid(config: str, input: str, output: str):
