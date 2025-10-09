@@ -41,6 +41,9 @@ dependencies = [
     "torch-geometric==2.4.0",
 ]
 
+[project.scripts]
+bris_fiab = "bris_fiab.scripts:cli"
+
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"
 Issues = "https://github.com/metno/bris-fiab/issues"

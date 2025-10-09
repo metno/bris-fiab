@@ -1,4 +1,4 @@
-checkpoint: malawi_normalized_0_025.ckpt
+checkpoint: share/checkpoints/bris/bris-metnorway-malawi-0-025-n320-20251001.ckpt
 
 date: "2025-04-06"
 

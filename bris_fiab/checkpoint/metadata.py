@@ -44,11 +44,3 @@ def adapt_metdata(original_metadata: dict, replace_path: str = 'dataset.variable
             if p.parameter in ('z', 'lsm'):
                 v["constant_in_time"] = True
 
-
-if __name__ == "__main__":
-    import json
-    with open('inference-last.json') as f:
-        metadata = json.load(f)
-    print(metadata['dataset']['variables_metadata']["z"])
-    adapt_metdata(metadata)
-    print(metadata['dataset']['variables_metadata']["z"])
