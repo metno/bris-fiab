@@ -11,6 +11,7 @@ import io
 @click.option('--grid', type=float, required=True, help='New grid resolution.')
 @click.option('--area', type=str, required=True, help='New area in the format north/west/south/east.')
 @click.option('--add-fiab-metadata', is_flag=True, default=False, help='Add forecast-in-a-box metadata to the checkpoint.')
+@click.option('--create-sample-config', is_flag=True, default=False, help='Create a sample config file for the new domain as <dest>.yaml.')
 @click.option('--global-grid', type=str, default='n320', show_default=True, help='Global grid to use, e.g. n320.')
 @click.option('--lam-resolution', type=int, default=10, show_default=True)
 @click.option('--global-resolution', type=int, default=7, show_default=True)
@@ -18,7 +19,7 @@ import io
 @click.option('--orography-file', type=click.Path(exists=True), default=None, help='Path to a local orography file (GeoTIFF). If not provided, the script will download orography data from OpenTopography.org.')
 @click.argument('src', type=click.Path(exists=True))
 @click.argument('dest', type=click.Path())
-def move_domain(grid: float, area: str, add_fiab_metadata: bool, global_grid: str, lam_resolution: int, global_resolution: int, margin_radius_km: int, orography_file: str | None, src: str, dest: str) -> None:
+def move_domain(grid: float, area: str, add_fiab_metadata: bool, create_sample_config: bool, global_grid: str, lam_resolution: int, global_resolution: int, margin_radius_km: int, orography_file: str | None, src: str, dest: str) -> None:
     '''Move a bris domain checkpoint to a new location and resolution.'''
 
     area_elements = area.split('/')
@@ -50,6 +51,10 @@ def move_domain(grid: float, area: str, add_fiab_metadata: bool, global_grid: st
     if add_fiab_metadata:
         from bris_fiab.checkpoint.fiab import add_metadata_to_checkpoint
         add_metadata_to_checkpoint(grid, area, global_grid, dest)
+
+    if create_sample_config:
+        from bris_fiab.checkpoint.config import save_sample_config
+        save_sample_config(dest + '.yaml', dest, area, grid)
 
     click.echo('created new checkpoint at ' + dest)
 
