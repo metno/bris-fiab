@@ -21,8 +21,11 @@ uv sync
 ### Accessing data
 
 In order to run inference, you need access to data.
-There are several ways to get this, but we have tested against two data services from [ecmwf](https://www.ecmwf.int/): 
+There are several ways to get this, but we have tested against two data services from [ecmwf](https://www.ecmwf.int/):
 [Mars](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets) and [polytope](https://polytope.readthedocs.io/en/latest/).
+If you move the domain for a bris checkpoint, as described below, you can autmatically have polytope configured as a data source for that domain.
+Note, however, that **neither of these data sources are freely available to the public**.
+This means that your organization will need to somehow have arranged access to these data sources for you, unless you configure other data sources.
 
 ### Running inference
 
