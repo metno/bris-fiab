@@ -18,6 +18,12 @@ In order to get started, you need access to a bris checkpoint, such as [Cloudy S
 uv sync
 ```
 
+### Accessing data
+
+In order to run inference, you need access to data.
+There are several ways to get this, but we have tested against two data services from [ecmwf](https://www.ecmwf.int/): 
+[Mars](https://www.ecmwf.int/en/forecasts/access-forecasts/access-archive-datasets) and [polytope](https://polytope.readthedocs.io/en/latest/).
+
 ### Running inference
 
 ```shell
