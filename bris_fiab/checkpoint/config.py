@@ -38,6 +38,3 @@ output:
       - printer
       - netcdf: out.nc
 '''
-
-if __name__ == '__main__':
-    save_sample_config('ghana.yaml', 'ghana.ckpt', '14/-6/0/4', 0.05)
