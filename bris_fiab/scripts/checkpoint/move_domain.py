@@ -11,7 +11,7 @@ import io
 @click.option('--grid', type=float, required=True, help='New grid resolution.')
 @click.option('--area', type=str, required=True, help='New area in the format north/west/south/east.')
 @click.option('--add-fiab-metadata', is_flag=True, default=False, help='Add forecast-in-a-box metadata to the checkpoint.')
-@click.option('--create-sample-config', is_flag=True, default=False, help='Create a sample config file for the new domain as <dest>.yaml.')
+@click.option('--create-sample-config', is_flag=True, default=False, help='Create a sample config file for the new domain for use with anemoi inference. It will be named as <dest>.yaml.')
 @click.option('--global-grid', type=str, default='n320', show_default=True, help='Global grid to use, e.g. n320.')
 @click.option('--lam-resolution', type=int, default=10, show_default=True)
 @click.option('--global-resolution', type=int, default=7, show_default=True)
