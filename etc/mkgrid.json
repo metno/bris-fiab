@@ -34,6 +34,14 @@
                         "standard_name": "air_temperature"
                     }
                 },
+                "hcc": {
+                    "variable_name": "high_type_cloud_area_fraction",
+                    "attributes": {
+                        "units": "1",
+                        "long_name": "high type cloud area fraction",
+                        "standard_name": "high_type_cloud_area_fraction"
+                    }
+                },
                 "lcc": {
                     "variable_name": "low_type_cloud_area_fraction",
                     "attributes": {
@@ -51,7 +59,7 @@
                     }
                 },
                 "mcc": {
-                    "variable_name": "medium_type_cloud_area_fraction_0m",
+                    "variable_name": "medium_type_cloud_area_fraction",
                     "attributes": {
                         "units": "1",
                         "long_name": "medium type cloud area fraction",
@@ -99,12 +107,13 @@
                     "attributes": {}
                 },
                 "tp": {
-                    "variable_name": "precipitation_amount",
+                    "variable_name": "precipitation_amount_acc",
                     "attributes": {
-                        "units": "m",
-                        "long_name": "precipitation amount",
+                        "units": "kg/m^2",
+                        "long_name": "accumulated total precipitation",
                         "standard_name": "precipitation_amount"
-                    }
+                    },
+                    "assumed_input_units": "megagram/m^2"
                 },
                 "z": {
                     "variable_name": "geopotential",

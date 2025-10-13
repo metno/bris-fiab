@@ -1,6 +1,6 @@
 import click
 import json
-import rioxarray
+import pint
 import xarray as xr
 import numpy as np
 from typing import Dict
@@ -10,6 +10,7 @@ import pydantic
 class VariableConfig(pydantic.BaseModel):
     variable_name: str
     attributes: Dict[str, object]
+    assumed_input_units: str | None = None # if set, convert from this unit to the unit in attributes
 
 
 class SurfaceVariablesConfig(pydantic.BaseModel):
@@ -123,6 +124,16 @@ def make_grid(config: str, input: str, output: str):
 
         param_data = data[variable].values[:, :size].reshape(
             (time_count, len(y), len(x)))
+        if variable == 'tp':
+            param_data = np.nan_to_num(param_data, nan=0)
+            assert not np.any(np.isnan(param_data))
+
+        if cfg.assumed_input_units and 'units' in cfg.attributes and cfg.attributes['units'] != cfg.assumed_input_units:
+            from_units = pint.Unit(cfg.assumed_input_units)
+            to_units = pint.Unit(str(cfg.attributes['units']))
+            factor = (1 * from_units).to(to_units).magnitude
+            param_data *= factor
+
         param = xr.DataArray(
             param_data,
             coords=[data['time'], y, x],
