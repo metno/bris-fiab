@@ -24,6 +24,18 @@ uv sync
 uv run anemoi-inference run config.yaml
 ```
 
+### Viewing results
+
+The output from anemoi inference can be hard to visualize.
+To aid in this, we provide a tool, make-grid, to convert to a more standardized output format.
+It can be run like this:
+
+```shell
+uv run bris_fiab process make-grid anemoi-output.nc grid.nc
+```
+
+This should create a file, `grid.nc`, which can be displayed in eg. diana.
+
 ## Checkpoint
 
 In order to run inference, you need to modify a bris checkpoint, to prepare it for running for a different area.
