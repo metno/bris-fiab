@@ -1,7 +1,7 @@
 import zipfile
 
 
-def add_metadata_to_checkpoint(grid: str | float, area: str, global_grid: str, checkpoint: str):
+def add_fiab_metadata_to_checkpoint(grid: str | float, area: str, global_grid: str, checkpoint: str):
     metadata = _make_fiab_metadata(grid, area, global_grid)
     _add_metadata_to_checkpoint(metadata, checkpoint)
 
