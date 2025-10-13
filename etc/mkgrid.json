@@ -109,7 +109,7 @@
                 "tp": {
                     "variable_name": "precipitation_amount_acc",
                     "attributes": {
-                        "units": "mm",
+                        "units": "kg/m^2",
                         "long_name": "accumulated total precipitation",
                         "standard_name": "precipitation_amount"
                     },

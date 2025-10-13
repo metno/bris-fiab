@@ -129,7 +129,10 @@ def make_grid(config: str, input: str, output: str):
         
         if cfg.assumed_input_units and 'units' in cfg.attributes and cfg.attributes['units'] != cfg.assumed_input_units:
             from_units = pint.Unit(cfg.assumed_input_units)
-            to_units = pint.Unit(str(cfg.attributes['units']))
+            to_units_str = str(cfg.attributes['units'])
+            if to_units_str == 'kg/m^2':
+                to_units_str = 'mm'
+            to_units = pint.Unit(to_units_str)
             factor = (1 * from_units).to(to_units).magnitude
             param_data *= factor
 
