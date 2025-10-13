@@ -7,14 +7,14 @@ lead_time: 0
 input:
   cutout:
     lam_0:
-      mars:
+      polytope:
         log: true
         grid: "0.025/0.025"
         area: "-8/30/-22/43"
         pre_processors:
           - apply_adiabatic_corrections
     global:
-      mars:
+      polytope:
         log: true
       mask: 'global/cutout_mask'
 

@@ -39,6 +39,7 @@ dependencies = [
     "metpy>=1.7.1",
     "twine>=6.2.0",
     "torch-geometric==2.4.0",
+    "anemoi-plugins-ecmwf-inference[polytope]>=0.1.14",
 ]
 
 [project.scripts]
