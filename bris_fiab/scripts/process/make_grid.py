@@ -130,11 +130,7 @@ def make_grid(config: str, input: str, output: str):
 
         if cfg.assumed_input_units and 'units' in cfg.attributes and cfg.attributes['units'] != cfg.assumed_input_units:
             from_units = pint.Unit(cfg.assumed_input_units)
-            to_units_str = str(cfg.attributes['units'])
-            if to_units_str == 'kg/m^2':
-                # diana needs units kg/m^2 for precipitation, but data from anemoi inference is in m, so we make a special case here
-                to_units_str = 'mm'
-            to_units = pint.Unit(to_units_str)
+            to_units = pint.Unit(str(cfg.attributes['units']))
             factor = (1 * from_units).to(to_units).magnitude
             param_data *= factor
 

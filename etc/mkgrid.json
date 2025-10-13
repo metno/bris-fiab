@@ -113,7 +113,7 @@
                         "long_name": "accumulated total precipitation",
                         "standard_name": "precipitation_amount"
                     },
-                    "assumed_input_units": "m"
+                    "assumed_input_units": "megagram/m^2"
                 },
                 "z": {
                     "variable_name": "geopotential",
