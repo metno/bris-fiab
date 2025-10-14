@@ -3,7 +3,7 @@
 Tools and docs for 
 * moving the domain in a Bris model to another geographical area.
 * run inference on the resulting model.
-* utilizing the result of of the inference.
+* utilizing the result of the inference.
 
 For information on how to use the original Bris model, you should rather look at the [bris-inference docs](https://github.com/metno/bris-inference).
 

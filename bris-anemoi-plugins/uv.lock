@@ -141,6 +141,7 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
+    { name = "ecmwf-api-client" },
     { name = "pytest" },
 ]
 
@@ -148,6 +149,7 @@ dev = [
 requires-dist = [
     { name = "anemoi-inference" },
     { name = "earthkit-data" },
+    { name = "ecmwf-api-client", marker = "extra == 'dev'" },
     { name = "metpy", specifier = ">=1.7.1" },
     { name = "pint" },
     { name = "pytest", marker = "extra == 'dev'" },
@@ -617,6 +619,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/1c/54/fa53a320ca5f86cf295e303f4519e0482fc97ed61a993e98c72e6a1885b8/eckitlib-1.32.2.4-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:2d5944b83401945d45f4b2874724c1487404e31ea593c01a228cd5b61b42ac6d", size = 2925751, upload-time = "2025-10-13T10:29:11.874Z" },
     { url = "https://files.pythonhosted.org/packages/ee/7c/81da96abd04ef6fb061c32dac9741ec4e69f5086780cc449223c5f64a134/eckitlib-1.32.2.4-cp313-cp313-macosx_13_0_x86_64.whl", hash = "sha256:bc271381eab719b50d2e58aba96f6ff30dae125bfc4a8964ad1ba5a848814089", size = 3028906, upload-time = "2025-10-13T10:32:20.908Z" },
     { url = "https://files.pythonhosted.org/packages/07/1c/4134844bf3c75a96da88e2db23e820872f2fd75adbbb309bda9fa33cb1d8/eckitlib-1.32.2.4-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:79cf8fce45a764b4c86cb2507fb57c66dbd07ca82a44dac86be9e4afd7d8ac36", size = 44583601, upload-time = "2025-10-13T10:43:48.552Z" },
+]
+
+[[package]]
+name = "ecmwf-api-client"
+version = "1.6.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/14/b5/837fa2daee28118c592cd003b910433894008d5a1f9e3bed9f2c3cabe34b/ecmwf_api_client-1.6.5.tar.gz", hash = "sha256:1fc0eba27163686b7fba5da027cc5dc0a361f75b652508fa7805f50599368b1c", size = 12974, upload-time = "2025-03-10T10:27:25.057Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f5/f3/7a5832d5fb8e16db4d1f3be58fcb2537e68ccffea1270bff8b65de7c85b5/ecmwf_api_client-1.6.5-py3-none-any.whl", hash = "sha256:82678c2c18083b44be74b23e2a7e82d2343061966c0bf3a895272b9e9a802836", size = 13495, upload-time = "2025-03-10T10:27:24.215Z" },
 ]
 
 [[package]]

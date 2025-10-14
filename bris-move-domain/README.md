@@ -2,10 +2,10 @@
 
 Create a checkpoint, based on an existing Bris checkpoint and a new specified geographical domain.
 
-## Setting up
+## Setting up for developers
 
 ```shell
-uv sync
+uv sync --all-extras
 ```
 
 ## Checkpoint
