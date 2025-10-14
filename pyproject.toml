@@ -39,10 +39,14 @@ dependencies = [
     "metpy>=1.7.1",
     "twine>=6.2.0",
     "torch-geometric==2.4.0",
+    "anemoi-plugins-ecmwf-inference[polytope]>=0.1.14",
 ]
 
 [project.optional-dependencies]
 images = ["cartopy", "gridpp"]
+
+[project.scripts]
+bris_fiab = "bris_fiab.scripts:cli"
 
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"

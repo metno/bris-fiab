@@ -1,4 +1,4 @@
-checkpoint: malawi_normalized_0_025.ckpt
+checkpoint: share/checkpoints/bris/bris-metnorway-malawi-0-025-n320-20251001.ckpt
 
 date: "2025-04-06"
 
@@ -7,14 +7,14 @@ lead_time: 0
 input:
   cutout:
     lam_0:
-      mars:
+      polytope:
         log: true
         grid: "0.025/0.025"
         area: "-8/30/-22/43"
         pre_processors:
           - apply_adiabatic_corrections
     global:
-      mars:
+      polytope:
         log: true
       mask: 'global/cutout_mask'
 

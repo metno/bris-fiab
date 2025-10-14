@@ -1,6 +1,6 @@
-import json
 import click
-import rioxarray
+import json
+import pint
 import xarray as xr
 import numpy as np
 from typing import Dict
@@ -10,6 +10,8 @@ import pydantic
 class VariableConfig(pydantic.BaseModel):
     variable_name: str
     attributes: Dict[str, object]
+    # if set, convert from this unit to the unit in attributes
+    assumed_input_units: str | None = None
 
 
 class SurfaceVariablesConfig(pydantic.BaseModel):
@@ -31,43 +33,37 @@ class MkGridConfig(pydantic.BaseModel):
 
 
 @click.command()
-@click.option('--grid', type=click.Path(exists=True), help='Grid to convert to')
-@click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', help='Configuration file for variable mapping')
+@click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', show_default=True, help='Configuration file for variable mapping')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
-def cli(grid: str, config: str, input: str, output: str):
+def make_grid(config: str, input: str, output: str):
+    '''Convert FIAB output to a gridded NetCDF file.'''
     with open(config) as f:
         config_json = json.load(f)
         met_variables = MkGridConfig.model_validate(config_json)
 
     data = xr.open_dataset(input)
 
-    if grid:
-        elevation = rioxarray.open_rasterio(grid)
-        x: np.ndarray = elevation.x.values  # type: ignore
-        y: np.ndarray = elevation.y.values  # type: ignore
-        spatial_ref = elevation['spatial_ref']  # type: ignore
-    else:
-        x = np.unique(data.longitude.values)
-        y = np.unique(data.latitude.values)[::-1]
-        spatial_ref = xr.DataArray(
-            data=0,
-            attrs={
-                'crs_wkt': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]',
-                'semi_major_axis': 6378137.0,
-                'semi_minor_axis': 6356752.314245179,
-                'inverse_flattening': 298.257223563,
-                'reference_ellipsoid_name': 'WGS 84',
-                'longitude_of_prime_meridian': 0.0,
-                'prime_meridian_name': 'Greenwich',
-                'geographic_crs_name': 'WGS 84',
-                'horizontal_datum_name': 'World Geodetic System 1984',
-                'grid_mapping_name': 'latitude_longitude',
-                'spatial_ref': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]',
-                # 'GeoTransform': f'29.999583333285614 0.025 0.0 -7.9995833333178865 0.0 -0.025'
-                'GeoTransform': f'{x[0]} {(x[1] - x[0]):.3g} 0.0 {y[-1]} 0.0 {(y[-1] - y[-2]):.3g}'
-            }
-        )
+    x = np.unique(data.longitude.values)
+    y = np.unique(data.latitude.values)[::-1]
+    spatial_ref = xr.DataArray(
+        data=0,
+        attrs={
+            'crs_wkt': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]',
+            'semi_major_axis': 6378137.0,
+            'semi_minor_axis': 6356752.314245179,
+            'inverse_flattening': 298.257223563,
+            'reference_ellipsoid_name': 'WGS 84',
+            'longitude_of_prime_meridian': 0.0,
+            'prime_meridian_name': 'Greenwich',
+            'geographic_crs_name': 'WGS 84',
+            'horizontal_datum_name': 'World Geodetic System 1984',
+            'grid_mapping_name': 'latitude_longitude',
+            'spatial_ref': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]',
+            # 'GeoTransform': f'29.999583333285614 0.025 0.0 -7.9995833333178865 0.0 -0.025'
+            'GeoTransform': f'{x[0]} {(x[1] - x[0]):.3g} 0.0 {y[-1]} 0.0 {(y[-1] - y[-2]):.3g}'
+        }
+    )
 
     size = len(x) * len(y)
     time_count = len(data['time'])
@@ -129,6 +125,16 @@ def cli(grid: str, config: str, input: str, output: str):
 
         param_data = data[variable].values[:, :size].reshape(
             (time_count, len(y), len(x)))
+        if variable == 'tp':
+            param_data = np.nan_to_num(param_data, nan=0)
+            assert not np.any(np.isnan(param_data))
+
+        if cfg.assumed_input_units and 'units' in cfg.attributes and cfg.attributes['units'] != cfg.assumed_input_units:
+            from_units = pint.Unit(cfg.assumed_input_units)
+            to_units = pint.Unit(str(cfg.attributes['units']))
+            factor = (1 * from_units).to(to_units).magnitude
+            param_data *= factor
+
         param = xr.DataArray(
             param_data,
             coords=[data['time'], y, x],
@@ -163,7 +169,3 @@ def cli(grid: str, config: str, input: str, output: str):
 
     ds.to_netcdf(output)
     print(ds)
-
-
-if __name__ == "__main__":
-    cli()

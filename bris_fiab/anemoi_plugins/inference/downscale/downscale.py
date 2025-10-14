@@ -8,7 +8,7 @@ import rioxarray
 import rasterio
 import numpy as np
 import typing
-import zipfile
+import io
 import scipy.interpolate
 from scipy.spatial import Delaunay
 from dataclasses import dataclass
@@ -24,8 +24,12 @@ class Topography:
     spatial_ref: typing.Any  # rasterio.crs.CRS
 
     @classmethod
-    def from_topography_file(cls, topography_file: str | rasterio.MemoryFile):
-        topography = rioxarray.open_rasterio(topography_file)
+    def from_topography_file(cls, topography_file: str | io.BufferedIOBase) -> 'Topography':
+
+        file_handle = topography_file
+        if hasattr(topography_file, "read"):
+            file_handle = rasterio.MemoryFile(topography_file) 
+        topography = rioxarray.open_rasterio(file_handle)
 
         x_values, y_values = make_two_dimensional(
             topography['x'].values,  # type: ignore
@@ -44,8 +48,10 @@ class Topography:
         )
 
     @classmethod
-    def from_topography_file_to_grid(cls, topography_file: str | rasterio.MemoryFile, latitudes: np.ndarray, longitudes: np.ndarray) -> 'Topography':
+    def from_topography_file_to_grid(cls, topography_file: str | io.BufferedIOBase, latitudes: np.ndarray, longitudes: np.ndarray) -> 'Topography':
         topo = cls.from_topography_file(topography_file)
+
+        assert topo.elevation is not None
 
         values = interpolate_to_grid(topo.y_values, topo.x_values,
                                      topo.elevation, latitudes, longitudes)

@@ -1,63 +1,36 @@
 import numpy as np
+from io import BufferedIOBase
 from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional
 import earthkit.data as ekd
 from dataclasses import dataclass
 from .make_graph import build_stretched_graph
 from .update import update
-from .elevation import get_model_elevation, get_model_elevation_mars_grid
+from .elevation import get_model_elevation_mars_grid
 
 
 @dataclass
 class GraphConfig:
+    area: tuple[float | str, float | str, float | str, float | str]
+    grid: float | str
+    global_grid: str = 'n320'
     lam_resolution: int = 10
     global_resolution: int = 7
     margin_radius_km: int = 11
-    area_latlon: tuple[float, float, float, float, float] | None = None
 
 
-def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: str, add_model_elevation: bool, save_graph_to: str, save_latlon: bool, graph_config: GraphConfig = GraphConfig()):
-    elevation: np.ndarray | None = None
+def run(original_checkpoint: str, new_checkpoint: str, graph_config: GraphConfig, orography_stream: BufferedIOBase | None, save_graph_to: str = ''):
 
-    if graph_config.area_latlon is not None:
-        lat, lon = _get_lat_lon_from_area(graph_config.area_latlon)
-        elevation = None
-    elif topography_file is not None:
-        lat, lon, elevation = _get_latlon(topography_file)
-    else:
-        raise ValueError(
-            'Either topography_file or area_latlon must be provided.')
+    lat, lon, model_elevation = get_model_elevation_mars_grid(
+            graph_config.area, graph_config.grid)
 
-    if save_latlon:
-        with open('latitudes.npy', 'wb') as f:
-            np.save(f, lat)
-        with open('longitudes.npy', 'wb') as f:
-            np.save(f, lon)
-        if elevation is not None:
-            with open('elevations.npy', 'wb') as f:
-                np.save(f, elevation)
-
-    if elevation is None and topography_file is not None:
-        print(
-            f'Loading correct elevation from {topography_file} interpolated to the mars grid')
-        _tlat, _tlon, elevation = _get_topography_on_grid(
-            topography_file, lat, lon)
-
-    if elevation is None:
-        print(f'No elevation data found in {topography_file}')
-
-    if add_model_elevation:
-        # model_elevation = get_model_elevation(lat, lon)
-        if graph_config.area_latlon is not None:
-            model_elevation = get_model_elevation_mars_grid(
-                graph_config.area_latlon)
-        else:
-            model_elevation = get_model_elevation(lat, lon)
-    else:
-        model_elevation = None
+    correct_elevation: np.ndarray | None = None
+    if orography_stream is not None:
+        correct_elevation = _get_topography_on_grid(
+            orography_stream, lat, lon)
 
     graph = build_stretched_graph(
         lat.flatten(), lon.flatten(),
-        global_grid='n320',
+        global_grid=graph_config.global_grid,
         lam_resolution=graph_config.lam_resolution,
         global_resolution=graph_config.global_resolution,
         margin_radius_km=graph_config.margin_radius_km
@@ -67,37 +40,41 @@ def run(topography_file: str | None, original_checkpoint: str, new_checkpoint: s
         import torch
         torch.save(graph, save_graph_to)
         print('saved graph')
-    # graph = torch.load(args.output, weights_only=False, map_location=torch.device('cpu'))
 
-    update(graph, original_checkpoint, new_checkpoint,
-           model_elevation, (lat, lon, elevation))
+    update(
+        graph=graph,
+        model_file=original_checkpoint,
+        output_file=new_checkpoint, 
+        latitudes=lat,
+        longitudes=lon,
+        model_elevation=model_elevation,
+        correct_elevation=correct_elevation
+    )
 
 
-def _get_latlon(topography_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
-    topo = Topography.from_topography_file(topography_file)
-    return topo.y_values, topo.x_values, topo.elevation
+def _get_topography_on_grid(orography_stream: BufferedIOBase, latitude: np.ndarray, longitude: np.ndarray) -> np.ndarray:
 
+    # TODO: Verify that orography_stream has a larger area than latitude/longitude
 
-def _get_topography_on_grid(topography_file: str, latitude: np.ndarray, longitude: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray | None]:
     topo = Topography.from_topography_file_to_grid(
-        topography_file, latitude, longitude)
-    return topo.y_values, topo.x_values, topo.elevation
+        orography_stream, latitude, longitude)
+    assert topo.elevation is not None
+    return topo.elevation.astype('int16')
 
 
-def _get_lat_lon_from_area(area_latlon: tuple[float, float, float, float, float]) -> tuple[np.ndarray, np.ndarray]:
+def _get_lat_lon_from_area(area: tuple[float | str, float | str, float | str, float | str], grid: float | str) -> tuple[np.ndarray, np.ndarray]:
     """The function use earthkit.data to download lat/lon for the specified area from Mars.
-    area_latlon: (north, west, south, east, resolution)
+    area: (north, west, south, east)
     returns: lat, lon
     """
 
     # resolution is area_latlon[4]
     # return lat, lon arrays
-    area = [area_latlon[0], area_latlon[1], area_latlon[2], area_latlon[3]]
     ds = ekd.from_source(  # type: ignore
         'mars',
         {
             'AREA': area,
-            'GRID': f"{area_latlon[4]}/{area_latlon[4]}",
+            'GRID': f"{grid}/{grid}",
             'param': '2t',
             'date': -34,
             'stream': 'oper',

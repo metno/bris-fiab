@@ -98,6 +98,23 @@ wheels = [
 ]
 
 [[package]]
+name = "anemoi-plugins-ecmwf-inference"
+version = "0.1.14"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anemoi-inference" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6d/4d/f85992cc4c163bd4d8addd66cb4c7fd1a55617bfde4c2ba8dc9e64451d45/anemoi_plugins_ecmwf_inference-0.1.14.tar.gz", hash = "sha256:cde240bb8bcee66243424e10f4002bd4cf62f6a9cf543c85deda47d671186c55", size = 36098, upload-time = "2025-10-03T13:52:15.857Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b7/50/ae8c9ca8c4618190243dcfbd1fd5da890f92412f6b710a5eb01484934c59/anemoi_plugins_ecmwf_inference-0.1.14-py3-none-any.whl", hash = "sha256:e59d40add4fe2942d4b04ca72021d54bc15a3c36530394d194646fc2eb4638f4", size = 40708, upload-time = "2025-10-03T13:52:14.081Z" },
+]
+
+[package.optional-dependencies]
+polytope = [
+    { name = "earthkit-data", extra = ["polytope"] },
+]
+
+[[package]]
 name = "anemoi-transform"
 version = "0.1.16"
 source = { registry = "https://pypi.org/simple" }
@@ -219,6 +236,7 @@ dependencies = [
     { name = "anemoi-graphs" },
     { name = "anemoi-inference" },
     { name = "anemoi-models" },
+    { name = "anemoi-plugins-ecmwf-inference", extra = ["polytope"] },
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
     { name = "ecmwf-api-client" },
@@ -245,6 +263,7 @@ requires-dist = [
     { name = "anemoi-graphs" },
     { name = "anemoi-inference" },
     { name = "anemoi-models", specifier = "==0.9.5" },
+    { name = "anemoi-plugins-ecmwf-inference", extras = ["polytope"], specifier = ">=0.1.14" },
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
     { name = "cartopy", marker = "extra == 'images'" },
@@ -714,6 +733,15 @@ wheels = [
 ]
 
 [[package]]
+name = "docstring-parser"
+version = "0.17.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b2/9d/c3b43da9515bd270df0f80548d9944e389870713cc1fe2b8fb35fe2bcefd/docstring_parser-0.17.0.tar.gz", hash = "sha256:583de4a309722b3315439bb31d64ba3eebada841f2e2cee23b99df001434c912", size = 27442, upload-time = "2025-07-21T07:35:01.868Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/e2/2537ebcff11c1ee1ff17d8d0b6f4db75873e3b0fb32c2d4a2ee31ecb310a/docstring_parser-0.17.0-py3-none-any.whl", hash = "sha256:cf2569abd23dce8099b300f9b4fa8191e9582dda731fd533daf54c4551658708", size = 36896, upload-time = "2025-07-21T07:35:00.684Z" },
+]
+
+[[package]]
 name = "docutils"
 version = "0.22.2"
 source = { registry = "https://pypi.org/simple" }
@@ -750,6 +778,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/64/e3/9c388d441f811039cb3e28f7bcc134c2da793da7c78fc37c5e64a58e5e76/earthkit_data-0.16.6.tar.gz", hash = "sha256:0483cc4b30bb1a58fdc0af4d8c1bf982d538738ccb08fcf7e3d5466ad00ec11b", size = 5519708, upload-time = "2025-09-19T07:06:48.783Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/17/8c/0f13c0a455f5b2bb06d5ee95c9a898164a95e8bd6c27d139c8afebce7104/earthkit_data-0.16.6-py3-none-any.whl", hash = "sha256:c8a083ea05ef3f79b6df534a19d38215fe902c8b15f8c7629fb617555c63da53", size = 378375, upload-time = "2025-09-19T07:06:47.387Z" },
+]
+
+[package.optional-dependencies]
+polytope = [
+    { name = "polytope-client" },
 ]
 
 [[package]]
@@ -2012,6 +2045,23 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f9/e2/3e91f31a7d2b083fe6ef3fa267035b518369d9511ffab804f839851d2779/pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3", size = 69412, upload-time = "2025-05-15T12:30:07.975Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746", size = 20538, upload-time = "2025-05-15T12:30:06.134Z" },
+]
+
+[[package]]
+name = "polytope-client"
+version = "0.7.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "docstring-parser" },
+    { name = "jsonschema" },
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/77/99/b2fb221ba6597ac71a1a1df7522640a056be5c5df2d3d16b8b6aa93f1619/polytope_client-0.7.8.tar.gz", hash = "sha256:bd06091645cfaba42ccc99885e8c4bd78d2c2032fd220280c88455c15d5d7c7b", size = 45799, upload-time = "2025-09-22T14:26:54.94Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b8/ef/1f8541b627c97d03be5b41f85eb9f4dad56168b43116db3066dfe64eac84/polytope_client-0.7.8-py3-none-any.whl", hash = "sha256:3aa28cfb47479e06188b1cf4e741bdb16b77b1844b7afe11362d610b94c51f2e", size = 52422, upload-time = "2025-09-22T14:26:53.847Z" },
 ]
 
 [[package]]
