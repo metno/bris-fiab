@@ -73,9 +73,6 @@ Save the key in `$HOME/..opentopographyrc`. This should be a json file with the 
 uv run bris_fiab checkpoint move-domain --grid 0.05 --area 14/-6/0/4 bris-checkpoint.ckpt ghana.ckpt
 ```
 
-You can skip the `--topography-file` option if you will not do orographic corrections of the data.
-
-
 This will create a new checkpoint, called `ghana.ckpt`. Orography information will be included in the checkpoint.
 
 In order to run inference with the newly created checkpoint, you need to copy and modify the [config.yaml](config.yaml) file.
