@@ -33,9 +33,10 @@ class MkGridConfig(pydantic.BaseModel):
 
 @click.command()
 @click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', show_default=True, help='Configuration file for variable mapping')
+@click.option('--checkpoint', type=click.Path(exists=True), default=None, help='Checkpoint file to read metadata from. Only required if you read data from a file with global coverage')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
-def make_grid(config: str, input: str, output: str):
+def make_grid(config: str, checkpoint: str|None, input: str, output: str):
     '''Convert FIAB output to a gridded NetCDF file.'''
     with open(config) as f:
         config_json = json.load(f)
@@ -43,8 +44,21 @@ def make_grid(config: str, input: str, output: str):
 
     data = xr.open_dataset(input)
 
-    x = np.unique(data.longitude.values)
-    y = np.unique(data.latitude.values)[::-1]
+    longitudes = data.longitude.values
+    latitudes = data.latitude.values
+    times = data['time'].values
+    if checkpoint is not None:
+        from anemoi.inference.checkpoint import Checkpoint
+        c = Checkpoint(checkpoint)
+        size = len(c.supporting_arrays['source0/latitudes']) - len(c.supporting_arrays['source1/latitudes'])
+        longitudes = longitudes[:size]
+        latitudes = latitudes[:size]
+
+    x = np.unique(longitudes)
+    y = np.unique(latitudes)[::-1]
+    size = len(x) * len(y)
+    time_count = len(times)
+
     spatial_ref = xr.DataArray(
         data=0,
         attrs={
@@ -59,18 +73,14 @@ def make_grid(config: str, input: str, output: str):
             'horizontal_datum_name': 'World Geodetic System 1984',
             'grid_mapping_name': 'latitude_longitude',
             'spatial_ref': 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AXIS["Latitude",NORTH],AXIS["Longitude",EAST],AUTHORITY["EPSG","4326"]]',
-            # 'GeoTransform': f'29.999583333285614 0.025 0.0 -7.9995833333178865 0.0 -0.025'
             'GeoTransform': f'{x[0]} {(x[1] - x[0]):.3g} 0.0 {y[-1]} 0.0 {(y[-1] - y[-2]):.3g}'
         }
     )
 
-    size = len(x) * len(y)
-    time_count = len(data['time'])
-
     variables = {
         'spatial_ref': spatial_ref,  # type: ignore
         'forecast_reference_time': xr.DataArray(
-            np.datetime64(data['time'].values[0]),
+            np.datetime64(times[0]),
             dims=(),
             attrs={
                 'long_name': 'forecast reference time',
@@ -81,7 +91,7 @@ def make_grid(config: str, input: str, output: str):
 
     coords = {
         'time': xr.DataArray(
-            data['time'].values,
+            times,
             dims='time',
             attrs={
                 'standard_name': 'time'
@@ -136,7 +146,7 @@ def make_grid(config: str, input: str, output: str):
 
         param = xr.DataArray(
             param_data,
-            coords=[data['time'], y, x],
+            coords=[times, y, x],
             dims=['time', 'lat', 'lon'],
             attrs={**cfg.attributes, "grid_mapping": "spatial_ref"}
         )
@@ -155,7 +165,7 @@ def make_grid(config: str, input: str, output: str):
 
         param = xr.DataArray(
             param_data,
-            coords=[data['time'], met_variables.variables.pl.levels, y, x],
+            coords=[times, met_variables.variables.pl.levels, y, x],
             dims=['time', 'pl', 'lat', 'lon'],
             attrs={**cfg.attributes, "grid_mapping": "spatial_ref"}
         )
