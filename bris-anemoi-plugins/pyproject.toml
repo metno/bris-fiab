@@ -15,9 +15,14 @@ license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = [
     "anemoi-inference",
-    "metpy>=1.7.1", 
+    "metpy>=1.7.1",
     "pint",
     "earthkit-data",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
 ]
 
 [project.urls]
