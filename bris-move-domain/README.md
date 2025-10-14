@@ -2,10 +2,20 @@
 
 Create a checkpoint, based on an existing Bris checkpoint and a new specified geographical domain.
 
+## Setting up
+
+```shell
+uv sync
+```
+
 ## Checkpoint
 
 In order to run inference, you need to modify a bris checkpoint, to prepare it for running for a different area.
 This includes downloading high-resolution orography information for it.
+
+### Getting started
+
+In order to get started, you need access to a bris checkpoint, such as [Cloudy Skies](https://huggingface.co/met-no/bris_cloudy-skies).
 
 ### Getting orography information
 

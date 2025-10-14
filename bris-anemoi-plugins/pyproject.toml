@@ -1,7 +1,6 @@
 [build-system]
 requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 
-
 [project]
 name = "bris-anemoi-plugins"
 version = "0.1.1"
@@ -15,10 +14,11 @@ classifiers = [
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = [
-    "anemoi-inference"
+    "anemoi-inference",
+    "metpy>=1.7.1", 
+    "pint",
+    "earthkit-data",
 ]
-
-optional-dependencies.apply_adiabatic_corrections = [ "metpy>=1.7.1", "pint", "earthkit-data" ]
 
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"

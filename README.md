@@ -1,6 +1,11 @@
 # Bris in Forecast-in-a-Box
 
-**WIP** - this is not yet ready to be used for anything.
+Tools and docs for 
+* moving the domain in a Bris model to another geographical area.
+* run inference on the resulting model.
+* utilizing the result of of the inference.
+
+For information on how to use the original Bris model, you should rather look at the [bris-inference docs](https://github.com/metno/bris-inference).
 
 This contains the neccessary components to run the bris model in [anemoi inference](https://anemoi.readthedocs.io/projects/inference/en/latest/) and [Forecast-in-a-Box](https://github.com/ecmwf/forecast-in-a-box). It consists of several parts: 
 
@@ -8,15 +13,9 @@ This contains the neccessary components to run the bris model in [anemoi inferen
 * [A tool to adapt a checkpoint so it can run in anemoi-inference](bris-move-domain/README.md)
 * Later, docs for how to add this to Forecast-in-a-Box will be added.
 
-## Getting started
+## Create a forecast with a moved Bris checkpoint
 
-In order to get started, you need access to a bris checkpoint, such as [Cloudy Skies](https://huggingface.co/met-no/bris_cloudy-skies).
-
-### Setting up
-
-```shell
-uv sync
-```
+To create a forecast you need to run inference on the model. This can be done directly with anemoi-inference or by Forecast-in-a-Box (which also uses anemoi-inference)
 
 ### Accessing data
 
@@ -27,13 +26,24 @@ If you move the domain for a bris checkpoint, as described below, you can autmat
 Note, however, that **neither of these data sources are freely available to the public**.
 This means that your organization will need to somehow have arranged access to these data sources for you, unless you configure other data sources.
 
-### Running inference
+### anemoi-inference
+
+#### Running inference
+
+Install anemoi-inference, e.g in an empty directory with:
 
 ```shell
-uv run anemoi-inference run config.yaml
+uv init
+uv add anemoi-inference
 ```
 
-### Viewing results
+Create config that fits your needs. See [example-config](example-config.yaml). Also, see [bris-move-domain](bris-move-domain/README.md) for more information on configuration.
+
+```shell
+uv run anemoi-inference run <config.yaml>
+```
+
+#### Viewing results
 
 The output from anemoi inference can be hard to visualize.
 To aid in this, we provide a tool, make-grid, to convert to a more standardized output format.
@@ -44,4 +54,7 @@ uv run bris_fiab process make-grid anemoi-output.nc grid.nc
 ```
 
 This should create a file, `grid.nc`, which can be displayed in eg. diana.
+
+
+### Forecast-in-a-Box
 
