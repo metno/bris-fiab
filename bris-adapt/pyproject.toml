@@ -3,16 +3,15 @@ requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 
 [tool.setuptools]
 packages = [
-    "bris_fiab", 
-    "bris_fiab.anemoi_plugins.inference.downscale", 
-    "bris_fiab.checkpoint",
-    "bris_fiab.orography",
+    "bris_adapt",
+    "bris_adapt.checkpoint",
+    "bris_adapt.orography",
 ]
 
 [project]
-name = "bris-fiab"
+name = "bris-adapt"
 version = "0.1.1"
-description = "Running the bris model in Forecast-in-a-Box and anemoi-inference"
+description = "Use a Bris checkpoint to create a new checkpoint with a new graph for a specified domain."
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
@@ -31,7 +30,6 @@ dependencies = [
     "anemoi-utils",
     "ecmwf-api-client",
     "pydantic>=2.11.7",
-    "pytest>=8.4.1",
     "rioxarray>=0.19.0",
     "scipy>=1.16.1",
     "trimesh>=4.7.3",
@@ -39,20 +37,11 @@ dependencies = [
     "metpy>=1.7.1",
     "twine>=6.2.0",
     "torch-geometric==2.4.0",
-    "anemoi-plugins-ecmwf-inference[polytope]>=0.1.14",
 ]
 
 [project.scripts]
-bris_fiab = "bris_fiab.scripts:cli"
+bris-adapt = "bris_adapt.scripts:cli"
 
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"
 Issues = "https://github.com/metno/bris-fiab/issues"
-
-
-[project.entry-points."anemoi.inference.inputs"]
-downscaled_mars = "bris_fiab.anemoi_plugins.inference.downscale:DownscaledMarsInput"
-
-[project.entry-points."anemoi.inference.pre_processors"]
-# downscale = "bris_fiab.anemoi_plugins.inference.downscale:DownscalePreProcessor"
-apply_adiabatic_corrections = "bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"

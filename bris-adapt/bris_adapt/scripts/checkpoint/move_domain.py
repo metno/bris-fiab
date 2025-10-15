@@ -1,6 +1,6 @@
 import click
-from bris_fiab.orography import download, api_key
-from bris_fiab.checkpoint import graph
+from bris_adapt.orography import download, api_key
+from bris_adapt.checkpoint import graph
 import tempfile
 import yaml
 import os
@@ -49,11 +49,11 @@ def move_domain(grid: float, area: str, add_fiab_metadata: bool, create_sample_c
     )
 
     if add_fiab_metadata:
-        from bris_fiab.checkpoint.fiab import add_fiab_metadata_to_checkpoint
+        from bris_adapt.checkpoint.fiab import add_fiab_metadata_to_checkpoint
         add_fiab_metadata_to_checkpoint(grid, area, global_grid, dest)
 
     if create_sample_config:
-        from bris_fiab.checkpoint.config import save_sample_config
+        from bris_adapt.checkpoint.config import save_sample_config
         save_sample_config(dest + '.yaml', dest, area, grid)
 
     click.echo('created new checkpoint at ' + dest)
