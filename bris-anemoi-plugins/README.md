@@ -12,11 +12,11 @@ This plugin corrects the input data parameters to the Bris model. The correction
 uv sync
 ```
 
-
 ### Configure anemoi-inference to use plugin
 
 Example:
-```
+
+```text
 input:
   cutout:
     lam_0:

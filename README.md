@@ -1,13 +1,14 @@
 # Bris in Forecast-in-a-Box
 
-Tools and docs for 
+Tools and docs for
+
 * moving the domain in a Bris model to another geographical area.
 * run inference on the resulting model.
 * utilizing the result of the inference.
 
 For information on how to use the original Bris model, you should rather look at the [bris-inference docs](https://github.com/metno/bris-inference).
 
-This contains the neccessary components to run the bris model in [anemoi inference](https://anemoi.readthedocs.io/projects/inference/en/latest/) and [Forecast-in-a-Box](https://github.com/ecmwf/forecast-in-a-box). It consists of several parts: 
+This contains the neccessary components to run the bris model in [anemoi inference](https://anemoi.readthedocs.io/projects/inference/en/latest/) and [Forecast-in-a-Box](https://github.com/ecmwf/forecast-in-a-box). It consists of several parts:
 
 * [Plugins for anemoi-inference](bris-anemoi-plugins/README.md)
 * [A tool to adapt a checkpoint so it can run in anemoi-inference](bris-move-domain/README.md)
@@ -55,6 +56,6 @@ uv run bris_fiab process make-grid anemoi-output.nc grid.nc
 
 This should create a file, `grid.nc`, which can be displayed in eg. diana.
 
-
 ### Forecast-in-a-Box
 
+TODO

@@ -3,10 +3,9 @@ requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 
 [tool.setuptools]
 packages = [
-    "bris_move_domain", 
+    "bris_move_domain",
     "bris_move_domain.checkpoint",
     "bris_move_domain.orography",
-    "scripts",
 ]
 
 [project]
@@ -38,11 +37,6 @@ dependencies = [
     "metpy>=1.7.1",
     "twine>=6.2.0",
     "torch-geometric==2.4.0",
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
 ]
 
 [project.scripts]
