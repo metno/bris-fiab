@@ -3,13 +3,13 @@ requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 
 [tool.setuptools]
 packages = [
-    "bris_move_domain",
-    "bris_move_domain.checkpoint",
-    "bris_move_domain.orography",
+    "bris_adapt",
+    "bris_adapt.checkpoint",
+    "bris_adapt.orography",
 ]
 
 [project]
-name = "bris-move-domain"
+name = "bris-adapt"
 version = "0.1.1"
 description = "Use a Bris checkpoint to create a new checkpoint with a new graph for a specified domain."
 readme = "README.md"
@@ -40,7 +40,7 @@ dependencies = [
 ]
 
 [project.scripts]
-bris_move_domain = "scripts:cli"
+bris-adapt = "scripts:cli"
 
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"

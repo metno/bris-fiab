@@ -1,4 +1,4 @@
-# bris-move-domain
+# bris-adapt
 
 Create a checkpoint, based on an existing Bris checkpoint and a new specified geographical domain.
 
@@ -37,7 +37,7 @@ Save the key in `$HOME/..opentopographyrc`. This should be a json file with the 
 ### Creating your new checkpoint
 
 ```shell
-uv run bris_move_domain checkpoint move-domain --grid 0.05 --area 14/-6/0/4 bris-checkpoint.ckpt ghana.ckpt
+uv run bris-adapt checkpoint move-domain --grid 0.05 --area 14/-6/0/4 bris-checkpoint.ckpt ghana.ckpt
 ```
 
 This will create a new checkpoint, called `ghana.ckpt`. Orography information will be included in the checkpoint.
@@ -51,8 +51,8 @@ If you plan on experimenting with various setups, you may want to download orogr
 In that case, do something like this:
 
 ```shell
-uv run bris_move_domain checkpoint download-orography --area 15/-7/-1/5 ghana.tiff
-uv run bris_move_domain checkpoint move-domain --orography-file ghana.tiff --grid 0.05 --area 14/-6/0/4  bris-checkpoint.ckpt ghana.ckpt
+uv run bris-adapt checkpoint download-orography --area 15/-7/-1/5 ghana.tiff
+uv run bris-adapt checkpoint move-domain --orography-file ghana.tiff --grid 0.05 --area 14/-6/0/4  bris-checkpoint.ckpt ghana.ckpt
 ```
 
 Note that the downloaded grid data must be _larger_ than the target area for the checkpoint.

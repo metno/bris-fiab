@@ -1,6 +1,6 @@
 import click
-from bris_move_domain.orography import download
-from bris_move_domain.orography.api_key import find_api_key_file, read_api_key
+from bris_adapt.orography import download
+from bris_adapt.orography.api_key import find_api_key_file, read_api_key
 
 
 @click.command(

@@ -2,16 +2,17 @@
 
 Tools and docs for
 
-* moving the domain in a Bris model to another geographical area.
+* Adapting the Bris model by moving the domain in a Bris model to another geographical area.
 * run inference on the resulting model.
 * utilizing the result of the inference.
+* various support tools.
 
 For information on how to use the original Bris model, you should rather look at the [bris-inference docs](https://github.com/metno/bris-inference).
 
 This contains the neccessary components to run the bris model in [anemoi inference](https://anemoi.readthedocs.io/projects/inference/en/latest/) and [Forecast-in-a-Box](https://github.com/ecmwf/forecast-in-a-box). It consists of several parts:
 
 * [Plugins for anemoi-inference](bris-anemoi-plugins/README.md)
-* [A tool to adapt a checkpoint so it can run in anemoi-inference](bris-move-domain/README.md)
+* [A tool to adapt a checkpoint so it can run in anemoi-inference](bris-adapt/README.md)
 * Later, docs for how to add this to Forecast-in-a-Box will be added.
 
 ## Create a forecast with a moved Bris checkpoint
@@ -38,7 +39,7 @@ uv init
 uv add anemoi-inference
 ```
 
-Create config that fits your needs. See [example-config](example-config.yaml). Also, see [bris-move-domain](bris-move-domain/README.md) for more information on configuration.
+Create config that fits your needs. See [example-config](example-config.yaml). Also, see [bris-adapt](bris-adapt/README.md) for more information on configuration.
 
 ```shell
 uv run anemoi-inference run <config.yaml>
@@ -51,7 +52,7 @@ To aid in this, we provide a tool, make-grid, to convert to a more standardized 
 It can be run like this:
 
 ```shell
-uv run bris_fiab process make-grid anemoi-output.nc grid.nc
+uv run bris-adapt process make-grid anemoi-output.nc grid.nc
 ```
 
 This should create a file, `grid.nc`, which can be displayed in eg. diana.
