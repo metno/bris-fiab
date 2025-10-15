@@ -45,3 +45,8 @@ bris-adapt = "bris_adapt.scripts:cli"
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"
 Issues = "https://github.com/metno/bris-fiab/issues"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.0",
+]
