@@ -20,16 +20,19 @@ dependencies = [
     "earthkit-data",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "ecmwf-api-client",
-    "anemoi-plugins-ecmwf-inference[polytope]",
-]
-
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"
 Issues = "https://github.com/metno/bris-fiab/issues"
 
 [project.entry-points."anemoi.inference.pre_processors"]
 apply_adiabatic_corrections = "anemoi.plugins.bris.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ecmwf-api-client",
+    "anemoi-plugins-ecmwf-inference[polytope]",
+    "anemoi-graphs>=0.7.0",
+    "anemoi-models==0.9.5",
+    "torch-geometric==2.4.0",
+]
