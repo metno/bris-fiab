@@ -35,4 +35,4 @@ def download(
     if count % 100 == 0:
       print(".", end="", flush=True)
     dest_stream.write(chunk)
-  print(f"\nDownloaded DEM to stream")
+  print("\nDownloaded DEM to stream")

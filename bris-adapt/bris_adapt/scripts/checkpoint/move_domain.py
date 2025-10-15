@@ -1,9 +1,6 @@
 import click
 from bris_adapt.orography import download, api_key
 from bris_adapt.checkpoint import graph
-import tempfile
-import yaml
-import os
 import io
 
 

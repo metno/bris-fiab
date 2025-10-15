@@ -1,5 +1,4 @@
 import os
-import pint
 from metpy.units import units
 import earthkit.data as ekd
 import metpy.calc
@@ -48,7 +47,7 @@ class TestAdiabaticCorrectorVariableTimes(AbstractAdiabaticCorrectorTest):
         assert np.all(corrected_sp < original_sp)
 
     def test_others(self):
-        for n, d in enumerate(self.test_data):
+        for n, d in enumerate(self.test_data): # type: ignore
             if d.metadata('param') in ['2t', '2d', 'sp']:
                 # these are supposed to change
                 continue

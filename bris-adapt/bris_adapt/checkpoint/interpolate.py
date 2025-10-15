@@ -1,4 +1,3 @@
-from typing import Tuple
 import numpy as np
 # from scipy.spatial import cKDTree
 from metpy.interpolate import interpolate_to_points

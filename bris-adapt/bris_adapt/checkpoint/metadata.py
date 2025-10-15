@@ -31,7 +31,7 @@ def adapt_metdata(original_metadata: dict, replace_path: str = 'dataset.variable
         variables = variables[p]
 
     for k, v in variables.items():
-        if not 'mars' in v:
+        if 'mars' not in v:
             continue
         p = BrisParameter.from_string(k)
         mars = v['mars']

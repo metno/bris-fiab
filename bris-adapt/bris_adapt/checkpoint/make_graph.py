@@ -36,7 +36,6 @@ def build_stretched_graph(latitudes, longitudes, global_grid: str, lam_resolutio
     from anemoi.utils.grids import grids
 
     import torch
-    import numpy as np
 
     assert latitudes.ndim == 1
     assert longitudes.ndim == 1
