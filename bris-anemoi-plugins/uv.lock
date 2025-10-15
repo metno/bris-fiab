@@ -203,6 +203,9 @@ dev = [
     { name = "pytest" },
     { name = "torch-geometric" },
 ]
+test = [
+    { name = "pytest" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -221,6 +224,7 @@ dev = [
     { name = "pytest" },
     { name = "torch-geometric", specifier = "==2.4.0" },
 ]
+test = [{ name = "pytest" }]
 
 [[package]]
 name = "certifi"
