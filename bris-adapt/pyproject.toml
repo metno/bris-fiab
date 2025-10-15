@@ -40,7 +40,7 @@ dependencies = [
 ]
 
 [project.scripts]
-bris-adapt = "scripts:cli"
+bris-adapt = "bris_adapt.scripts:cli"
 
 [project.urls]
 Homepage = "https://github.com/metno/bris-fiab"
