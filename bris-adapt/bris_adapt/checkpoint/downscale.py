@@ -12,7 +12,7 @@ import io
 import scipy.interpolate
 from scipy.spatial import Delaunay
 from dataclasses import dataclass
-from bris_fiab.checkpoint.interpolate import interpolate_to_grid
+from .interpolate import interpolate_to_grid
 
 
 @dataclass

@@ -2,7 +2,7 @@ import numpy as np
 import earthkit.data as ekd
 import metpy.calc
 from metpy.units import units
-from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, downscaler
+from .downscale import Topography, downscaler
 
 
 def get_model_elevation_mars_grid(area: tuple[float|str, float|str, float|str, float|str], grid: float|str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:

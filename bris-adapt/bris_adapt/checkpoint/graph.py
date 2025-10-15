@@ -1,6 +1,6 @@
 import numpy as np
 from io import BufferedIOBase
-from bris_fiab.anemoi_plugins.inference.downscale.downscale import Topography, make_two_dimensional
+from .downscale import Topography, make_two_dimensional
 import earthkit.data as ekd
 from dataclasses import dataclass
 from .make_graph import build_stretched_graph

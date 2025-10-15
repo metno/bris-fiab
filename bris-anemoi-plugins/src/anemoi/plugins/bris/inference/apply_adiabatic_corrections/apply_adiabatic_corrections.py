@@ -3,7 +3,8 @@ from anemoi.inference.context import Context
 from metpy.units import units
 import earthkit.data as ekd
 import pint
-import bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections.adiabatic_correct as adiabatic_correct
+from . import adiabatic_correct
+
 
 
 class AdiabaticCorrectionPreProcessor(Processor):

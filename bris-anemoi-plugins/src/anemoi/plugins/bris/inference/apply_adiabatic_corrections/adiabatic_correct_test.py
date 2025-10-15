@@ -1,7 +1,7 @@
 import numpy as np
 import pint
 from metpy.units import units
-import bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections.adiabatic_correct as adiabatic_correct 
+from . import adiabatic_correct 
 
 
 def test_correct_temperature():

@@ -6,7 +6,7 @@ import numpy as np
 from copy import deepcopy
 import logging
 
-from bris_fiab.checkpoint.metadata import adapt_metdata
+from bris_adapt.checkpoint.metadata import adapt_metdata
 LOG = logging.getLogger(__name__)
 
 
