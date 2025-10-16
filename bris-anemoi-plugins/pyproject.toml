@@ -1,0 +1,41 @@
+[build-system]
+requires = [ "setuptools>=60", "setuptools-scm>=8" ]
+
+[project]
+name = "bris-anemoi-plugins"
+version = "0.1.1"
+description = "Plugins needed for running the Bris model with Forecast-in-a-Box and anemoi-inference"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+dependencies = [
+    "anemoi-inference",
+    "metpy>=1.7.1",
+    "pint",
+    "earthkit-data",
+]
+
+[project.urls]
+Homepage = "https://github.com/metno/bris-fiab"
+Issues = "https://github.com/metno/bris-fiab/issues"
+
+[project.entry-points."anemoi.inference.pre_processors"]
+apply_adiabatic_corrections = "anemoi.plugins.bris.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"
+
+[dependency-groups]
+dev = [
+    "ecmwf-api-client",
+    "anemoi-plugins-ecmwf-inference[polytope]",
+    "anemoi-graphs>=0.7.0",
+    "anemoi-models==0.9.5",
+    "torch-geometric==2.4.0",
+    {include-group = "test"}
+]
+test = [
+  "pytest"
+]

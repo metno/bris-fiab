@@ -5,7 +5,7 @@ import earthkit.data as ekd
 import metpy.calc
 import numpy as np
 
-from bris_fiab.anemoi_plugins.inference.apply_adiabatic_corrections.apply_adiabatic_corrections import AdiabaticCorrector
+from .apply_adiabatic_corrections import AdiabaticCorrector
 
 class AbstractAdiabaticCorrectorTest:
     grib_file = 'none.grib'  # Override in subclasses
