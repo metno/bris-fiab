@@ -1,7 +1,4 @@
-import os
-import sys
 from typing import Any
-
 from matplotlib.collections import QuadMesh
 import numpy as np
 import matplotlib.pylab as mpl
@@ -15,6 +12,7 @@ import time
 import datetime
 import xarray as xr
 import click
+from .ncutil import get_variable_by_standard_name
 
 
 @click.command()
@@ -166,22 +164,18 @@ def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, t
     return (cm, "10m wind speed (m/s)")
 
 
-def _get_variable_by_standard_name(ds: xr.Dataset, standard_name: str) -> str:
-    for var in ds.variables:
-        if "standard_name" in ds[var].attrs and ds[var].attrs["standard_name"] == standard_name:
-            return var
-    raise ValueError(f"Variable with standard_name {standard_name} not found")
+# def _get_variable_by_standard_name(ds: xr.Dataset, standard_name: str) -> str:
+#     for var in ds.variables:
+#         if "standard_name" in ds[var].attrs and ds[var].attrs["standard_name"] == standard_name:
+#             return var
+#     raise ValueError(f"Variable with standard_name {standard_name} not found")
 
 
 def _get_area(ds: xr.Dataset) -> dict[str, np.ndarray]:
-    latName = _get_variable_by_standard_name(ds, "latitude")
-    lonName = _get_variable_by_standard_name(ds, "longitude")
-
-    print(f"Using lat/lon variables: {latName}/{lonName}")
+    lats = get_variable_by_standard_name(ds, "latitude")
+    lons = get_variable_by_standard_name(ds, "longitude")
 
     data: dict[str, np.ndarray] = dict()
-    lats = ds[latName].values
-    lons = ds[lonName].values
     if len(lats.shape) == 1:
         lons, lats = np.meshgrid(lons, lats)
 
