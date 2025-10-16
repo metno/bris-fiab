@@ -25,7 +25,7 @@ import click
 @click.option('--map-area', type=click.Choice(['africa', 'northern-europe']), help='Map area to use', show_default=True, default='africa')
 @click.argument('global-area', type=click.Path(exists=True))
 @click.argument('local-area', type=click.Path(exists=True))
-def cli(output: str, timestep: int, colormap: str, map_type: str, global_area: str, local_area: str, map_area: str):
+def create_image(output: str, timestep: int, colormap: str, map_type: str, global_area: str, local_area: str, map_area: str):
     """Create a single image file from global and local area netcdf files."""
     show_colorbar = True
     show_coastlines = True

@@ -1,35 +1,8 @@
 import click
-import json
 import pint
 import xarray as xr
 import numpy as np
-from typing import Dict
-import pydantic
-
-
-class VariableConfig(pydantic.BaseModel):
-    variable_name: str
-    attributes: Dict[str, object]
-    # if set, convert from this unit to the unit in attributes
-    assumed_input_units: str | None = None
-
-
-class SurfaceVariablesConfig(pydantic.BaseModel):
-    variables: Dict[str, VariableConfig]
-
-
-class PressureLevelVariablesConfig(pydantic.BaseModel):
-    levels: list[int]
-    variables: Dict[str, VariableConfig]
-
-
-class VariablesConfig(pydantic.BaseModel):
-    sfc: SurfaceVariablesConfig
-    pl: PressureLevelVariablesConfig
-
-
-class MkGridConfig(pydantic.BaseModel):
-    variables: VariablesConfig
+from .config import open_config
 
 
 @click.command()
@@ -38,10 +11,7 @@ class MkGridConfig(pydantic.BaseModel):
 @click.argument('output', type=click.Path())
 def make_grid(config: str, input: str, output: str):
     '''Convert FIAB output to a gridded NetCDF file.'''
-    with open(config) as f:
-        config_json = json.load(f)
-        met_variables = MkGridConfig.model_validate(config_json)
-
+    met_variables = open_config(config)
     data = xr.open_dataset(input)
 
     x = np.unique(data.longitude.values)
@@ -88,17 +58,17 @@ def make_grid(config: str, input: str, output: str):
                 'standard_name': 'time'
             }
         ),
-        'latitude': xr.DataArray(
+        'lat': xr.DataArray(
             y,
-            dims='latitude',
+            dims='lat',
             attrs={
                 'units': 'degree',
                 'standard_name': 'latitude'
             }
         ),
-        'longitude': xr.DataArray(
+        'lon': xr.DataArray(
             x,
-            dims='longitude',
+            dims='lon',
             attrs={
                 'units': 'degree',
                 'standard_name': 'longitude'
@@ -138,7 +108,7 @@ def make_grid(config: str, input: str, output: str):
         param = xr.DataArray(
             param_data,
             coords=[data['time'], y, x],
-            dims=['time', 'latitude', 'longitude'],
+            dims=['time', 'lat', 'lon'],
             attrs={**cfg.attributes, "grid_mapping": "spatial_ref"}
         )
         variables[cfg.variable_name] = param
@@ -157,7 +127,7 @@ def make_grid(config: str, input: str, output: str):
         param = xr.DataArray(
             param_data,
             coords=[data['time'], met_variables.variables.pl.levels, y, x],
-            dims=['time', 'pl', 'latitude', 'longitude'],
+            dims=['time', 'pl', 'lat', 'lon'],
             attrs={**cfg.attributes, "grid_mapping": "spatial_ref"}
         )
         variables[cfg.variable_name] = param
