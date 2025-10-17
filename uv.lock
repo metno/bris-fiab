@@ -10,7 +10,7 @@ resolution-markers = [
 members = [
     "bris-adapt",
     "bris-anemoi-plugins",
-    "workspace",
+    "bris-fiab",
 ]
 
 [[package]]
@@ -66,14 +66,13 @@ wheels = [
 
 [[package]]
 name = "anemoi-inference"
-version = "0.8.0"
+version = "0.7.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anemoi-transform" },
     { name = "anemoi-utils", extra = ["provenance", "text"] },
     { name = "aniso8601" },
     { name = "anytree" },
-    { name = "deprecation" },
     { name = "earthkit-data" },
     { name = "eccodes" },
     { name = "numpy" },
@@ -84,9 +83,9 @@ dependencies = [
     { name = "semantic-version" },
     { name = "torch" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/8a/cfe34bc3a5662e545584edc9575191155614de5a781e9b2337d33ec22562/anemoi_inference-0.8.0.tar.gz", hash = "sha256:28ecbb86e6c6f5f7d07a559dc0c31ee2dedb237806804043dbaa84593010357f", size = 1378413, upload-time = "2025-10-15T15:02:54.927Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c2/d1/fc9ebf6b3134ac67c2f2e69352b9a7d81cc5bcba5bc36186d9e255d8b857/anemoi_inference-0.7.3.tar.gz", hash = "sha256:381890d4c497e2bdc4828170bf59433aace8f6019b46b5ee0e823d749b474a1c", size = 1363602, upload-time = "2025-09-24T14:25:40.371Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b3/67/c3a061875c531ea85262df923a57ce60b1cce3bdf36bf2cf442f9b9bc515/anemoi_inference-0.8.0-py3-none-any.whl", hash = "sha256:9aada5239e23f1e2cf3e22c3a48d9a209670b938de1ba13c0eb8179d4be935ed", size = 211766, upload-time = "2025-10-15T15:02:53.016Z" },
+    { url = "https://files.pythonhosted.org/packages/93/90/e748b70d21ad64c47f7e1e6a18838796f52851b37719363bfa161a882cc0/anemoi_inference-0.7.3-py3-none-any.whl", hash = "sha256:c5aa5601633930c9dcd64f370a658970c115c1a16f86b70205d749e4ddb404c3", size = 194851, upload-time = "2025-09-24T14:25:38.463Z" },
 ]
 
 [[package]]
@@ -263,7 +262,7 @@ dependencies = [
 requires-dist = [
     { name = "anemoi-datasets" },
     { name = "anemoi-graphs" },
-    { name = "anemoi-inference" },
+    { name = "anemoi-inference", specifier = "==0.7.3" },
     { name = "anemoi-models", specifier = "==0.9.5" },
     { name = "anemoi-transform" },
     { name = "anemoi-utils" },
@@ -322,6 +321,11 @@ dev = [
     { name = "torch-geometric", specifier = "==2.4.0" },
 ]
 test = [{ name = "pytest" }]
+
+[[package]]
+name = "bris-fiab"
+version = "0.0.0"
+source = { virtual = "." }
 
 [[package]]
 name = "cartopy"
@@ -3203,11 +3207,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/24/30/6b0809f4510673dc7
 wheels = [
     { url = "https://files.pythonhosted.org/packages/af/b5/123f13c975e9f27ab9c0770f514345bd406d0e8d3b7a0723af9d43f710af/wcwidth-0.2.14-py2.py3-none-any.whl", hash = "sha256:a7bb560c8aee30f9957e5f9895805edd20602f2d7f720186dfd906e82b4982e1", size = 37286, upload-time = "2025-09-22T16:29:51.641Z" },
 ]
-
-[[package]]
-name = "workspace"
-version = "0.0.0"
-source = { virtual = "." }
 
 [[package]]
 name = "wrapt"
