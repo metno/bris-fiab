@@ -37,10 +37,10 @@ dependencies = [
     "metpy>=1.7.1",
     "twine>=6.2.0",
     "torch-geometric==2.4.0",
+    "cartopy>=0.21.1",
+    "gridpp",
 ]
 
-[project.optional-dependencies]
-images = ["cartopy", "gridpp"]
 
 [project.scripts]
 bris-adapt = "bris_adapt.scripts:cli"
