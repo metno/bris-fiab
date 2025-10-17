@@ -23,7 +23,7 @@ license-files = ["LICENSE"]
 dependencies = [
     "anemoi-datasets",
     "anemoi-graphs",
-    "anemoi-inference",
+    "anemoi-inference==0.7.3",
     "anemoi-models==0.9.5",
     "metpy>=1.7.1",
     "anemoi-transform",
