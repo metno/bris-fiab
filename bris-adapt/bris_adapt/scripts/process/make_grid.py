@@ -37,7 +37,10 @@ class MkGridConfig(pydantic.BaseModel):
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
 def make_grid(config: str, checkpoint: str|None, input: str, output: str):
-    '''Convert FIAB output to a gridded NetCDF file.'''
+    '''Convert anemoi-inference output to a gridded NetCDF file.
+
+    This converts an output file from having run anemoi-inference with bris into a more stadardized netcdf format,
+    suitable for viewing with common tools.'''
     with open(config) as f:
         config_json = json.load(f)
         met_variables = MkGridConfig.model_validate(config_json)
