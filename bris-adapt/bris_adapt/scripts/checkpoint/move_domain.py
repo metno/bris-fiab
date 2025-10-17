@@ -15,7 +15,7 @@ import io
 @click.option('--global-grid', type=str, default='n320', show_default=True, help='Global grid to use, e.g. n320.')
 @click.option('--lam-resolution', type=int, default=10, show_default=True)
 @click.option('--global-resolution', type=int, default=7, show_default=True)
-@click.option('--margin-radius-km', type=int, default=11, show_default=True)
+@click.option('--margin-radius-km', type=int, default=6, show_default=True)
 @click.option('--orography-file', type=click.Path(exists=True), default=None, help='Path to a local orography file (GeoTIFF). If not provided, the script will download orography data from OpenTopography.org.')
 @click.argument('src', type=click.Path(exists=True))
 @click.argument('dest', type=click.Path())
