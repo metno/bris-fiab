@@ -37,6 +37,8 @@ def _make_fiab_metadata(grid: str | float, area: str, global_grid: str) -> str:
 # Therefore, we cannot use normal json serialization.
 _base_doc = '''{
     "pkg_versions": {
+        "anemoi-plugins-ecmwf-inference[polytope]": "0.1.14",
+        "bris-fiab": "0.1.1"
     },
     "input_source": null,
     "nested": {
