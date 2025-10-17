@@ -56,3 +56,62 @@ uv run bris-adapt checkpoint move-domain --orography-file ghana.tiff --grid 0.05
 ```
 
 Note that the downloaded grid data must be _larger_ than the target area for the checkpoint.
+
+#### Creating image with globale and local area data
+
+We need two configuration files to output both global and local data. anemoi-inference must be run two times, once for each configuration.
+
+Global forcast configuration: create a configuration file with the following content.
+
+```yaml
+ ...
+post_processors: 
+  - extract_from_state: 
+      cutout_source: 'global'
+  
+output:
+  tee:
+    outputs:
+      - printer
+      - netcdf: 
+          path: global.nc
+          variables:
+            - '2t'
+            - msl
+            - '10u'
+            - '10v'
+            - 'tp'
+
+...
+```
+
+Local forecast configuration: create a configuration file with the following content.
+
+```yaml
+...
+post_processors: 
+  - extract_from_state: 
+      cutout_source: 'lam_0'
+
+output:
+  tee:
+    outputs:
+      - printer
+      - netcdf: 
+          path: local.nc
+
+```
+
+**Note** At the momment, with the post_processors.extract_from_state, the cutout_source global and lam_0 are exlusive so we need to run two inferences.
+
+The global netcdf is scattered points over the globe. To interpolate this on a regular grid use `mkglobal_grid.py`. 
+
+```shell
+uv run bris-adapt process mkglobal-grid global.nc global_0_25deg.nc
+```
+
+We can now create an image with both global and local forecast.
+
+```shell
+uv run  bris-adapt process create-image global_0_25deg.nc local.nc --map-type temperature --map-area africa --timestep 1 --output image.png
+```
