@@ -43,14 +43,14 @@ _base_doc = '''{
     "input_source": null,
     "nested": {
         "lam_0": {
-            "mars": {
+            "polytope": {
                 "grid": "$grid_str",
                 "area": "$area_str",
                 "pre_processors": ["apply_adiabatic_corrections"]
             }
         },
         "global": {
-            "mars": {
+            "polytope": {
                 "grid": "$global_grid_str"
             }
         }
