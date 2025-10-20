@@ -2,7 +2,7 @@ import click
 import pint
 import xarray as xr
 import numpy as np
-from .config import open_config
+from bris_adapt.process.config import open_config
 
 
 @click.command()

@@ -6,13 +6,12 @@ import matplotlib.pylab as mpl
 from matplotlib import colormaps
 import matplotlib
 from scipy.ndimage import generic_filter
-# import cartopy
 import cartopy.crs as ccrs
 import time
 import datetime
 import xarray as xr
 import click
-from bris_adapt.ncutil.util import get_variable_by_standard_name
+from bris_adapt.process.ncutil import get_variable_by_standard_name
 
 
 @click.command()

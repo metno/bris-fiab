@@ -1,6 +1,6 @@
 import numpy as np
 import xarray as xr
-from .ncutil import get_variable_by_standard_name
+from bris_adapt.process.ncutil import get_variable_by_standard_name
 from sklearn.neighbors import BallTree
 
 MEAN_EARTH_RADIUS_KM: float = 6371.0  # Mean Earth radius in km

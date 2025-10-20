@@ -247,7 +247,6 @@ dependencies = [
     { name = "anemoi-utils" },
     { name = "cartopy" },
     { name = "ecmwf-api-client" },
-    { name = "gridpp" },
     { name = "metpy" },
     { name = "pydantic" },
     { name = "pyyaml" },
@@ -268,7 +267,6 @@ requires-dist = [
     { name = "anemoi-utils" },
     { name = "cartopy", specifier = ">=0.21.1" },
     { name = "ecmwf-api-client" },
-    { name = "gridpp" },
     { name = "metpy", specifier = ">=1.7.1" },
     { name = "pydantic", specifier = ">=2.11.7" },
     { name = "pyyaml", specifier = ">=6.0.1" },
@@ -1130,18 +1128,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9a/c8/dd58967d119baab745caec2f9d853297cec1989ec1d63f677d3880632b88/gitpython-3.1.45.tar.gz", hash = "sha256:85b0ee964ceddf211c41b9f27a49086010a190fd8132a24e21f362a4b36a791c", size = 215076, upload-time = "2025-07-24T03:45:54.871Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/01/61/d4b89fec821f72385526e1b9d9a3a0385dda4a72b206d28049e2c7cd39b8/gitpython-3.1.45-py3-none-any.whl", hash = "sha256:8908cb2e02fb3b93b7eb0f2827125cb699869470432cc885f019b8fd0fccff77", size = 208168, upload-time = "2025-07-24T03:45:52.517Z" },
-]
-
-[[package]]
-name = "gridpp"
-version = "0.7.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "numpy" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/71/70ee79c442390f1595f0eea02432a98578002615c8609af3b0021d448fa2/gridpp-0.7.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:357aae50a77cea364c5b9a2c4087d9ab0c441d048560420bfa17c2b18144dc25", size = 23626445, upload-time = "2024-07-07T12:59:30.868Z" },
-    { url = "https://files.pythonhosted.org/packages/cf/ef/7c6831e2bcbcb37b17278f9bd97e2e5b39c451207f79a6069694913fa106/gridpp-0.7.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e8542c7ed1346ab97503554a7d80171143ba43feef70bf43a65ac801a8cddb81", size = 23643198, upload-time = "2024-07-07T12:59:35.009Z" },
 ]
 
 [[package]]

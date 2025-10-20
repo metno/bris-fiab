@@ -1,9 +1,9 @@
 import numpy as np
 import xarray as xr
 import click
-from .interpolate import CreateGlobalGridInterpolator
-from .interpolate import MEAN_EARTH_RADIUS_KM
-from .config import open_config
+from bris_adapt.process.interpolate import CreateGlobalGridInterpolator
+from bris_adapt.process.interpolate import MEAN_EARTH_RADIUS_KM
+from bris_adapt.process.config import open_config
 import pint
 
 

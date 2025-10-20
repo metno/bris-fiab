@@ -38,7 +38,6 @@ dependencies = [
     "twine>=6.2.0",
     "torch-geometric==2.4.0",
     "cartopy>=0.21.1",
-    "gridpp",
 ]
 
 
