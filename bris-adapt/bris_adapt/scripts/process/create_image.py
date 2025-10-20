@@ -1,54 +1,113 @@
+import os
 from typing import Any
 from matplotlib.collections import QuadMesh
 import numpy as np
 import matplotlib.pylab as mpl
 from matplotlib import colormaps
-# import verif.util
 import matplotlib
-import cartopy
+from scipy.ndimage import generic_filter
+# import cartopy
 import cartopy.crs as ccrs
-import gridpp
 import time
 import datetime
 import xarray as xr
 import click
-from .ncutil import get_variable_by_standard_name
+from bris_adapt.ncutil.util import get_variable_by_standard_name
 
 
 @click.command()
-@click.option('--output', help='Output file name', required=False, default=None)
-@click.option('--timestep', type=int, help='Timestep', show_default=True, required=True, default=0)
-@click.option('--colormap', help='Colormap', default=None)
+@click.option('--output-dir', help='Output directory. If not specified, defaults to current directory.', required=False, default=None)
+@click.option('--timestep', type=int, help='Timestep, set to -1 to create for all', show_default=True, required=True, default=0)
+@click.option('--timesteps', type=(int, int), help='Timestep range: <first> <last> (last -1 to create for all)', default=None, required=False, show_default=True)
+@click.option('--colormap', type=click.Choice(list(colormaps.keys())), help='Colormap', default=None, show_default=True)
 @click.option('--map-type', type=click.Choice(['temperature', 'wind']), help='What type of map to create', show_default=True, default='temperature')
 @click.option('--map-area', type=click.Choice(['africa', 'northern-europe']), help='Map area to use', show_default=True, default='africa')
+@click.option('--create-animated-gif', is_flag=True, help='Create animated gif from images', default=False, show_default=True)
+@click.option('--force', is_flag=True, help='Force re-creation of images even if they already exist', default=False, show_default=True)
 @click.argument('global-area', type=click.Path(exists=True))
 @click.argument('local-area', type=click.Path(exists=True))
-def create_image(output: str, timestep: int, colormap: str, map_type: str, global_area: str, local_area: str, map_area: str):
-    """Create a single image file from global and local area netcdf files."""
-    show_colorbar = True
-    show_coastlines = True
+def create_image(output_dir: str, timestep: int, timesteps: (int, int), colormap: str, map_type: str, map_area: str, create_animated_gif: bool, force: bool, global_area: str, local_area: str):
+    """Create image(s) file from global and local area netcdf files.
+    GLOBAL_AREA: Path to global area netcdf file
+    LOCAL_AREA: Path to local area netcdf file
+    Write out   put to output directory or current directory if not specified.
+    The output filename is constructed from map type and time step and is <map_type>_<forcast reference time (YYYYMMDDThh)>_<timestamp>.png.
+    if TIMESTEP is -1, create images for all time steps.
+    If TIMESTEPS is specified, create images for the specified range of time steps.
+    """
+
+    print(f"Creating {map_type} images for {map_area}")
     ds_global_area = xr.open_dataset(global_area)
     ds_local_area = xr.open_dataset(local_area)
+    ndims = min(ds_global_area['time'].size, ds_local_area['time'].size)
+
+    if output_dir is None:
+        output_dir = "."
+
+    output_prefix = f"{output_dir}/{map_type}_{timestring(ds_global_area['time'].values[0], '%Y%m%dT%H')}"
+
+    print(
+        f"Number of time steps available: {ndims}")
+    first, last = timestep, timestep
+
+    if timesteps is not None:
+        first, last = timesteps
+        if last == -1 or last > ndims:
+            last = ndims
+    elif timestep == -1:
+        first = 0
+        last = ndims
+    elif timestep >= ndims:
+        first = ndims - 1
+        last = ndims
+
+    print(f"Creating images for timesteps {first} to {last - 1}")
+    image_files = []
+
+    for t in range(first, last):
+        image_file = create_one_image(output_prefix, t,  colormap,
+                                      map_type, map_area, ds_global_area, ds_local_area, not force)
+        if image_file is not None:
+            image_files.append(image_file)
+
+    if create_animated_gif and len(image_files) > 0:
+        gif_output = f"{output_prefix}.gif"
+        create_animation(image_files, gif_output)
+
+
+def create_one_image(output_prefix: str, timestep: int, colormap: str, map_type: str, map_area: str, ds_global_area: xr.Dataset, ds_local_area: xr.Dataset, skip_existing: bool = True) -> str | None:
+    show_colorbar = True
+    show_coastlines = True
+
     global_time = ds_global_area['time'].values[timestep]
     local_time = ds_local_area['time'].values[timestep]
 
     if global_time != local_time:
         print(
-            f"Error: Global area time {timestring(global_time)} != Local area time {timestring(local_time)}")
-        exit(1)
+            f"Warning: Global area time {timestring(global_time)} != Local area time {timestring(local_time)}")
+        return None
+
+    output = f"{output_prefix}_{timestring(global_time, '%Y%m%dT%H')}.png"
+
+    if skip_existing and os.path.exists(output):
+        print(f"Image {output} already exists, skipping...")
+        return output
 
     s_time = time.time()
 
-    if colormap is not None and colormap not in colormaps:
-        print(f"Colormap {colormap} not found, using default")
-        list(colormaps)
-        colormap = None
+    if colormap is not None:
+        if colormap not in colormaps:
+            print(f"Colormap {colormap} not found, using default")
+            list(colormaps)
+            colormap = None
+        else:
+            colormap = colormaps[colormap]
 
     # TODO: make projection confiagurable. Use Mercator as default.
     map = mpl.gcf().add_axes([0, 0, 1, 1], projection=ccrs.Mercator())
 
     print(
-        f"Creating map {map_type}, timestep {timestep}  time {timestring(global_time)} ... ")
+        f"Creating image for timestep {timestep}  time {timestring(global_time)} ... ", end='', flush=True)
     if map_type == 'temperature':
         cm, param_label = create_temperature_map(
             ds_global_area, ds_local_area, map, timestep, colormap)
@@ -57,11 +116,7 @@ def create_image(output: str, timestep: int, colormap: str, map_type: str, globa
             ds_global_area, ds_local_area, map, timestep, colormap)
 
     if show_coastlines:
-        start_time = time.time()
-        print("Creating coastlines ... ")
         map.coastlines(resolution='10m', zorder=20, linewidth=0.5)
-        # map.coastlines(resolution='50m', zorder=20, linewidth=0.5)
-        print(f"{time.time() - start_time} seconds: Done coastlines")
 
     # TODO: make map area configurable
     if map_area == 'northern-europe':
@@ -86,11 +141,16 @@ def create_image(output: str, timestep: int, colormap: str, map_type: str, globa
         for t in cbar.ax.get_yticklabels():
             t.set_fontsize(8)
 
-    if output is not None:
-        mpl.savefig(output, bbox_inches='tight', dpi=200)
-    else:
-        mpl.show()
-    print(f"{time.time() - s_time}: Done")
+    mpl.savefig(output, bbox_inches='tight', dpi=200)
+    print(f" in {time.time() - s_time:<.0f} seconds, saved image to {output}")
+    mpl.clf()
+    map = None
+    return output
+
+
+def smooth(data: np.ndarray, window_size: (int, int) = (3, 3)) -> np.ndarray:
+    ''' Smooth data using either gridpp or scipy generic_filter '''
+    return generic_filter(data, np.mean, size=window_size)
 
 
 def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, timestep: int, colormap: Any) -> tuple[QuadMesh, str]:
@@ -108,10 +168,8 @@ def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset, map:
 
     pargs = dict(cmap=colormap, norm=norm, transform=trans, alpha=1.0)
 
-    edata["air_temperature_2m"] = gridpp.neighbourhood(
-        edata["air_temperature_2m"], 1, gridpp.Mean)
-    mdata["air_temperature_2m"] = gridpp.neighbourhood(
-        mdata["air_temperature_2m"], 1, gridpp.Mean)
+    edata["air_temperature_2m"] = smooth(edata["air_temperature_2m"])
+    mdata["air_temperature_2m"] = smooth(mdata["air_temperature_2m"])
     cm = map.pcolormesh(edata["lons"], edata["lats"],
                         edata["air_temperature_2m"], zorder=-10, **pargs)
     # Draw a magenta box around the regional domain
@@ -127,7 +185,6 @@ def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset, map:
 def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, timestep: int, colormap: str) -> tuple[QuadMesh, str]:
     mdata = get_wind_data(local_area, timestep)
     edata = get_wind_data(global_area, timestep)
-
     edges = np.arange(0, 27, 3)
     contour_lw = 0.5
     levels = np.arange(950, 1050, 5)
@@ -142,10 +199,10 @@ def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, t
     cargs = dict(levels=levels, colors='b',
                  linewidths=contour_lw, transform=trans)
 
-    edata["air_pressure_at_sea_level"] = gridpp.neighbourhood(
-        edata["air_pressure_at_sea_level"], 1, gridpp.Mean)
-    mdata["air_pressure_at_sea_level"] = gridpp.neighbourhood(
-        mdata["air_pressure_at_sea_level"], 1, gridpp.Mean)
+    edata["air_pressure_at_sea_level"] = smooth(
+        edata["air_pressure_at_sea_level"])
+    mdata["air_pressure_at_sea_level"] = smooth(
+        mdata["air_pressure_at_sea_level"])
     cm = map.pcolormesh(edata["lons"], edata["lats"],
                         edata["wind_speed_10m"], zorder=-10, **pargs)
     map.contour(edata["lons"], edata["lats"],
@@ -162,13 +219,6 @@ def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, t
     map.contour(mdata["lons"], mdata["lats"],
                 mdata["air_pressure_at_sea_level"], **cargs)
     return (cm, "10m wind speed (m/s)")
-
-
-# def _get_variable_by_standard_name(ds: xr.Dataset, standard_name: str) -> str:
-#     for var in ds.variables:
-#         if "standard_name" in ds[var].attrs and ds[var].attrs["standard_name"] == standard_name:
-#             return var
-#     raise ValueError(f"Variable with standard_name {standard_name} not found")
 
 
 def _get_area(ds: xr.Dataset) -> dict[str, np.ndarray]:
@@ -216,12 +266,28 @@ def get_temperature_data(ds: xr.Dataset, timestep: int) -> dict[str, np.ndarray]
     return data
 
 
-def timestring(dt: np.datetime64) -> str:
+def create_animation(image_files: list[str], gif_output: str, duration: int = 800):
+    from PIL import Image
+    print(f"Creating animated gif {gif_output} ... ", end='', flush=True)
+    s_time = time.time()
+    images = [Image.open(f) for f in image_files]
+    images[0].save(
+        gif_output,
+        save_all=True,
+        append_images=images[1:],
+        duration=duration,
+        loop=0
+    )
+    print(
+        f" in {time.time() - s_time:<.0f} seconds, saved animated gif to {gif_output}")
+
+
+def timestring(dt: np.datetime64, fmt: str = '%Y-%m-%d %H') -> str:
     if (dt is None):
         return "0000-00-00 00"
     else:
         dt = dt.astype('datetime64[s]').astype(datetime.datetime)
-        return dt.strftime('%Y-%m-%d %H')
+        return dt.strftime(fmt)
 
 
 if __name__ == "__main__":
