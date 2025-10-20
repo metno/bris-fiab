@@ -1,34 +1,8 @@
 import click
-import json
 import pint
 import xarray as xr
 import numpy as np
-from typing import Dict
-import pydantic
-
-
-class VariableConfig(pydantic.BaseModel):
-    variable_name: str
-    attributes: Dict[str, object]
-    assumed_input_units: str | None = None # if set, convert from this unit to the unit in attributes
-
-
-class SurfaceVariablesConfig(pydantic.BaseModel):
-    variables: Dict[str, VariableConfig]
-
-
-class PressureLevelVariablesConfig(pydantic.BaseModel):
-    levels: list[int]
-    variables: Dict[str, VariableConfig]
-
-
-class VariablesConfig(pydantic.BaseModel):
-    sfc: SurfaceVariablesConfig
-    pl: PressureLevelVariablesConfig
-
-
-class MkGridConfig(pydantic.BaseModel):
-    variables: VariablesConfig
+from bris_adapt.process.config import open_config
 
 
 @click.command()

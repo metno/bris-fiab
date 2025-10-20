@@ -170,20 +170,20 @@
                         "units": "m/s",
                         "long_name": "northward wind",
                         "standard_name": "y_wind"
-                    },
-                    "w": {
-                        "variable_name": "vertical_velocity_pl",
-                        "attributes": {
-                            "standard_name": "vertical_velocity",
-                            "units": "m/s"
-                        }
-                    },
-                    "z": {
-                        "variable_name": "geopotential_pl",
-                        "attributes": {
-                            "standard_name": "geopotential",
-                            "units": "m^2/s^2"
-                        }
+                    }
+                },
+                "w": {
+                    "variable_name": "vertical_velocity_pl",
+                    "attributes": {
+                        "standard_name": "vertical_velocity",
+                        "units": "m/s"
+                    }
+                },
+                "z": {
+                    "variable_name": "geopotential_pl",
+                    "attributes": {
+                        "standard_name": "geopotential",
+                        "units": "m^2/s^2"
                     }
                 }
             }
