@@ -29,7 +29,7 @@ def create_image(output_dir: str, timestep: int, timesteps: (int, int), colormap
     """Create image(s) file from global and local area netcdf files.
     GLOBAL_AREA: Path to global area netcdf file
     LOCAL_AREA: Path to local area netcdf file
-    Write out   put to output directory or current directory if not specified.
+    Write output to output directory or current directory if not specified.
     The output filename is constructed from map type and time step and is <map_type>_<forcast reference time (YYYYMMDDThh)>_<timestamp>.png.
     if TIMESTEP is -1, create images for all time steps.
     If TIMESTEPS is specified, create images for the specified range of time steps.

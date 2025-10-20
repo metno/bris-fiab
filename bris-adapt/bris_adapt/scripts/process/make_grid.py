@@ -10,7 +10,10 @@ from bris_adapt.process.config import open_config
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
 def make_grid(config: str, input: str, output: str):
-    '''Convert FIAB output to a gridded NetCDF file.'''
+    '''
+    Convert FIAB output to a gridded NetCDF file.
+    INPUT: Path to the NetCDF file created by anemoi-inference
+    OUTPUT: Path to the output gridded NetCDF file'''
     met_variables = open_config(config)
     data = xr.open_dataset(input)
 

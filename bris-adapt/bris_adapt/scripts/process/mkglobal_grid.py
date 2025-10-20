@@ -20,6 +20,9 @@ def mkglobal_grid(resolution: float, method: str, k: int, power: float, radius_k
     """
 Interpolate scattered data to a regular global lat/lon grid.
 Uses nearest-neighbor or inverse-distance-weighting (IDW) interpolation.
+
+INPUT: Path to the input NetCDF file with scattered global data (created by anemoi-inference)
+OUTPUT: Path to the output NetCDF file with gridded global data
     """
 
     met_variables = open_config(config)
