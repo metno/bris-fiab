@@ -15,7 +15,7 @@ from bris_adapt.process.ncutil import get_variable_by_standard_name
 
 
 @click.command()
-@click.option('--output-dir', help='Output directory. If not specified, defaults to current directory.', required=False, default=None)
+@click.option('--output-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True), help='Output directory. If not specified, defaults to current directory.', required=False, default=None)
 @click.option('--timestep', type=int, help='Timestep, set to -1 to create for all', show_default=True, required=True, default=0)
 @click.option('--timesteps', type=(int, int), help='Timestep range: <first> <last> (last -1 to create for all)', default=None, required=False, show_default=True)
 @click.option('--colormap', type=click.Choice(list(colormaps.keys())), help='Colormap', default=None, show_default=True)

@@ -113,5 +113,12 @@ uv run bris-adapt process mkglobal-grid global.nc global_0_25deg.nc
 We can now create an image with both global and local forecast.
 
 ```shell
-uv run  bris-adapt process create-image global_0_25deg.nc local.nc --map-type temperature --map-area africa --timestep 1 --output image.png
+uv run  bris-adapt process create-image global_0_25deg.nc local.nc --map-type temperature --map-area africa --timestep 1 --output-dir images
+```
+
+To create an animated gif with data from all timesteps.
+
+
+```shell
+uv run  bris-adapt process create-image global_0_25deg.nc local.nc --map-type temperature --map-area africa --timestep -1 --create-animated-gif --output-dir images
 ```
