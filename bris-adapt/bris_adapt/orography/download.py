@@ -70,10 +70,10 @@ def download_to_file(
         raise ValueError("No suitable dataset found.")
 
     tiler = Tiler(
-        north=area_latlon[0],
-        south=area_latlon[2],
-        west=area_latlon[1],
-        east=area_latlon[3],
+        north=float(area_latlon[0]),
+        south=float(area_latlon[2]),
+        west=float(area_latlon[1]),
+        east=float(area_latlon[3]),
         max_km2=dataset_info[1],
         dlat=None,
         dlon=None
