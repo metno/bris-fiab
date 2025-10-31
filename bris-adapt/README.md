@@ -104,7 +104,16 @@ output:
 
 **Note** At the momment, with the post_processors.extract_from_state, the cutout_source global and lam_0 are exlusive so we need to run two inferences.
 
-The global netcdf is scattered points over the globe. To interpolate this on a regular grid use `mkglobal_grid.py`. 
+The netcdf output from the inference is not grided. The first step is to convert local.nc and global.nc
+to a regular grid.
+
+Convert **local.nc** to a regular grid.
+
+```shell
+uv run bris-adapt process make-grid --config bris-adapt/etc/mkgrid.json local.nc local-gridded.nc
+```
+
+The **global.nc** netcdf is scattered points over the globe. We need to interpolate this on a regular grid. 
 
 ```shell
 uv run bris-adapt process mkglobal-grid global.nc global_0_25deg.nc
@@ -113,12 +122,11 @@ uv run bris-adapt process mkglobal-grid global.nc global_0_25deg.nc
 We can now create an image with both global and local forecast.
 
 ```shell
-uv run  bris-adapt process create-image global_0_25deg.nc local.nc --map-type temperature --map-area africa --timestep 1 --output-dir images
+uv run  bris-adapt process create-image global_0_25deg.nc local-gridded.nc --map-type temperature --map-area africa --timestep 1 --output-dir images
 ```
 
 To create an animated gif with data from all timesteps.
 
-
 ```shell
-uv run  bris-adapt process create-image global_0_25deg.nc local.nc --map-type temperature --map-area africa --timestep -1 --create-animated-gif --output-dir images
+uv run  bris-adapt process create-image global_0_25deg.nc local-gridded.nc --map-type temperature --map-area africa --timestep -1 --create-animated-gif --output-dir images
 ```
