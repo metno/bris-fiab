@@ -51,7 +51,7 @@ def download_to_file(
         area_latlon (tuple): Bounding box coordinates as (north, west, south, east).
         dest_stream (BinaryIO or str): A writable binary file-like object to save the downloaded data.
         high_res (bool): If True, use high-resolution DEMs (30m), otherwise use low-resolution (90m).
-        delete_temp (bool): If True, delete temporary files after merging.
+        delete_temp (bool): If True, delete temporary files after merging. If false the temporary directory path is returned.
 
      Returns:
         The path to the temporary directory containing downloaded tiles if delete_temp is False, else None
