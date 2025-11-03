@@ -39,27 +39,6 @@ OUTPUT: Path to the output NetCDF file with gridded global data
     print(
         f"Input data has {ds.sizes['time']} time steps and {ds.sizes['values']} scattered points")
 
-    coords = {
-        'time': xr.DataArray(ds["time"].values, dims="time", attrs={
-            "standard_name": "time",
-        }),
-        'lat': xr.DataArray(interpol.latitude(), dims="lat", attrs={
-            "units": "degrees_north", "standard_name": "latitude"
-        }),
-        'lon': xr.DataArray(interpol.longitude(), dims="lon", attrs={
-            "units": "degrees_east", "standard_name": "longitude"
-        }),
-        'pl': xr.DataArray(
-            met_variables.variables.pl.levels,
-            dims='pl',
-            attrs={
-                'units': 'hPa',
-                'standard_name': 'air_pressure',
-                'long_name': 'pressure level',
-            }
-        )
-    }
-
     variables = {
         'projection': xr.DataArray(
             data=0,
