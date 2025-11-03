@@ -10,15 +10,13 @@ from bris_adapt.process.config import open_config
 @click.option('--checkpoint', type=click.Path(exists=True), default=None, help='Checkpoint file to read metadata from. Only required if you read data from a file with global coverage')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
-def make_grid(config: str, checkpoint: str|None, input: str, output: str):
+def make_grid(config: str, checkpoint: str | None, input: str, output: str):
     '''Convert anemoi-inference output to a gridded NetCDF file.
 
     This converts an output file from having run anemoi-inference with bris into a more stadardized netcdf format,
     suitable for viewing with common tools.'''
-    with open(config) as f:
-        config_json = json.load(f)
-        met_variables = MkGridConfig.model_validate(config_json)
 
+    met_variables = open_config(config)
     data = xr.open_dataset(input)
 
     longitudes = data.longitude.values
@@ -27,7 +25,8 @@ def make_grid(config: str, checkpoint: str|None, input: str, output: str):
     if checkpoint is not None:
         from anemoi.inference.checkpoint import Checkpoint
         c = Checkpoint(checkpoint)
-        size = len(c.supporting_arrays['source0/latitudes']) - len(c.supporting_arrays['source1/latitudes'])
+        size = len(c.supporting_arrays['source0/latitudes']) - \
+            len(c.supporting_arrays['source1/latitudes'])
         longitudes = longitudes[:size]
         latitudes = latitudes[:size]
 
