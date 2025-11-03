@@ -32,5 +32,4 @@ def open_config(config: str) -> MkGridConfig:
     '''Load netCDF variable mappings from a JSON configuration file.'''
     with open(config) as f:
         config_json = json.load(f)
-        met_variables = MkGridConfig.model_validate(config_json)
-        return met_variables
+        return MkGridConfig.model_validate(config_json)
