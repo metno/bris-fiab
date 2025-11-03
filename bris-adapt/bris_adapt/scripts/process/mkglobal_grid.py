@@ -38,8 +38,6 @@ OUTPUT: Path to the output NetCDF file with gridded global data
           f"(k={interpol.kq}, radius_km={interpol.radius_km})")
     print(
         f"Input data has {ds.sizes['time']} time steps and {ds.sizes['values']} scattered points")
-    sfc_names = []
-    pl_names = []
 
     coords = {
         'time': xr.DataArray(ds["time"].values, dims="time", attrs={
@@ -80,6 +78,7 @@ OUTPUT: Path to the output NetCDF file with gridded global data
             }
         )}
 
+    sfc_names: list[str] = []
     for variable, cfg in met_variables.variables.sfc.variables.items():
         if variable not in ds.data_vars:
             print(f"Variable {variable} not found in input data.")
@@ -110,6 +109,7 @@ OUTPUT: Path to the output NetCDF file with gridded global data
         )
         variables[cfg.variable_name] = param
 
+    pl_names: list[str] = []
     for variable, cfg in met_variables.variables.pl.variables.items():
         if not cfg.variable_name:
             print(f"Variable {variable} is not configured.")
