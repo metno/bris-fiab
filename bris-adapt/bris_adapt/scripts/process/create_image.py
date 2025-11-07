@@ -94,13 +94,10 @@ def create_one_image(output_prefix: str, timestep: int, colormap: str, map_type:
 
     s_time = time.time()
 
-    if colormap is not None:
-        if colormap not in colormaps:
-            print(f"Colormap {colormap} not found, using default")
-            list(colormaps)
-            colormap = None
-        else:
-            colormap = colormaps[colormap]
+    if colormap is not None and colormap not in colormaps:
+        print(f"Colormap {colormap} not found, using default")
+        list(colormaps)
+        colormap = None
 
     # TODO: make projection confiagurable. Use Mercator as default.
     map = mpl.gcf().add_axes([0, 0, 1, 1], projection=ccrs.Mercator())
@@ -238,7 +235,6 @@ def _get_area(ds: xr.Dataset) -> dict[str, np.ndarray]:
 
 
 def get_wind_data(ds: xr.Dataset, timestep: int) -> dict:
-    data: dict[str, np.ndarray] = dict()
     data = _get_area(ds)
     x = ds["x_wind_10m"][timestep, ...]
     y = ds["y_wind_10m"][timestep, ...]
@@ -254,7 +250,6 @@ def get_wind_data(ds: xr.Dataset, timestep: int) -> dict:
 
 
 def get_temperature_data(ds: xr.Dataset, timestep: int) -> dict[str, np.ndarray]:
-    data = dict()
     data = _get_area(ds)
     if "air_temperature_2m" not in ds.variables:
         print("Missing air_temperature_2m")

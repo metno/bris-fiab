@@ -1,14 +1,16 @@
 import numpy as np
 import xarray as xr
 import click
-from bris_adapt.process.interpolate import CreateGlobalGridInterpolator
+from bris_adapt.process.interpolate import create_target_grid_from_area, Interpolator
 from bris_adapt.process.interpolate import MEAN_EARTH_RADIUS_KM
 from bris_adapt.process.config import open_config
 import pint
+from typing import Final
 
 
 @click.command()
 @click.option('--resolution', type=float, help='Grid resolution to interpolate to', show_default=True, default=0.25)
+@click.option('--area', type=str, required=True, help='Area in the format north/west/south/east.')
 @click.option('--method', type=click.Choice(['nearest', 'idw']), help='Interpolation method', show_default=True, default='idw')
 @click.option('--k', type=int, help='Number of neighbors for IDW (ignored for nearest if radius is None)', show_default=True, default=4)
 @click.option('--power', type=float, help='Power parameter for IDW', show_default=True, default=2.0)
@@ -16,25 +18,33 @@ import pint
 @click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', help='Configuration file for variable mapping')
 @click.argument('input', type=click.Path(exists=True))
 @click.argument('output', type=click.Path())
-def mkglobal_grid(resolution: float, method: str, k: int, power: float, radius_km: float, config: str, input: str, output: str):
+def mkglobal_grid(resolution: float | None, area: str, method: str, k: int, power: float, radius_km: float, config: str, input: str, output: str):
     """
-Interpolate scattered data to a regular global lat/lon grid.
+Interpolate scattered data to a regular lat/lon grid given with the area.
 Uses nearest-neighbor or inverse-distance-weighting (IDW) interpolation.
 
-INPUT: Path to the input NetCDF file with scattered global data (created by anemoi-inference)
-OUTPUT: Path to the output NetCDF file with gridded global data
+INPUT: Path to the input NetCDF file with scattered data (created by anemoi-inference)
+OUTPUT: Path to the output NetCDF file with gridded data
     """
+    the_area: tuple[float, float, float, float] | None = None
+    if area is not None:
+        area_elements = area.split('/')
+        if len(area_elements) != 4:
+            raise ValueError(
+                "Area must be specified as north/west/south/east.")
+        north, west, south, east = map(float, area_elements)
+        the_area = (north, west, south, east)
 
     met_variables = open_config(config)
     ds = xr.open_dataset(input, decode_times=True)
 
-    interpol = CreateGlobalGridInterpolator(ds, resolution, method, k,
-                                            power, radius_km)
+    target_grid = create_target_grid_from_area(the_area, resolution)
+    interpol = Interpolator(ds, target_grid, method, k, power, radius_km)
     ref_time = np.datetime64(ds["time"].values[0])
     print("Reference time:", str(ref_time))
     # ----------------- RUN REMAPPING -----------------
-    print(f"Interpolating to {interpol.nlat}x{interpol.nlon} grid "
-          f"({interpol.resolution:.3f}° resolution) using {interpol.method} "
+    print(f"Interpolating to {interpol.shape()} grid "
+          f"({resolution:.3f}° resolution) using {interpol.method} "
           f"(k={interpol.kq}, radius_km={interpol.radius_km})")
     print(
         f"Input data has {ds.sizes['time']} time steps and {ds.sizes['values']} scattered points")
@@ -63,7 +73,6 @@ OUTPUT: Path to the output NetCDF file with gridded global data
             print(f"Variable {variable} not found in input data.")
             continue
         if not cfg.variable_name:
-            # print(f"Variable {variable} is not configured.")
             continue
 
         var_name = cfg.variable_name
@@ -86,7 +95,7 @@ OUTPUT: Path to the output NetCDF file with gridded global data
             dims=['time', 'lat', 'lon'],
             attrs={**cfg.attributes, "grid_mapping": "projection"}
         )
-        variables[cfg.variable_name] = param
+        variables[var_name] = param
 
     pl_names: list[str] = []
     for variable, cfg in met_variables.variables.pl.variables.items():
@@ -94,16 +103,16 @@ OUTPUT: Path to the output NetCDF file with gridded global data
             print(f"Variable {variable} is not configured.")
             continue
 
-        if not all([vn in ds.data_vars for vn in [
-                f'{variable}_{level}' for level in met_variables.variables.pl.levels]]):
+        variable_names = [
+            f'{variable}_{level}' for level in met_variables.variables.pl.levels]
+        if not all([vn in ds.data_vars for vn in variable_names]):
             print(
                 f"Variable {variable} does not have all required levels. Skipping.")
             continue
 
         print(
             f"Interpolating variable {variable} for all levels as {cfg.variable_name}")
-        variable_names = [
-            f'{variable}_{level}' for level in met_variables.variables.pl.levels]
+
         levels_data = [
             interpol.interpolate_var_name(vn) for vn in variable_names
         ]  # list of (time, lat, lon)
@@ -143,9 +152,7 @@ OUTPUT: Path to the output NetCDF file with gridded global data
             }
         )
 
-    resolution_str = " "
-    if interpol.resolution is not None:
-        resolution_str = f" {interpol.resolution:.3f} degree "
+    resolution_str = f" {resolution:.3f} degree " if resolution is not None else ""
 
     out = xr.Dataset(data_vars=variables, coords=coords, attrs={
         'title': f"Interpolation of scattered (values) to regular{resolution_str}lat/lon grid",
