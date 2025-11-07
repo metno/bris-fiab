@@ -31,10 +31,11 @@ def move_domain(grid: float, area: str, add_fiab_metadata: bool, create_sample_c
     click.echo(
         f'Moving domain from {src} to {dest} with grid {grid} and area {north}/{west}/{south}/{east}.')
 
-    orography_stream = get_orography_stream(orography_file, north, west, south, east)
+    orography_stream = get_orography_stream(
+        orography_file, north, west, south, east)
 
     graph_config = graph.GraphConfig(
-        area=tuple(area_elements), # type: ignore
+        area=tuple(area_elements),  # type: ignore
         grid=grid,
         global_grid=global_grid,
         lam_resolution=lam_resolution,
