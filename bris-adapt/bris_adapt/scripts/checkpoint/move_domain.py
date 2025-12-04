@@ -17,9 +17,10 @@ import io
 @click.option('--global-resolution', type=int, default=7, show_default=True)
 @click.option('--margin-radius-km', type=int, default=6, show_default=True)
 @click.option('--orography-file', type=click.Path(exists=True), default=None, help='Path to a local orography file (GeoTIFF). If not provided, the script will download orography data from OpenTopography.org.')
+@click.option('--save-graph-to', type=click.Path(), default=None, help='If provided, saves the generated graph to the specified path for reuse.')
 @click.argument('src', type=click.Path(exists=True))
 @click.argument('dest', type=click.Path())
-def move_domain(grid: float, area: str, add_fiab_metadata: bool, create_sample_config: bool, global_grid: str, lam_resolution: int, global_resolution: int, margin_radius_km: int, orography_file: str | None, src: str, dest: str) -> None:
+def move_domain(grid: float, area: str, add_fiab_metadata: bool, create_sample_config: bool, global_grid: str, lam_resolution: int, global_resolution: int, margin_radius_km: int, orography_file: str | None, save_graph_to: str | None, src: str, dest: str) -> None:
     '''Move a bris domain checkpoint to a new location and resolution.'''
 
     area_elements = area.split('/')
@@ -46,6 +47,7 @@ def move_domain(grid: float, area: str, add_fiab_metadata: bool, create_sample_c
         new_checkpoint=dest,
         orography_stream=orography_stream,
         graph_config=graph_config,
+        save_graph_to=save_graph_to,
     )
 
     if add_fiab_metadata:
