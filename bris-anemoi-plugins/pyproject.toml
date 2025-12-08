@@ -30,10 +30,10 @@ apply_adiabatic_corrections = "anemoi.plugins.bris.inference.apply_adiabatic_cor
 [dependency-groups]
 dev = [
     "ecmwf-api-client",
-    "anemoi-plugins-ecmwf-inference[polytope]",
-    "anemoi-graphs>=0.7.0",
-    "anemoi-models==0.9.5",
-    "torch-geometric==2.4.0",
+    # "anemoi-plugins-ecmwf-inference[polytope]",
+    "anemoi-graphs",
+    "anemoi-models",
+    "torch-geometric",
     {include-group = "test"}
 ]
 test = [

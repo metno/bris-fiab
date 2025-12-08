@@ -8,6 +8,10 @@ packages = [
     "bris_adapt.orography",
 ]
 
+[tool.uv.sources]
+anemoi-datasets = { git = "https://github.com/metno/anemoi-datasets.git", rev = "feature/trimedge" }
+anemoi-models = { git = "https://github.com/ecmwf/anemoi-core.git", subdirectory = "models", rev = "652507dca5f296ee3efa6e77b07725c21ba6137f" }
+
 [project]
 name = "bris-adapt"
 version = "0.1.1"
@@ -23,11 +27,11 @@ license-files = ["LICENSE"]
 dependencies = [
     "anemoi-datasets",
     "anemoi-graphs",
-    "anemoi-inference",
-    "anemoi-models==0.9.5",
+    "anemoi-inference==0.8.2",
+    "anemoi-models",
     "metpy>=1.7.1",
     "anemoi-transform",
-    "anemoi-utils",
+    "anemoi-utils[provenance]",
     "ecmwf-api-client",
     "pydantic>=2.11.7",
     "rioxarray>=0.19.0",
@@ -36,7 +40,7 @@ dependencies = [
     "pyyaml>=6.0.1",
     "metpy>=1.7.1",
     "twine>=6.2.0",
-    "torch-geometric==2.4.0",
+    "torch-geometric==2.6.1",
 ]
 
 [project.scripts]
