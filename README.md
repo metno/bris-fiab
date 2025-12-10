@@ -55,6 +55,8 @@ It can be run like this:
 uv run bris-adapt process make-grid anemoi-output.nc grid.nc
 ```
 
+This should create a file, `grid.nc`, which can be displayed in eg. diana.
+
 #### Inspect checkpoint
 
 List python dependencies
@@ -62,8 +64,6 @@ List python dependencies
 ```shell
 uv run bris-adapt checkpoint list-dependencies <checkpoint>
 ```
-
-This should create a file, `grid.nc`, which can be displayed in eg. diana.
 
 ### Forecast-in-a-Box
 
