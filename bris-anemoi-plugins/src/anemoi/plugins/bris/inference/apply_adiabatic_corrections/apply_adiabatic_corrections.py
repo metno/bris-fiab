@@ -1,5 +1,6 @@
 from anemoi.inference.processor import Processor
 from anemoi.inference.context import Context
+from anemoi.inference.types import State
 from metpy.units import units
 import earthkit.data as ekd
 import pint
@@ -18,8 +19,9 @@ class AdiabaticCorrectionPreProcessor(Processor):
         )
         super().__init__(context, **kwargs)
 
-    def process(self, fields: ekd.FieldList) -> ekd.FieldList:
-        return self._corrector.apply(fields)
+    def process(self, state: State) -> State:
+        state['fields'] = self._corrector.apply(state['fields'])
+        return state
 
 
 class AdiabaticCorrector:
