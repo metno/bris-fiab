@@ -420,6 +420,12 @@ test = [{ name = "pytest" }]
 name = "bris-fiab"
 version = "0.0.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "anemoi-inference" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "anemoi-inference", specifier = ">=0.8.1" }]
 
 [[package]]
 name = "certifi"
