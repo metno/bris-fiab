@@ -1,6 +1,7 @@
 import click
 
 from .download_orography import download_orography
+from .fix_metadata import fix_metadata
 from .move_domain import move_domain
 
 
@@ -12,3 +13,4 @@ def checkpoint():
 
 checkpoint.add_command(move_domain)
 checkpoint.add_command(download_orography)
+checkpoint.add_command(fix_metadata)
