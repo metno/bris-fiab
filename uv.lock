@@ -400,7 +400,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anemoi-inference" },
+    { name = "anemoi-inference", specifier = ">=0.8.1" },
     { name = "earthkit-data" },
     { name = "metpy", specifier = ">=1.7.1" },
     { name = "pint" },
