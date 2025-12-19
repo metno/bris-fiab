@@ -1,11 +1,12 @@
 import click
-from .move_domain import move_domain
+
 from .download_orography import download_orography
+from .move_domain import move_domain
 
 
 @click.group()
 def checkpoint():
-    '''Adapt or manipulate a bris checkpoint.'''
+    """Adapt or manipulate a bris checkpoint."""
     pass
 
 

@@ -5,45 +5,53 @@
 
 edge_attrs = {
     "edge_length": {
-      "_target_": "anemoi.graphs.edges.attributes.EdgeLength",
-      "norm": "unit-max"
+        "_target_": "anemoi.graphs.edges.attributes.EdgeLength",
+        "norm": "unit-max",
     },
     "edge_dirs": {
-      "_target_": "anemoi.graphs.edges.attributes.EdgeDirection",
-      "norm": "unit-std"
-    }
+        "_target_": "anemoi.graphs.edges.attributes.EdgeDirection",
+        "norm": "unit-std",
+    },
 }
 
 
 def combine_nodes(latitudes, longitudes, global_lats, global_lons):
-    from anemoi.datasets.grids import cutout_mask
-    import torch
     import numpy as np
+    import torch
+    from anemoi.datasets.grids import cutout_mask
 
-    
     _mask = cutout_mask(latitudes, longitudes, global_lats, global_lons)
     lats = np.concatenate([latitudes, global_lats[_mask]])
     lons = np.concatenate([longitudes, global_lons[_mask]])
-    mask = torch.tensor([True] * len(latitudes) + [False] * sum(_mask), dtype=torch.bool)
+    mask = torch.tensor(
+        [True] * len(latitudes) + [False] * sum(_mask), dtype=torch.bool
+    )
     return lats, lons, mask, _mask
 
 
-def build_stretched_graph(latitudes, longitudes, global_grid: str, lam_resolution: int, global_resolution: int, margin_radius_km: int):
-
-    from torch_geometric.data import HeteroData
-    from anemoi.graphs.nodes import LatLonNodes, StretchedTriNodes
-    from anemoi.graphs.edges import KNNEdges, MultiScaleEdges
-    from anemoi.utils.grids import grids
-
-    import torch
+def build_stretched_graph(
+    latitudes,
+    longitudes,
+    global_grid: str,
+    lam_resolution: int,
+    global_resolution: int,
+    margin_radius_km: int,
+):
     import numpy as np
+    import torch
+    from anemoi.graphs.edges import KNNEdges, MultiScaleEdges
+    from anemoi.graphs.nodes import LatLonNodes, StretchedTriNodes
+    from anemoi.utils.grids import grids
+    from torch_geometric.data import HeteroData
 
     assert latitudes.ndim == 1
     assert longitudes.ndim == 1
     assert len(latitudes) == len(longitudes)
-    
+
     global_points = grids(global_grid)
-    lats, lons, mask, _mask = combine_nodes(latitudes, longitudes, global_points["latitudes"], global_points["longitudes"])
+    lats, lons, mask, _mask = combine_nodes(
+        latitudes, longitudes, global_points["latitudes"], global_points["longitudes"]
+    )
 
     graph = LatLonNodes(lats, lons, name="data").update_graph(HeteroData())
     graph["data"]["global_grid"] = global_grid
@@ -51,20 +59,25 @@ def build_stretched_graph(latitudes, longitudes, global_grid: str, lam_resolutio
     graph["data"]["latitudes"] = lats
     graph["data"]["longitudes"] = lons
     graph["data"]["global/cutout_mask"] = _mask
-    graph["data"]["lam_0/cutout_mask"] =  torch.tensor([True] * len(latitudes))
+    graph["data"]["lam_0/cutout_mask"] = torch.tensor([True] * len(latitudes))
 
     # All of the following can easily be moved to a configuration file and substituted by:
-    # graph = GraphCreator("recipe_forecast_in_a_box.yaml").update_graph(graph)
+    # graph = GraphCreator("recipe_forecast_in_a_box.yaml").update_graph(graph)
     hidden = StretchedTriNodes(
-        lam_resolution=lam_resolution, 
-        global_resolution=global_resolution, 
+        lam_resolution=lam_resolution,
+        global_resolution=global_resolution,
         margin_radius_km=margin_radius_km,
-        reference_node_name="data", 
-        mask_attr_name="cutout_mask", 
+        reference_node_name="data",
+        mask_attr_name="cutout_mask",
         name="hidden",
     )
     enc = KNNEdges("data", "hidden", num_nearest_neighbours=12)
-    proc = MultiScaleEdges("hidden", "hidden", x_hops=1, scale_resolutions=list(range(1, lam_resolution + 1)))
+    proc = MultiScaleEdges(
+        "hidden",
+        "hidden",
+        x_hops=1,
+        scale_resolutions=list(range(1, lam_resolution + 1)),
+    )
     dec = KNNEdges("hidden", "data", num_nearest_neighbours=1)
 
     graph = hidden.update_graph(graph)
@@ -74,8 +87,6 @@ def build_stretched_graph(latitudes, longitudes, global_grid: str, lam_resolutio
     graph = dec.update_graph(graph, edge_attrs)
 
     return graph
-
-
 
 
 # import argparse
