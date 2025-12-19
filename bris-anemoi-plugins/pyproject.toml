@@ -3,7 +3,7 @@ requires = [ "setuptools>=60", "setuptools-scm>=8" ]
 
 [project]
 name = "bris-anemoi-plugins"
-version = "0.1.1"
+version = "0.1.2"
 description = "Plugins needed for running the Bris model with Forecast-in-a-Box and anemoi-inference"
 readme = "README.md"
 requires-python = ">=3.11"
