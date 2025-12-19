@@ -377,7 +377,7 @@ requires-dist = [
 
 [[package]]
 name = "bris-anemoi-plugins"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "bris-anemoi-plugins" }
 dependencies = [
     { name = "anemoi-inference" },
