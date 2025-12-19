@@ -14,7 +14,7 @@ classifiers = [
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = [
-    "anemoi-inference",
+    "anemoi-inference>=0.8.1",
     "metpy>=1.7.1",
     "pint",
     "earthkit-data",

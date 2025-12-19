@@ -315,7 +315,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anemoi-inference" },
+    { name = "anemoi-inference", specifier = ">=0.8.1" },
     { name = "earthkit-data" },
     { name = "metpy", specifier = ">=1.7.1" },
     { name = "pint" },
@@ -336,6 +336,12 @@ test = [{ name = "pytest" }]
 name = "bris-fiab"
 version = "0.0.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "anemoi-inference" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "anemoi-inference", specifier = ">=0.8.1" }]
 
 [[package]]
 name = "certifi"
