@@ -6,12 +6,6 @@ Currently one plugin is available:
 
 This plugin corrects the input data parameters to the Bris model. The corrections are done based on topography metadata added to the checkpoint.
 
-### Setting up
-
-```shell
-uv sync
-```
-
 ### Configure anemoi-inference to use plugin
 
 Example:
