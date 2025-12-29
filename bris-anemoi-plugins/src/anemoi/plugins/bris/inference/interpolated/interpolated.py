@@ -1,13 +1,10 @@
 from copy import copy
-import datetime
 import logging
 
-import earthkit.data as ekd
 import numpy as np
 from anemoi.inference.context import Context
 from anemoi.inference.inputs.ekd import EkdInput
 from anemoi.inference.inputs.mars import MarsInput
-from anemoi.inference.testing import float_hash
 from anemoi.inference.types import Date, State
 
 from ._interpolator import create_interpolator, LatLon
@@ -62,10 +59,6 @@ class InterpolatedInput(EkdInput):
         source_state = self._mars.create_input_state(date=date, **kwargs)
         return self._interpolate(source_state)
 
-        # dates: list[Date] = [date + h for h in self.checkpoint.lagged]
-        # fields = self._fields(dates, self.variables)
-        # return self._create_input_state(fields, variables=None, date=date, **kwargs)
-
     def load_forcings_state(self, *, dates: list[Date], current_state: State) -> State:
         """Load the forcings state for the given variables and dates.
 
@@ -84,22 +77,16 @@ class InterpolatedInput(EkdInput):
 
         fake_state = {
             'date': current_state['date'],
-            'latitudes': None,
+            'latitudes': None,  # This should trigger the fetching of lat/lon from downloaded data instead of previously interpolated
             'longitudes': None,
-            'fields': current_state['fields'], # Possibly not correct
+            # Possibly not correct (or used)
+            'fields': current_state['fields'],
         }
 
         source_state = self._mars.load_forcings_state(
             dates=dates, current_state=fake_state
         )
         return self._interpolate(source_state)
-
-        # fields = self._fields(dates, self.variables)
-        # return self._load_forcings_state(
-        #     fields,
-        #     dates=dates,
-        #     current_state=current_state,
-        # )
 
     def _interpolate(self, source_state: State) -> State:
         interpolate = create_interpolator(
@@ -115,7 +102,8 @@ class InterpolatedInput(EkdInput):
         fields = {}
         for k, v in source_state["fields"].items():
             values = interpolate(v)
-            assert len(values[0]) == len(self._latitudes), f'{len(values[0])} != {len(self._latitudes)}'
+            assert len(values[0]) == len(
+                self._latitudes), f'{len(values[0])} != {len(self._latitudes)}'
             fields[k] = values
 
         ret = {}  # source_state.copy()
@@ -123,57 +111,4 @@ class InterpolatedInput(EkdInput):
         ret["latitudes"] = self._latitudes
         ret["longitudes"] = self._longitudes
         ret["fields"] = fields
-        # ret["_input"] = self
         return ret
-
-    def _fields(self, dates: list[Date], variables) -> ekd.FieldList:
-        """Generate fields for the given dates and variables.
-
-        Parameters
-        ----------
-        dates : List[Date]
-            List of dates for which to generate fields, by default None.
-        variables : Optional[List[str]], optional
-            List of variables for which to generate fields, by default None.
-
-        Returns
-        -------
-        ekd.FieldList
-            The generated fields.
-        """
-
-        LOG.info("Generating fields for %s", variables)
-
-        typed_variables = self.checkpoint.typed_variables
-
-        result = []
-        for variable in variables:
-            is_constant_in_time = typed_variables[variable].is_constant_in_time
-
-            keys = {
-                k: v
-                for k, v in typed_variables[variable].grib_keys.items()
-                if k not in SKIP_KEYS
-            }
-
-            for date in dates:
-                assert type(date) is datetime.datetime, (
-                    "date must be a datetime.date object"
-                )
-                x = float_hash(variable, dates[0] if is_constant_in_time else date)
-
-                handle = dict(
-                    values=np.ones(
-                        self.checkpoint.number_of_grid_points, dtype=np.float32
-                    )
-                    * x,
-                    latitudes=self._latitudes,
-                    longitudes=self._longitudes,
-                    date=date.strftime("%Y%m%d"),
-                    time=date.strftime("%H%M"),
-                    name=variable,
-                    **keys,
-                )
-                result.append(handle)
-
-        return ekd.from_source("list-of-dicts", result)
