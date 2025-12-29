@@ -3,14 +3,12 @@ import logging
 
 import numpy as np
 from anemoi.inference.context import Context
+import anemoi.inference.inputs
 from anemoi.inference.inputs.ekd import EkdInput
 from anemoi.inference.inputs.mars import MarsInput
 from anemoi.inference.types import Date, State
 
 from ._interpolator import create_interpolator, LatLon
-
-LOG = logging.getLogger(__name__)
-SKIP_KEYS = ["date", "time", "step", "valid_datetime"]
 
 
 class InterpolatedInput(EkdInput):
@@ -24,9 +22,19 @@ class InterpolatedInput(EkdInput):
         context : Context
             The context for the input.
         """
-        super().__init__(context, **kwargs)
 
-        self._mars = MarsInput(copy(context), grid="N80", **kwargs)
+        source = kwargs.pop('source', None)
+        if source is None:
+            raise ValueError("Source input configuration must be provided for InterpolatedInput.")
+        if len(source) != 1:
+            raise ValueError("Exactly one source input must be provided for InterpolatedInput.")
+        source_name, source_kwargs = next(iter(source.items()))
+
+        source_factory = anemoi.inference.inputs.input_registry.lookup(source_name)
+        source_kwargs.update(kwargs)
+        self._source = source_factory(copy(context), **source_kwargs) # type: ignore
+
+        super().__init__(context, **kwargs)
 
         self._latitudes = self.checkpoint.supporting_arrays["latitudes"].astype(
             np.float32
@@ -56,7 +64,7 @@ class InterpolatedInput(EkdInput):
             The created input state.
         """
 
-        source_state = self._mars.create_input_state(date=date, **kwargs)
+        source_state = self._source.create_input_state(date=date, **kwargs)
         return self._interpolate(source_state)
 
     def load_forcings_state(self, *, dates: list[Date], current_state: State) -> State:
@@ -83,7 +91,7 @@ class InterpolatedInput(EkdInput):
             'fields': current_state['fields'],
         }
 
-        source_state = self._mars.load_forcings_state(
+        source_state = self._source.load_forcings_state(
             dates=dates, current_state=fake_state
         )
         return self._interpolate(source_state)
