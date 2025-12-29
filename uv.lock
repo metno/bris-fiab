@@ -384,6 +384,7 @@ dependencies = [
     { name = "earthkit-data" },
     { name = "metpy" },
     { name = "pint" },
+    { name = "scipy" },
 ]
 
 [package.dev-dependencies]
@@ -404,6 +405,7 @@ requires-dist = [
     { name = "earthkit-data" },
     { name = "metpy", specifier = ">=1.7.1" },
     { name = "pint" },
+    { name = "scipy", specifier = ">=1.16.3" },
 ]
 
 [package.metadata.requires-dev]

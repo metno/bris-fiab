@@ -18,6 +18,7 @@ dependencies = [
     "metpy>=1.7.1",
     "pint",
     "earthkit-data",
+    "scipy>=1.16.3",
 ]
 
 [project.urls]
@@ -26,6 +27,9 @@ Issues = "https://github.com/metno/bris-fiab/issues"
 
 [project.entry-points."anemoi.inference.pre_processors"]
 apply_adiabatic_corrections = "anemoi.plugins.bris.inference.apply_adiabatic_corrections:AdiabaticCorrectionPreProcessor"
+
+[project.entry-points."anemoi.inference.inputs"]
+interpolated = "anemoi.plugins.bris.inference.interpolated:InterpolatedInput"
 
 [dependency-groups]
 dev = [
