@@ -1,0 +1,22 @@
+{
+  "areas": {
+    "europe": {
+      "north": 70.0,
+      "west": -25.0,
+      "south": 40.0,
+      "east": 55.0
+    },
+    "afrika": {
+      "north": -10.0,
+      "west": 68.0,
+      "south": -45.0,
+      "east": 32.0
+    },
+    "asia": {
+      "north": 55.0,
+      "west": 60.0,
+      "south": 5.0,
+      "east": 150.0
+    }
+  }
+}
