@@ -1,24 +1,31 @@
+
 import numpy as np
 import xarray as xr
 import click
 from bris_adapt.process.interpolate import create_target_grid_from_area, Interpolator
 from bris_adapt.process.interpolate import MEAN_EARTH_RADIUS_KM
 from bris_adapt.process.config import open_config
+from bris_adapt.process.areas import Area, load_areas, parse_area_from_str
 import pint
 from typing import Final
+import os
 
 
 @click.command()
 @click.option('--resolution', type=float, help='Grid resolution to interpolate to', show_default=True, default=0.25)
-@click.option('--area', type=str, required=True, help='Area in the format north/west/south/east.')
+@click.option('--area', type=str, required=False, help='Area in the format north/west/south/east. Overrides named-area if both are provided.', default=None)
+@click.option('--named-area', type=str, help='Named area. Areas is defined in an areas configuration file.', default=None)
+@click.option('--list-areas', is_flag=True, help='List available named areas and exit.', default=False)
 @click.option('--method', type=click.Choice(['nearest', 'idw']), help='Interpolation method', show_default=True, default='idw')
 @click.option('--k', type=int, help='Number of neighbors for IDW (ignored for nearest if radius is None)', show_default=True, default=4)
 @click.option('--power', type=float, help='Power parameter for IDW', show_default=True, default=2.0)
 @click.option('--radius_km', type=float, help='Radius in km to limit neighbors; set to 0 or negative to disable', show_default=True, default=100.0)
-@click.option('--config', type=click.Path(exists=True), default='etc/mkgrid.json', help='Configuration file for variable mapping')
-@click.argument('input', type=click.Path(exists=True))
-@click.argument('output', type=click.Path())
-def mkglobal_grid(resolution: float | None, area: str, method: str, k: int, power: float, radius_km: float, config: str, input: str, output: str):
+@click.option('--config', type=click.Path(), default='mkgrid.json', help='Configuration file for variable mapping')
+@click.option('--area-config', type=click.Path(), default='areas.json', help='Configuration file for named areas', show_default=True)
+@click.argument('input', type=click.Path(exists=True), required=False, default=None)
+@click.argument('output', type=click.Path(), required=False, default=None)
+def mkglobal_grid(resolution: float, area: str | None, named_area: str | None, list_areas: bool, method: str, k: int, power: float,
+                  radius_km: float, config: str, area_config: str, input: str, output: str):
     """
 Interpolate scattered data to a regular lat/lon grid given with the area.
 Uses nearest-neighbor or inverse-distance-weighting (IDW) interpolation.
@@ -26,19 +33,22 @@ Uses nearest-neighbor or inverse-distance-weighting (IDW) interpolation.
 INPUT: Path to the input NetCDF file with scattered data (created by anemoi-inference)
 OUTPUT: Path to the output NetCDF file with gridded data
     """
-    the_area: tuple[float, float, float, float] | None = None
-    if area is not None:
-        area_elements = area.split('/')
-        if len(area_elements) != 4:
-            raise ValueError(
-                "Area must be specified as north/west/south/east.")
-        north, west, south, east = map(float, area_elements)
-        the_area = (north, west, south, east)
+    area_config = find_config_file(area_config)
+    config = find_config_file(config)
+
+    print(f"Using area configuration file: {area_config}")
+    print(f"Using variable configuration file: {config}")
+
+    the_are = get_area(area_config, list_areas, named_area, area)
+    print(f"Using area: {the_are}")
+    if input is None:
+        print("Input file is required.")
+        exit(1)
 
     met_variables = open_config(config)
     ds = xr.open_dataset(input, decode_times=True)
 
-    target_grid = create_target_grid_from_area(the_area, resolution)
+    target_grid = create_target_grid_from_area(the_are.as_tuple(), resolution)
     interpol = Interpolator(ds, target_grid, method, k, power, radius_km)
     ref_time = np.datetime64(ds["time"].values[0])
     print("Reference time:", str(ref_time))
@@ -173,6 +183,37 @@ OUTPUT: Path to the output NetCDF file with gridded data
     print(
         f"Wrote: {output}, lat/lon size: ({interpol.latitude().size}, {interpol.longitude().size})")
     print(out)
+
+
+def get_area(area_cionfig_file: str, list_areas: bool, area_name: str | None = None, area_str: str | None = None) -> Area:
+    areas_config = load_areas(area_cionfig_file)
+
+    if list_areas:
+        print("Available named areas (north/west/south/east):")
+        for name in areas_config.list_area_names():
+            area_obj = areas_config.get_area(name)
+            print(f"  {name}: {'/'.join(map(str, area_obj.as_list()))}")
+        exit(0)
+
+    if area_str is not None:
+        return parse_area_from_str(area_str)
+    elif area_name is not None:
+        return areas_config.get_area(area_name)
+
+    raise ValueError(
+        "Either --area or --named-area must be specified, or use --list-areas to see available named areas.")
+
+
+def find_config_file(filename: str) -> str:
+    '''Find configuration file in current or parent directories.'''
+    search_paths: Final = ['.', 'etc',
+                           'bris-adapt/etc', '/etc', '/usr/local/etc']
+    for path in search_paths:
+        full_path = f"{path}/{filename}"
+
+        if os.path.isfile(full_path):
+            return full_path
+    raise FileNotFoundError(f"Configuration file '{filename}' not found.")
 
 
 if __name__ == '__main__':

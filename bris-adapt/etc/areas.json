@@ -7,16 +7,28 @@
       "east": 55.0
     },
     "afrika": {
-      "north": -10.0,
-      "west": 68.0,
+      "north": 32.0,
+      "west": -10.0,
       "south": -45.0,
-      "east": 32.0
+      "east": 62.0
+    },
+    "malawi": {
+      "north": -8.0,
+      "west": 30.0,
+      "south": -22.0,
+      "east": 43.0
     },
     "asia": {
       "north": 55.0,
       "west": 60.0,
       "south": 5.0,
       "east": 150.0
+    },
+    "global": {
+      "north": 90.0,
+      "west": -180.0,
+      "south": -90.0,
+      "east": 180.0
     }
   }
 }

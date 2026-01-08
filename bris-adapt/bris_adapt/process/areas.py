@@ -1,7 +1,6 @@
 from typing import Dict
 import json
 from pydantic import BaseModel
-from bris_adapt.process.find_file import find_file_in_parents
 
 
 class Area(BaseModel):
@@ -9,12 +8,23 @@ class Area(BaseModel):
     west: float
     south: float
     east: float
+    name: str | None = None
 
     def as_tuple(self) -> tuple[float, float, float, float]:
         return (self.north, self.west, self.south, self.east)
 
     def as_list(self) -> list[float]:
         return [self.north, self.west, self.south, self.east]
+
+    def set_name(self, name: str):
+        self.name = name
+
+    def get_name(self) -> str:
+        return self.name if self.name is not None else "<unnamed>"
+
+    def __str__(self) -> str:
+        name = f"({self.get_name()})" if self.name != '<unnamed>' else ""
+        return f"{self.north}/{self.west}/{self.south}/{self.east} {name}"
 
 
 class AreasConfig(BaseModel):
@@ -26,14 +36,17 @@ class AreasConfig(BaseModel):
         return self.areas[name]
 
     def list_area_names(self) -> list[str]:
-        return list(self.areas.keys())
+        return list(self.areas)
 
 
 def load_areas(config: str) -> AreasConfig:
     '''Load areas from a JSON configuration file.'''
     with open(config) as f:
         config_json = json.load(f)
-        return AreasConfig.model_validate(config_json)
+        areas = AreasConfig.model_validate(config_json)
+        for name, area in areas.areas.items():
+            area.set_name(name)
+        return areas
 
 
 def parse_area_from_str(area: str) -> Area:

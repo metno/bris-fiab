@@ -25,7 +25,7 @@ def create_target_grid_from_geotiff(topofile: str) -> tuple[np.ndarray, np.ndarr
         return lat, lon
 
 
-def create_target_grid_from_area(area: tuple[float, float, float, float] | None, resolution: float) -> tuple[np.ndarray, np.ndarray]:
+def create_target_grid_from_area(area: tuple[float, float, float, float], resolution: float) -> tuple[np.ndarray, np.ndarray]:
     '''
     Create a target grid for the specified area and resolution.
 
@@ -37,9 +37,6 @@ def create_target_grid_from_area(area: tuple[float, float, float, float] | None,
 
     Returns: (latitudes, longitudes) as 2D numpy arrays
     '''
-    if area is None:
-        area = (90, -180, -90, 180)
-
     north, west, south, east = area
     lat = np.arange(north, south - resolution, -resolution)
     lon = np.arange(west, east + resolution, resolution)
@@ -75,10 +72,6 @@ class Interpolator:
 
     def _setup(self, lat_src: np.ndarray, lon_src: np.ndarray):
         lat2d, lon2d = self.target_grid2d
-
-        print("Source points:", lat_src.shape[0])
-        print("Target lat shape:", lat2d.shape)
-        print("Target lon shape:", lon2d.shape)
 
         # ----------------- BUILD NEIGHBOR MAP (ONCE) -----------------
         src_rad = np.deg2rad(np.c_[lat_src, lon_src])  # (values, 2)

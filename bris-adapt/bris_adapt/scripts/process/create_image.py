@@ -20,12 +20,13 @@ from bris_adapt.process.ncutil import get_variable_by_standard_name
 @click.option('--timesteps', type=(int, int), help='Timestep range: <first> <last> (last -1 to create for all)', default=None, required=False, show_default=True)
 @click.option('--colormap', type=click.Choice(list(colormaps.keys())), help='Colormap', default=None, show_default=True)
 @click.option('--map-type', type=click.Choice(['temperature', 'wind']), help='What type of map to create', show_default=True, default='temperature')
-@click.option('--map-area', type=click.Choice(['africa', 'northern-europe']), help='Map area to use', show_default=True, default='africa')
+@click.option('--area-by-name', type=click.Choice(['africa', 'northern-europe']), help='Map area to use', show_default=True, default=None)
+@click.option('--area', type=str, help='Area bounding box, north/west/south/east', show_default=True, required=False, default=None)
 @click.option('--create-animated-gif', is_flag=True, help='Create animated gif from images', default=False, show_default=True)
 @click.option('--force', is_flag=True, help='Force re-creation of images even if they already exist', default=False, show_default=True)
 @click.argument('global-area', type=click.Path(exists=True))
-@click.argument('local-area', type=click.Path(exists=True))
-def create_image(output_dir: str, timestep: int, timesteps: (int, int), colormap: str, map_type: str, map_area: str, create_animated_gif: bool, force: bool, global_area: str, local_area: str):
+@click.argument('local-area', type=click.Path(exists=False))
+def create_image(output_dir: str, timestep: int, timesteps: (int, int), colormap: str, map_type: str, area_by_name: str, create_animated_gif: bool, force: bool, global_area: str, local_area: str):
     """Create image(s) file from global and local area netcdf files.
     GLOBAL_AREA: Path to global area netcdf file
     LOCAL_AREA: Path to local area netcdf file
@@ -34,6 +35,9 @@ def create_image(output_dir: str, timestep: int, timesteps: (int, int), colormap
     if TIMESTEP is -1, create images for all time steps.
     If TIMESTEPS is specified, create images for the specified range of time steps.
     """
+
+    if area_by_name is None and area is None:
+        map_area = 'Africa'  # Default area
 
     print(f"Creating {map_type} images for {map_area}")
     ds_global_area = xr.open_dataset(global_area)
@@ -282,6 +286,25 @@ def timestring(dt: np.datetime64, fmt: str = '%Y-%m-%d %H') -> str:
     else:
         dt = dt.astype('datetime64[s]').astype(datetime.datetime)
         return dt.strftime(fmt)
+
+
+def get_named_area_bounds(area_name: str) -> tuple[float, float, float, float]:
+    """Get bounding box for named area."""
+
+
+#     if map_area == 'northern-europe':
+#         # Northern Europe
+#         map.set_extent([-45, 55, 40, 70], ccrs.PlateCarree())
+#     elif map_area == 'africa':
+#         # Afrika modified
+#         map.set_extent([-10, 68, -45, 32],  ccrs.PlateCarree())
+
+    if area_name == 'africa':
+        return (-10.0, 68.0, -45.0, 32.0)  # north, west, south, east
+    elif area_name == 'northern-europe':
+        return (70.0, -25.0, 40.0, 55.0)  # north, west, south, east
+    else:
+        raise ValueError(f"Unknown area name: {area_name}")
 
 
 if __name__ == "__main__":
