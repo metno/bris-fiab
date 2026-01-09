@@ -6,6 +6,7 @@ from bris_adapt.process.interpolate import create_target_grid_from_area, Interpo
 from bris_adapt.process.interpolate import MEAN_EARTH_RADIUS_KM
 from bris_adapt.process.config import open_config
 from bris_adapt.process.areas import Area, load_areas, parse_area_from_str
+from bris_adapt.process.configutil import find_config_file
 import pint
 from typing import Final
 import os
@@ -202,18 +203,6 @@ def get_area(area_cionfig_file: str, list_areas: bool, area_name: str | None = N
 
     raise ValueError(
         "Either --area or --named-area must be specified, or use --list-areas to see available named areas.")
-
-
-def find_config_file(filename: str) -> str:
-    '''Find configuration file in current or parent directories.'''
-    search_paths: Final = ['.', 'etc',
-                           'bris-adapt/etc', '/etc', '/usr/local/etc']
-    for path in search_paths:
-        full_path = f"{path}/{filename}"
-
-        if os.path.isfile(full_path):
-            return full_path
-    raise FileNotFoundError(f"Configuration file '{filename}' not found.")
 
 
 if __name__ == '__main__':
