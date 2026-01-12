@@ -8,14 +8,11 @@ from bris_adapt.process.config import open_config
 from bris_adapt.process.areas import Area, load_areas, parse_area_from_str
 from bris_adapt.process.configutil import find_config_file
 import pint
-from typing import Final
-import os
 
 
 @click.command()
 @click.option('--resolution', type=float, help='Grid resolution to interpolate to', show_default=True, default=0.25)
-@click.option('--area', type=str, required=False, help='Area in the format north/west/south/east. Overrides named-area if both are provided.', default=None)
-@click.option('--named-area', type=str, help='Named area. Areas is defined in an areas configuration file.', default=None)
+@click.option('--area', type=str, help='Either a defined area or an area in the format north/west/south/east.', default=None)
 @click.option('--list-areas', is_flag=True, help='List available named areas and exit.', default=False)
 @click.option('--method', type=click.Choice(['nearest', 'idw']), help='Interpolation method', show_default=True, default='idw')
 @click.option('--k', type=int, help='Number of neighbors for IDW (ignored for nearest if radius is None)', show_default=True, default=4)
@@ -25,7 +22,7 @@ import os
 @click.option('--area-config', type=click.Path(), default='areas.json', help='Configuration file for named areas', show_default=True)
 @click.argument('input', type=click.Path(exists=True), required=False, default=None)
 @click.argument('output', type=click.Path(), required=False, default=None)
-def mkglobal_grid(resolution: float, area: str | None, named_area: str | None, list_areas: bool, method: str, k: int, power: float,
+def mkglobal_grid(resolution: float, area: str | None, list_areas: bool, method: str, k: int, power: float,
                   radius_km: float, config: str, area_config: str, input: str, output: str):
     """
 Interpolate scattered data to a regular lat/lon grid given with the area.
@@ -40,7 +37,7 @@ OUTPUT: Path to the output NetCDF file with gridded data
     print(f"Using area configuration file: {area_config}")
     print(f"Using variable configuration file: {config}")
 
-    the_are = get_area(area_config, list_areas, named_area, area)
+    the_are = get_area(area_config, list_areas, area)
     print(f"Using area: {the_are}")
     if input is None:
         print("Input file is required.")
@@ -186,7 +183,7 @@ OUTPUT: Path to the output NetCDF file with gridded data
     print(out)
 
 
-def get_area(area_cionfig_file: str, list_areas: bool, area_name: str | None = None, area_str: str | None = None) -> Area:
+def get_area(area_cionfig_file: str, list_areas: bool, local_area: str | None = None) -> Area:
     areas_config = load_areas(area_cionfig_file)
 
     if list_areas:
@@ -195,14 +192,13 @@ def get_area(area_cionfig_file: str, list_areas: bool, area_name: str | None = N
             area_obj = areas_config.get_area(name)
             print(f"  {name}: {'/'.join(map(str, area_obj.as_list()))}")
         exit(0)
+    if local_area is None or len(local_area) == 0:
+        raise ValueError(
+            "Either --local-area must be specified, or use --list-areas to see available named areas.")
+    if local_area.count('/') == 3:
+        return parse_area_from_str(local_area)
 
-    if area_str is not None:
-        return parse_area_from_str(area_str)
-    elif area_name is not None:
-        return areas_config.get_area(area_name)
-
-    raise ValueError(
-        "Either --area or --named-area must be specified, or use --list-areas to see available named areas.")
+    return areas_config.get_area(area_name)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 import os
-from typing import Any
+from typing import Any, NoReturn
 from matplotlib.collections import QuadMesh
+from ...process.areas import AreasConfig
 import numpy as np
 import matplotlib.pylab as mpl
 from matplotlib import colormaps
@@ -12,64 +13,74 @@ import datetime
 import xarray as xr
 import click
 from bris_adapt.process.ncutil import get_variable_by_standard_name
+from bris_adapt.process.configutil import find_config_file
+from bris_adapt.process.areas import parse_area_from_str, load_areas, Area, AreasConfig
 
 
 @click.command()
-@click.option('--output-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True), help='Output directory. If not specified, defaults to current directory.', required=False, default=None)
-@click.option('--timestep', type=int, help='Timestep, set to -1 to create for all', show_default=True, required=True, default=0)
-@click.option('--timesteps', type=(int, int), help='Timestep range: <first> <last> (last -1 to create for all)', default=None, required=False, show_default=True)
+@click.option('--output-dir', type=click.Path(exists=True, file_okay=False, dir_okay=True),
+              help='Output directory. If not specified, defaults to current directory.', required=False, default=None)
+@click.option('--timestep', type=str,
+              help='Timestep range: <first>[/<last>]. If only <first> is given, create only this timestep. -1 for all',
+              default="-1", required=False, show_default=True)
 @click.option('--colormap', type=click.Choice(list(colormaps.keys())), help='Colormap', default=None, show_default=True)
-@click.option('--map-type', type=click.Choice(['temperature', 'wind']), help='What type of map to create', show_default=True, default='temperature')
-@click.option('--area-by-name', type=click.Choice(['africa', 'northern-europe']), help='Map area to use', show_default=True, default=None)
-@click.option('--area', type=str, help='Area bounding box, north/west/south/east', show_default=True, required=False, default=None)
+@click.option('--map-type', type=click.Choice(['temperature', 'wind']), help='What type of map to create',
+              show_default=True, default='temperature')
+@click.option('--local-area', type=str, help='Either a defined area or an area in the format north/west/south/east.', default=None)
+@click.option('--list-areas', is_flag=True, help='List available named areas and exit.', default=False)
+@click.option('--no-box', is_flag=True, help='Do not draw box around local area', default=True, show_default=True)
 @click.option('--create-animated-gif', is_flag=True, help='Create animated gif from images', default=False, show_default=True)
 @click.option('--force', is_flag=True, help='Force re-creation of images even if they already exist', default=False, show_default=True)
-@click.argument('global-area', type=click.Path(exists=True))
-@click.argument('local-area', type=click.Path(exists=False))
-def create_image(output_dir: str, timestep: int, timesteps: (int, int), colormap: str, map_type: str, area_by_name: str, create_animated_gif: bool, force: bool, global_area: str, local_area: str):
-    """Create image(s) file from global and local area netcdf files.
-    GLOBAL_AREA: Path to global area netcdf file
-    LOCAL_AREA: Path to local area netcdf file
+@click.option('--area-config', type=click.Path(), default='areas.json', help='Configuration file for named areas', show_default=True)
+@click.argument('forecast', type=click.Path(exists=True), required=True)
+def create_image(output_dir: str, timestep: str, colormap: str | None, map_type: str, local_area: str | None,
+                 list_areas: bool, no_box: bool, create_animated_gif: bool, force: bool, area_config: str, forecast: str):
+    """Create image(s) file from a netcdf file with both global and local (higres) forecasts.
+    forecast: Path to netcdf file
+
     Write output to output directory or current directory if not specified.
-    The output filename is constructed from map type and time step and is <map_type>_<forcast reference time (YYYYMMDDThh)>_<timestamp>.png.
-    if TIMESTEP is -1, create images for all time steps.
-    If TIMESTEPS is specified, create images for the specified range of time steps.
+    The output filename is constructed from map type and timestep and is on the form <map_type>_<forcast reference time (YYYYMMDDThh)>_<timestamp>.png.
+    if timestep is -1, create images for all time steps.
+    If timestep is a range <first>/<last> is specified, create images for the specified range of timesteps.
+    If timestep is range <first>/-1 is specified, create images from <first> to the last timestep.
     """
 
-    if area_by_name is None and area is None:
-        map_area = 'Africa'  # Default area
+    area_config = find_config_file(area_config)
+    map_area: Area | None = None
 
-    print(f"Creating {map_type} images for {map_area}")
-    ds_global_area = xr.open_dataset(global_area)
-    ds_local_area = xr.open_dataset(local_area)
-    ndims = min(ds_global_area['time'].size, ds_local_area['time'].size)
+    if list_areas:
+        list_available_areas(area_config)
+        exit(0)
+
+    if local_area is not None:
+        map_area = get_area(area_config, local_area)
+
+    print(
+        f"Creating {map_type} images. {'' if map_area is None else f' {map_area}'} ")
+    ds_global = xr.open_dataset(forecast, decode_times=True)
+    # Both global and local are in the same file
+
+    ds_local: xr.Dataset | None = None
+    if map_area is not None:
+        ds_local = get_local_area(ds_global, map_area)
+
+    ndims = int(ds_global['time'].size)
 
     if output_dir is None:
         output_dir = "."
 
-    output_prefix = f"{output_dir}/{map_type}_{timestring(ds_global_area['time'].values[0], '%Y%m%dT%H')}"
+    output_prefix = f"{output_dir}/{map_type}_{timestring(ds_global['time'].values[0], '%Y%m%dT%H')}"
 
     print(
         f"Number of time steps available: {ndims}")
-    first, last = timestep, timestep
-
-    if timesteps is not None:
-        first, last = timesteps
-        if last == -1 or last > ndims:
-            last = ndims
-    elif timestep == -1:
-        first = 0
-        last = ndims
-    elif timestep >= ndims:
-        first = ndims - 1
-        last = ndims
+    first, last = parse_timestep(timestep, ndims)
 
     print(f"Creating images for timesteps {first} to {last - 1}")
     image_files = []
 
     for t in range(first, last):
         image_file = create_one_image(output_prefix, t,  colormap,
-                                      map_type, map_area, ds_global_area, ds_local_area, not force)
+                                      map_type, map_area, ds_global, ds_local, not force, no_box)
         if image_file is not None:
             image_files.append(image_file)
 
@@ -78,19 +89,24 @@ def create_image(output_dir: str, timestep: int, timesteps: (int, int), colormap
         create_animation(image_files, gif_output)
 
 
-def create_one_image(output_prefix: str, timestep: int, colormap: str, map_type: str, map_area: str, ds_global_area: xr.Dataset, ds_local_area: xr.Dataset, skip_existing: bool = True) -> str | None:
+def get_local_area(ds: xr.Dataset, area: Area) -> xr.Dataset | None:
+    lat_min, lat_max = area.south, area.north
+    lon_min, lon_max = area.west, area.east
+
+    mask = (
+        (ds.lat >= lat_min) & (ds.lat <= lat_max) &
+        (ds.lon >= lon_min) & (ds.lon <= lon_max)
+    )
+    ds_cutout = ds.where(mask, drop=True).load()
+    return ds_cutout.copy(deep=True)
+
+
+def create_one_image(output_prefix: str, timestep: int, colormap: str, map_type: str, map_area: Area, ds_global: xr.Dataset, ds_local: xr.Dataset | None, skip_existing: bool = True) -> str | None:
     show_colorbar = True
     show_coastlines = True
 
-    global_time = ds_global_area['time'].values[timestep]
-    local_time = ds_local_area['time'].values[timestep]
-
-    if global_time != local_time:
-        print(
-            f"Warning: Global area time {timestring(global_time)} != Local area time {timestring(local_time)}")
-        return None
-
-    output = f"{output_prefix}_{timestring(global_time, '%Y%m%dT%H')}.png"
+    current_time = ds_global['time'].values[timestep]
+    output = f"{output_prefix}_{timestring(current_time, '%Y%m%dT%H')}.png"
 
     if skip_existing and os.path.exists(output):
         print(f"Image {output} already exists, skipping...")
@@ -107,26 +123,22 @@ def create_one_image(output_prefix: str, timestep: int, colormap: str, map_type:
     map = mpl.gcf().add_axes([0, 0, 1, 1], projection=ccrs.Mercator())
 
     print(
-        f"Creating image for timestep {timestep}  time {timestring(global_time)} ... ", end='', flush=True)
+        f"Creating image for timestep {timestep}  time {timestring(current_time)} ... ", end='', flush=True)
     if map_type == 'temperature':
         cm, param_label = create_temperature_map(
-            ds_global_area, ds_local_area, map, timestep, colormap)
+            ds_global, ds_local, map, timestep, colormap)
     else:
         cm, param_label = create_wind_map(
-            ds_global_area, ds_local_area, map, timestep, colormap)
+            ds_global, ds_local, map, timestep, colormap)
 
     if show_coastlines:
         map.coastlines(resolution='10m', zorder=20, linewidth=0.5)
 
-    # TODO: make map area configurable
-    if map_area == 'northern-europe':
-        # Northern Europe
-        map.set_extent([-45, 55, 40, 70], ccrs.PlateCarree())
-    elif map_area == 'africa':
-        # Afrika modified
-        map.set_extent([-10, 68, -45, 32],  ccrs.PlateCarree())
+    global_area = get_bbox(ds_global)
+    map.set_extent([global_area.west, global_area.east, global_area.south,
+                   global_area.north],  ccrs.PlateCarree())
 
-    time_string = timestring(global_time)
+    time_string = timestring(current_time)
     label = f"{time_string}"
 
     # mpl.text(-43, 75, label, backgroundcolor='white')
@@ -148,14 +160,24 @@ def create_one_image(output_prefix: str, timestep: int, colormap: str, map_type:
     return output
 
 
+def get_bbox(ds: xr.Dataset) -> Area:
+    lats = get_variable_by_standard_name(ds, "latitude")
+    lons = get_variable_by_standard_name(ds, "longitude")
+    return Area(north=np.max(lats), south=np.min(lats), west=np.min(lons), east=np.max(lons))
+
+
 def smooth(data: np.ndarray, window_size: (int, int) = (3, 3)) -> np.ndarray:
     ''' Smooth data using either gridpp or scipy generic_filter '''
     return generic_filter(data, np.mean, size=window_size)
 
 
-def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, timestep: int, colormap: Any) -> tuple[QuadMesh, str]:
+def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset | None, map: Any, timestep: int, colormap: Any) -> tuple[QuadMesh, str]:
+    mdata: dict[str, np.ndarray] | None = None
     edata = get_temperature_data(global_area, timestep)
-    mdata = get_temperature_data(local_area, timestep)
+
+    if local_area is not None:
+        mdata = get_temperature_data(local_area, timestep)
+
     edges = np.arange(-10, 42, 2)
 
     norm = matplotlib.colors.BoundaryNorm(edges, 256)
@@ -169,22 +191,30 @@ def create_temperature_map(global_area: xr.Dataset, local_area: xr.Dataset, map:
     pargs = dict(cmap=colormap, norm=norm, transform=trans, alpha=1.0)
 
     edata["air_temperature_2m"] = smooth(edata["air_temperature_2m"])
-    mdata["air_temperature_2m"] = smooth(mdata["air_temperature_2m"])
+
+    if mdata is not None:
+        mdata["air_temperature_2m"] = smooth(mdata["air_temperature_2m"])
     cm = map.pcolormesh(edata["lons"], edata["lats"],
                         edata["air_temperature_2m"], zorder=-10, **pargs)
-    # Draw a magenta box around the regional domain
-    map.pcolormesh(mdata["lons"], mdata["lats"], mdata["air_temperature_2m"],
-                   facecolors='none', edgecolor='m', lw=3, transform=trans)
 
-    # Draw the regional domain
-    map.pcolormesh(mdata["lons"], mdata["lats"],
-                   mdata["air_temperature_2m"], **pargs)
+    if mdata is not None:
+        # Draw a magenta box around the regional domain
+        map.pcolormesh(mdata["lons"], mdata["lats"], mdata["air_temperature_2m"],
+                       facecolors='none', edgecolor='m', lw=1, transform=trans)
+
+        # Draw the regional domain
+        map.pcolormesh(mdata["lons"], mdata["lats"],
+                       mdata["air_temperature_2m"], **pargs)
     return (cm, "2m air temperature (°C)")
 
 
 def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, timestep: int, colormap: str) -> tuple[QuadMesh, str]:
-    mdata = get_wind_data(local_area, timestep)
+    mdata: dict[str, np.ndarray] | None = None
     edata = get_wind_data(global_area, timestep)
+
+    if local_area is not None:
+        mdata = get_wind_data(local_area, timestep)
+
     edges = np.arange(0, 27, 3)
     contour_lw = 0.5
     levels = np.arange(950, 1050, 5)
@@ -201,23 +231,26 @@ def create_wind_map(global_area: xr.Dataset, local_area: xr.Dataset, map: Any, t
 
     edata["air_pressure_at_sea_level"] = smooth(
         edata["air_pressure_at_sea_level"])
-    mdata["air_pressure_at_sea_level"] = smooth(
-        mdata["air_pressure_at_sea_level"])
+    if mdata is not None:
+        mdata["air_pressure_at_sea_level"] = smooth(
+            mdata["air_pressure_at_sea_level"])
+
     cm = map.pcolormesh(edata["lons"], edata["lats"],
                         edata["wind_speed_10m"], zorder=-10, **pargs)
     map.contour(edata["lons"], edata["lats"],
                 edata["air_pressure_at_sea_level"], zorder=-5, **cargs)
 
-    # Draw a magenta box around the regional domain
-    map.pcolormesh(mdata["lons"], mdata["lats"], mdata["wind_speed_10m"],
-                   facecolors='none', edgecolor='m', lw=3, transform=trans)
+    if mdata is not None:
+        # Draw a magenta box around the regional domain
+        map.pcolormesh(mdata["lons"], mdata["lats"], mdata["wind_speed_10m"],
+                       facecolors='none', edgecolor='m', lw=1, transform=trans)
 
-    # Draw the regional domain
-    map.pcolormesh(mdata["lons"], mdata["lats"],
-                   mdata["wind_speed_10m"], **pargs)
-    # print(np.mean(mdata["air_pressure_at_sea_level"]))
-    map.contour(mdata["lons"], mdata["lats"],
-                mdata["air_pressure_at_sea_level"], **cargs)
+        # Draw the regional domain
+        map.pcolormesh(mdata["lons"], mdata["lats"],
+                       mdata["wind_speed_10m"], **pargs)
+        # print(np.mean(mdata["air_pressure_at_sea_level"]))
+        map.contour(mdata["lons"], mdata["lats"],
+                    mdata["air_pressure_at_sea_level"], **cargs)
     return (cm, "10m wind speed (m/s)")
 
 
@@ -288,23 +321,50 @@ def timestring(dt: np.datetime64, fmt: str = '%Y-%m-%d %H') -> str:
         return dt.strftime(fmt)
 
 
-def get_named_area_bounds(area_name: str) -> tuple[float, float, float, float]:
-    """Get bounding box for named area."""
+def list_available_areas(area_config: str) -> None:
+    area_config = find_config_file(area_config)
+    areas: AreasConfig = load_areas(area_config)
+    print("Available named areas:")
+    for area_name in areas.list_area_names():
+        print(f"  {area_name}: {areas.get_area(area_name)}")
+    return
 
 
-#     if map_area == 'northern-europe':
-#         # Northern Europe
-#         map.set_extent([-45, 55, 40, 70], ccrs.PlateCarree())
-#     elif map_area == 'africa':
-#         # Afrika modified
-#         map.set_extent([-10, 68, -45, 32],  ccrs.PlateCarree())
+def get_area(area_cionfig_file: str, area: str) -> Area:
+    areas_config = load_areas(area_cionfig_file)
 
-    if area_name == 'africa':
-        return (-10.0, 68.0, -45.0, 32.0)  # north, west, south, east
-    elif area_name == 'northern-europe':
-        return (70.0, -25.0, 40.0, 55.0)  # north, west, south, east
+    if len(area) == 0:
+        raise ValueError(
+            "Either --local-area must be specified, or use --list-areas to see available named areas.")
+    if area.count('/') == 3:
+        return parse_area_from_str(area)
+
+    return areas_config.get_area(area)
+
+
+def parse_timestep(timestep_str: str, ndims: int) -> tuple[int, int]:
+    ''' Parse timestep string into first and last timestep indices. '''
+    first, last = 0, ndims
+
+    if '/' in timestep_str:
+        parts = timestep_str.split('/')
+        if len(parts) != 2:
+            raise ValueError(
+                "Timestep range must be in the format <first>[/<last>].")
+        first = int(parts[0])
+        last = int(parts[1])
+        if last == -1 or last > ndims:
+            last = ndims
     else:
-        raise ValueError(f"Unknown area name: {area_name}")
+        first = int(timestep_str)
+        if first == -1:
+            first = 0
+            last = ndims
+        elif first >= ndims:
+            first = ndims - 1
+            last = ndims
+
+    return (first, last)
 
 
 if __name__ == "__main__":
