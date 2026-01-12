@@ -1,5 +1,7 @@
 from typing import Tuple
+
 import numpy as np
+
 # from scipy.spatial import cKDTree
 from metpy.interpolate import interpolate_to_points
 
@@ -14,8 +16,14 @@ def _sph2cart(lat_deg: np.ndarray, lon_deg: np.ndarray) -> np.ndarray:
     return np.stack([x, y, z], axis=-1)
 
 
-def interpolate_to_grid(src_latitude: np.ndarray, src_longitude: np.ndarray, src_vals: np.ndarray,
-                        dst_latitude: np.ndarray, dst_longitude: np.ndarray, interp_type='nearest') -> np.ndarray:
+def interpolate_to_grid(
+    src_latitude: np.ndarray,
+    src_longitude: np.ndarray,
+    src_vals: np.ndarray,
+    dst_latitude: np.ndarray,
+    dst_longitude: np.ndarray,
+    interp_type="nearest",
+) -> np.ndarray:
     """
     Interpolate values from a source grid to a destination grid using specified interpolation method.
     Parameters:
@@ -29,11 +37,10 @@ def interpolate_to_grid(src_latitude: np.ndarray, src_longitude: np.ndarray, src
     Returns:
       np.ndarray: Interpolated values at the destination grid points, with shape matching dst_latitude.
     """
-    src_pts = _sph2cart(src_latitude.ravel(),
-                        src_longitude.ravel())
-    dst_pts = _sph2cart(dst_latitude.ravel(),
-                        dst_longitude.ravel())
-    dst_vals = interpolate_to_points(src_pts, src_vals.ravel(), dst_pts,
-                                     interp_type=interp_type)
+    src_pts = _sph2cart(src_latitude.ravel(), src_longitude.ravel())
+    dst_pts = _sph2cart(dst_latitude.ravel(), dst_longitude.ravel())
+    dst_vals = interpolate_to_points(
+        src_pts, src_vals.ravel(), dst_pts, interp_type=interp_type
+    )
     dst_vals = dst_vals.reshape(dst_latitude.shape)
     return dst_vals

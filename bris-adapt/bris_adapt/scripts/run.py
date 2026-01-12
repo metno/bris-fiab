@@ -1,15 +1,19 @@
 import click
+import earthkit.data as ekd
 from anemoi.inference.config.run import RunConfiguration
 from anemoi.inference.runners.default import DefaultRunner
-import earthkit.data as ekd
-
-
 
 
 @click.command()
-@click.option('--config', type=click.Path(exists=True), default='config.yaml', show_default=True, help='Inference configuration file')
+@click.option(
+    "--config",
+    type=click.Path(exists=True),
+    default="config.yaml",
+    show_default=True,
+    help="Inference configuration file",
+)
 def run(config: str):
-    '''Run inference based on a provided configuration file.'''
+    """Run inference based on a provided configuration file."""
     configuration = RunConfiguration.load(config)
 
     ekd.config.set("cache-policy", "user")
@@ -17,6 +21,7 @@ def run(config: str):
     runner = DefaultRunner(configuration)
 
     import torch
+
     if torch.cuda.is_available():
         runner.device = "cuda"
     elif torch.backends.mps.is_available():
@@ -27,5 +32,5 @@ def run(config: str):
     runner.execute()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

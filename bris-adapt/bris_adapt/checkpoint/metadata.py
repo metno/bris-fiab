@@ -3,14 +3,14 @@ from dataclasses import dataclass
 
 @dataclass
 class BrisParameter:
-    '''BrisParameter decodes parameters, as used in bris checkpoints'''
+    """BrisParameter decodes parameters, as used in bris checkpoints"""
 
     parameter: str
     level: int | None = None
 
     @classmethod
-    def from_string(cls, name: str) -> 'BrisParameter':
-        elements = name.split('_')
+    def from_string(cls, name: str) -> "BrisParameter":
+        elements = name.split("_")
 
         if len(elements) == 1:
             return BrisParameter(elements[0], None)
@@ -23,24 +23,25 @@ class BrisParameter:
         return self.level is not None
 
 
-def adapt_metdata(original_metadata: dict, replace_path: str = 'dataset.variables_metadata'):
-    '''Rewrite all parameter metadata so that it is usable in a mars request. Note that this will modify the input dict!'''
+def adapt_metdata(
+    original_metadata: dict, replace_path: str = "dataset.variables_metadata"
+):
+    """Rewrite all parameter metadata so that it is usable in a mars request. Note that this will modify the input dict!"""
 
     variables = original_metadata
-    for p in replace_path.split('.'):
+    for p in replace_path.split("."):
         variables = variables[p]
 
     for k, v in variables.items():
-        if not 'mars' in v:
+        if not "mars" in v:
             continue
         p = BrisParameter.from_string(k)
-        mars = v['mars']
+        mars = v["mars"]
         if p.has_level():
             mars["levtype"] = "pl"
             mars["levelist"] = p.level
             mars["param"] = p.parameter
         else:
             mars["levtype"] = "sfc"
-            if p.parameter in ('z', 'lsm'):
+            if p.parameter in ("z", "lsm"):
                 v["constant_in_time"] = True
-
