@@ -19,6 +19,8 @@ dependencies = [
     "pint",
     "earthkit-data",
     "scipy>=1.16.3",
+    "pyresample==1.35.0",
+    "healpy>=1.19.0",
 ]
 
 [project.urls]

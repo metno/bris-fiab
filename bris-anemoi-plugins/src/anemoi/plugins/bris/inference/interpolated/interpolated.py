@@ -11,6 +11,8 @@ from anemoi.inference.types import Date, State
 from ._interpolator import create_interpolator, LatLon
 
 
+count = 1
+
 class InterpolatedInput(EkdInput):
     trace_name = "interpolated"
 
@@ -36,12 +38,14 @@ class InterpolatedInput(EkdInput):
 
         super().__init__(context, **kwargs)
 
+
         self._latitudes = self.checkpoint.supporting_arrays["latitudes"].astype(
             np.float32
         )
         self._longitudes = self.checkpoint.supporting_arrays["longitudes"].astype(
             np.float32
         )
+
         assert (
             self.checkpoint.number_of_grid_points
             == len(self._latitudes)
@@ -103,13 +107,18 @@ class InterpolatedInput(EkdInput):
                 longitudes=source_state["longitudes"],
             ),
             output_points=LatLon(
-                latitudes=self._latitudes, longitudes=self._longitudes
+                latitudes=self._latitudes, 
+                longitudes=self._longitudes,
             ),
         )
 
         fields = {}
         for k, v in source_state["fields"].items():
             values = interpolate(v)
+
+            nan_count = np.isnan(values).sum()
+            print(f'Number of NaN in {k}: {nan_count} / {values.size}')
+
             assert len(values[0]) == len(
                 self._latitudes), f'{len(values[0])} != {len(self._latitudes)}'
             fields[k] = values
