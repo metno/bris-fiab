@@ -1,10 +1,18 @@
 [project]
 name = "bris-fiab"
 version = "0.0.0"
-requires-python = ">=3.11"
-dependencies = [
-    "anemoi-inference>=0.8.1",
-]
+requires-python = ">=3.11, <3.14"
+
 
 [tool.uv.workspace]
-members = ["bris-adapt", "bris-anemoi-plugins"]
+members = [
+    "bris-adapt", 
+    "bris-anemoi-plugins", 
+    "inference"
+]
+
+
+[tool.uv.sources]
+bris-anemoi-plugins = { workspace = true }
+run-inference = { workspace = true }
+bris-adapt = { workspace = true }
