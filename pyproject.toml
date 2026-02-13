@@ -8,7 +8,7 @@ requires-python = ">=3.11, <3.14"
 members = [
     "bris-adapt", 
     "bris-anemoi-plugins", 
-    "inference"
+    "run-inference"
 ]
 
 
