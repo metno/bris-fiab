@@ -57,6 +57,8 @@ uv run bris-adapt process make-grid anemoi-output.nc grid.nc
 
 This should create a file, `grid.nc`, which can be displayed in eg. diana.
 
+Note that this should be called from the bris-adapt folder.
+
 ### Forecast-in-a-Box
 
 TODO
