@@ -25,7 +25,7 @@ classifiers = [
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 dependencies = [
-    "anemoi-datasets",
+    "anemoi-datasets>=0.5.28",
     "anemoi-graphs",
     "anemoi-inference==0.8.2",
     "anemoi-models",
@@ -41,7 +41,11 @@ dependencies = [
     "metpy>=1.7.1",
     "twine>=6.2.0",
     "torch-geometric==2.6.1",
+    "cartopy>=0.21.1",
+    "numcodecs<0.12",
+    "zarr",
 ]
+
 
 [project.scripts]
 bris-adapt = "bris_adapt.scripts:cli"
